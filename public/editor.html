@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0b0f">
+    <title>محرر الصور - Photo Editor Pro</title>
+    <link rel="stylesheet" href="/css/editor.css">
+</head>
+
+<body>
+
+<header class="editor-header">
+    <button class="back-button" onclick="history.back()">→</button>
+
+    <div class="editor-title">
+        <strong>محرر الصور</strong>
+        <span>Photo Editor Pro</span>
+    </div>
+
+    <button class="save-button" id="exportButton" disabled>
+        تصدير
+    </button>
+</header>
+
+
+<main class="editor-container">
+
+    <section class="canvas-area">
+
+        <div class="empty-editor" id="emptyEditor">
+
+            <div class="empty-editor-icon">🖼️</div>
+
+            <h2>ابدأ بتعديل صورة</h2>
+
+            <p>اختر صورة من جهازك لفتحها داخل المحرر</p>
+
+            <button class="select-image-button" id="selectImageButton">
+                اختيار صورة
+            </button>
+
+        </div>
+
+
+        <div class="image-workspace" id="imageWorkspace" hidden>
+
+            <div class="image-container">
+                <img id="editorImage" alt="الصورة المحددة">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="editor-tools">
+
+        <button class="editor-tool" disabled>
+            <span>✂️</span>
+            <strong>قص</strong>
+        </button>
+
+        <button class="editor-tool" disabled>
+            <span>🔄</span>
+            <strong>تدوير</strong>
+        </button>
+
+        <button class="editor-tool" disabled>
+            <span>☀️</span>
+            <strong>إضاءة</strong>
+        </button>
+
+        <button class="editor-tool" disabled>
+            <span>◐</span>
+            <strong>تباين</strong>
+        </button>
+
+        <button class="editor-tool" disabled>
+            <span>🎨</span>
+            <strong>فلاتر</strong>
+        </button>
+
+        <button class="editor-tool" disabled>
+            <span>🔤</span>
+            <strong>نص</strong>
+        </button>
+
+        <button class="editor-tool" disabled>
+            <span>🏷️</span>
+            <strong>شعار</strong>
+        </button>
+
+    </section>
+
+</main>
+
+<script src="/js/image-editor.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+}
+
+.topbar {
+    height: 70px;
+    padding: 0 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #181818;
+    border-bottom: 1px solid #292929;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.settings {
+    background: #292929;
+    color: white;
+    border: 0;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.hero h1 {
+    font-size: 38px;
+    margin-bottom: 15px;
+}
+
+.hero p {
+    color: #aaa;
+    font-size: 18px;
+}
+
+.tools {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.tool-card {
+    background: #1b1b1b;
+    color: white;
+    border: 1px solid #292929;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: right;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.tool-card:hover {
+    transform: translateY(-3px);
+    border-color: #555;
+}
+
+.tool-card span {
+    display: block;
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.tool-card strong {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.tool-card small {
+    color: #999;
+}
+
+.recent {
+    margin-top: 50px;
+}
+
+.recent h2 {
+    margin-bottom: 20px;
+}
+
+.empty {
+    padding: 40px;
+    background: #181818;
+    border-radius: 12px;
+    color: #888;
+    text-align: center;
+}
+
+@media (max-width: 650px) {
+    .tools {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+}

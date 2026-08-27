@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0b0f">
+
+    <title>Photo Editor Pro</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <header class="app-header">
+
+        <div class="brand">
+            <div class="brand-logo">PE</div>
+
+            <div class="brand-info">
+                <h1>Photo Editor Pro</h1>
+                <span>استوديو التصميم والمونتاج</span>
+            </div>
+        </div>
+
+        <button class="icon-button" id="settingsButton" aria-label="الإعدادات">
+            ⚙️
+        </button>
+
+    </header>
+
+
+    <main class="app-container">
+
+        <section class="welcome-section">
+
+            <div>
+                <span class="welcome-label">مرحباً بك 👋</span>
+
+                <h2>
+                    ماذا تريد أن تصمم اليوم؟
+                </h2>
+
+                <p>
+                    عدّل صورك وفيديوهاتك وأنشئ تصاميمك من مكان واحد.
+                </p>
+            </div>
+
+        </section>
+
+
+        <section class="main-tools">
+
+            <button class="tool-card primary-tool" id="imageEditorButton">
+
+                <div class="tool-icon">
+                    🖼️
+                </div>
+
+                <div class="tool-content">
+
+                    <h3>تعديل صورة</h3>
+
+                    <p>
+                        تعديل الصور، الفلاتر، النصوص والشعارات
+                    </p>
+
+                </div>
+
+                <span class="tool-arrow">←</span>
+
+            </button>
+
+
+            <button class="tool-card" id="videoEditorButton">
+
+                <div class="tool-icon">
+                    🎬
+                </div>
+
+                <div class="tool-content">
+
+                    <h3>تعديل فيديو</h3>
+
+                    <p>
+                        قص، دمج، صوت، نصوص وانتقالات
+                    </p>
+
+                </div>
+
+                <span class="tool-arrow">←</span>
+
+            </button>
+
+        </section>
+
+
+        <section class="quick-section">
+
+            <div class="section-header">
+
+                <h2>أدوات سريعة</h2>
+
+            </div>
+
+
+            <div class="quick-tools">
+
+                <button class="quick-card">
+
+                    <span>🎨</span>
+
+                    <strong>القوالب</strong>
+
+                    <small>تصاميم جاهزة</small>
+
+                </button>
+
+
+                <button class="quick-card">
+
+                    <span>📁</span>
+
+                    <strong>مشاريعي</strong>
+
+                    <small>المشاريع المحفوظة</small>
+
+                </button>
+
+
+                <button class="quick-card">
+
+                    <span>✨</span>
+
+                    <strong>أدوات AI</strong>
+
+                    <small>قريباً</small>
+
+                </button>
+
+
+                <button class="quick-card">
+
+                    <span>⚙️</span>
+
+                    <strong>الإعدادات</strong>
+
+                    <small>تخصيص التطبيق</small>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <section class="projects-section">
+
+            <div class="section-header">
+
+                <h2>آخر المشاريع</h2>
+
+                <button id="viewProjectsButton">
+                    عرض الكل
+                </button>
+
+            </div>
+
+
+            <div class="empty-projects">
+
+                <div class="empty-icon">
+                    📂
+                </div>
+
+                <h3>لا توجد مشاريع بعد</h3>
+
+                <p>
+                    عندما تبدأ بتعديل الصور أو الفيديوهات ستظهر مشاريعك هنا.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="app-footer">
+
+        <span>Photo Editor Pro</span>
+
+        <span>الإصدار 1.0.0</span>
+
+    </footer>
+
+
+    <script src="/js/app.js"></script>
+
+</body>
+</html>

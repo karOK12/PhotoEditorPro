@@ -16,12 +16,15 @@ export default function Home() {
 
         <button
           className="icon-button"
-          id="settingsButton"
-          aria-label="الإعدادات"
+          id="sidebarButton"
+          aria-label="فتح القائمة الجانبية"
         >
-          ⚙️
+          ☰
         </button>
       </header>
+
+      <aside className="sidebar" id="sidebar">
+      </aside>
 
       <main className="app-container">
 

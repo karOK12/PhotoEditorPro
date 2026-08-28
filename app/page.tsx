@@ -7,20 +7,20 @@ export default function Home() {
     <>
       <header className="app-header">
         <div className="brand">
-          <div className="brand-logo">PE</div>
+          <button
+            className="icon-button"
+            id="sidebarButton"
+            aria-label="فتح القائمة الجانبية"
+          >
+            ☰
+          </button>
+
           <div className="brand-info">
             <h1>Photo Editor Pro</h1>
             <span>استوديو التصميم والمونتاج</span>
           </div>
         </div>
 
-        <button
-          className="icon-button"
-          id="sidebarButton"
-          aria-label="فتح القائمة الجانبية"
-        >
-          ☰
-        </button>
       </header>
 
       <main className="app-container">

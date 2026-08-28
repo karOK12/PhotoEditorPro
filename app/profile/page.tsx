@@ -380,96 +380,189 @@ const saveCover = async () => {
   const frame = frameRef.current;
   const img = imgRef.current;
 
-  if (!img || !frame) return;
+  if (!frame || !img || !img.naturalWidth || !img.naturalHeight) {
+    alert("لم يتم تحميل صورة الغلاف بعد");
+    return;
+  }
+
+  let fakeLoader: ReturnType<typeof setInterval> | null = null;
 
   try {
 
     setLoading(true);
-
     setProgress(0);
 
-    const fakeLoader = setInterval(() => {
-
+    fakeLoader = setInterval(() => {
       setProgress((prev) => {
-
         if (prev >= 90) return prev;
 
         const diff = 90 - prev;
-
         return prev + diff * 0.12;
-
       });
-
     }, 120);
+
+    /*
+      نحسب أبعاد الصورة كما تظهر داخل الإطار.
+      الصورة يتم تحريكها عمودياً فقط.
+    */
+
+    const displayedWidth = img.getBoundingClientRect().width;
+    const displayedHeight = img.getBoundingClientRect().height;
+
+    const frameWidth = frame.getBoundingClientRect().width;
+    const frameHeight = frame.getBoundingClientRect().height;
+
+    if (!displayedWidth || !displayedHeight) {
+      throw new Error("أبعاد الصورة غير صحيحة");
+    }
+
+    /*
+      نسبة التحويل من الصورة الأصلية
+      إلى الصورة الظاهرة على الشاشة.
+    */
+
+    const scaleX = displayedWidth / img.naturalWidth;
+    const scaleY = displayedHeight / img.naturalHeight;
+
+    /*
+      موقع الصورة الحالي داخل الإطار.
+      نقرأه مباشرة من style حتى نحفظ آخر حركة فعلية.
+    */
+
+    const currentStyle = window.getComputedStyle(img);
+
+    const imageTop = parseFloat(currentStyle.top) || 0;
+    const imageLeft = parseFloat(currentStyle.left) || 0;
+
+    /*
+      نحول موقع الصورة من px على الشاشة
+      إلى إحداثيات داخل الصورة الأصلية.
+    */
+
+    const sourceX = Math.max(
+      0,
+      -imageLeft / scaleX
+    );
+
+    const sourceY = Math.max(
+      0,
+      -imageTop / scaleY
+    );
+
+    /*
+      مقدار الجزء المطلوب قصه من الصورة الأصلية.
+    */
+
+    const sourceWidth = Math.min(
+      img.naturalWidth - sourceX,
+      frameWidth / scaleX
+    );
+
+    const sourceHeight = Math.min(
+      img.naturalHeight - sourceY,
+      frameHeight / scaleY
+    );
+
+    if (sourceWidth <= 0 || sourceHeight <= 0) {
+      throw new Error("منطقة القص غير صحيحة");
+    }
+
+    /*
+      نستخدم Canvas بحجم الإطار نفسه.
+    */
 
     const canvas = document.createElement("canvas");
 
-    canvas.width = frame.offsetWidth;
-
-    canvas.height = frame.offsetHeight;
+    canvas.width = Math.round(frameWidth);
+    canvas.height = Math.round(frameHeight);
 
     const ctx = canvas.getContext("2d");
 
-    if (!ctx) return;
+    if (!ctx) {
+      throw new Error("تعذر إنشاء Canvas");
+    }
 
-    const scale =
-      img.offsetWidth /
-      img.naturalWidth;
-
-    const sy = -cropTop.current / scale;
-
-    ctx.drawImage(
-      img,
-      0,
-      sy,
-      img.naturalWidth,
-      frame.offsetHeight / scale,
+    ctx.clearRect(
       0,
       0,
       canvas.width,
       canvas.height
     );
 
-    const finalImage =
-      canvas.toDataURL("image/jpeg", 0.6);
+    /*
+      رسم الجزء الذي يظهر فعلياً داخل الغلاف.
+    */
+
+    ctx.drawImage(
+      img,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    /*
+      تحويل الصورة إلى Base64.
+    */
+
+    const finalImage = canvas.toDataURL(
+      "image/jpeg",
+      0.85
+    );
+
+    /*
+      رفع الصورة إلى السيرفر.
+    */
 
     const res = await fetch("/api/upload", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        image: finalImage
+        image: finalImage,
       }),
     });
 
-    const data = await res.json();
-
-    clearInterval(fakeLoader);
-
-    if (!data?.ok || !data?.url) {
-
-      alert("فشل رفع الغلاف");
-
-      return;
-
+    if (!res.ok) {
+      throw new Error(
+        `HTTP ${res.status}`
+      );
     }
 
-    setProgress(100);
+    const data = await res.json();
+
+    if (!data?.ok || !data?.url) {
+      throw new Error(
+        data?.message || "فشل رفع الغلاف"
+      );
+    }
+
+    /*
+      حفظ رابط الغلاف.
+    */
 
     localStorage.setItem(
       "profileCover",
       data.url
     );
 
-    setLocked(true);
+    setProgress(100);
 
+    /*
+      تثبيت الصورة بعد الحفظ.
+    */
+
+    setLocked(true);
     setShowMenu(false);
 
     setTimeout(() => {
 
       setLoading(false);
-
       setProgress(0);
 
       alert("تم حفظ الغلاف ✔");
@@ -478,11 +571,23 @@ const saveCover = async () => {
 
   } catch (err) {
 
-    console.error(err);
+    console.error(
+      "SAVE COVER ERROR:",
+      err
+    );
 
-    alert("حدث خطأ أثناء الحفظ");
+    alert(
+      "حدث خطأ أثناء حفظ الغلاف"
+    );
 
     setLoading(false);
+    setProgress(0);
+
+  } finally {
+
+    if (fakeLoader) {
+      clearInterval(fakeLoader);
+    }
 
   }
 

@@ -1,0 +1,616 @@
+"use client";
+
+import { useRef, useState } from "react";
+
+export default function UserDataPage() {
+  const profileInputRef = useRef<HTMLInputElement>(null);
+
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [idImage, setIdImage] = useState<string | null>(null);
+
+  const [birthDay, setBirthDay] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthYear, setBirthYear] = useState("");
+
+  const [country, setCountry] = useState("");
+  const [idType, setIdType] = useState("");
+
+  const [showWarning, setShowWarning] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [serverMessage, setServerMessage] = useState("");
+  const [serverError, setServerError] = useState("");
+
+  const months = [
+    "يناير",
+    "فبراير",
+    "مارس",
+    "أبريل",
+    "مايو",
+    "يونيو",
+    "يوليو",
+    "أغسطس",
+    "سبتمبر",
+    "أكتوبر",
+    "نوفمبر",
+    "ديسمبر",
+  ];
+
+  const countries = [
+    { code: "+964", name: "العراق" },
+    { code: "+20", name: "مصر" },
+    { code: "+966", name: "السعودية" },
+    { code: "+971", name: "الإمارات" },
+    { code: "+965", name: "الكويت" },
+    { code: "+974", name: "قطر" },
+    { code: "+961", name: "لبنان" },
+    { code: "+962", name: "الأردن" },
+    { code: "+963", name: "سوريا" },
+    { code: "+212", name: "المغرب" },
+    { code: "+216", name: "تونس" },
+    { code: "+967", name: "اليمن" },
+  ];
+
+  function handleProfileImage(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("يرجى اختيار صورة صالحة.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("حجم صورة الملف الشخصي يجب ألا يتجاوز 5 ميجابايت.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setProfileImage(reader.result as string);
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function handleIdImage(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("يرجى اختيار صورة صالحة.");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("حجم صورة الهوية يجب ألا يتجاوز 10 ميجابايت.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setIdImage(reader.result as string);
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    if (isSendingOtp) return;
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const fullName = String(
+      formData.get("fullName") || ""
+    ).trim();
+
+    const lastName = String(
+      formData.get("lastName") || ""
+    ).trim();
+
+    const phone = String(
+      formData.get("phone") || ""
+    ).trim();
+
+    const city = String(
+      formData.get("city") || ""
+    ).trim();
+
+    const state = String(
+      formData.get("state") || ""
+    ).trim();
+
+    const email = String(
+      formData.get("email") || ""
+    ).trim().toLowerCase();
+
+    const idName = String(
+      formData.get("idName") || ""
+    ).trim();
+
+    const idNumber = String(
+      formData.get("idNumber") || ""
+    ).trim();
+
+    const zip = String(
+      formData.get("zip") || ""
+    ).trim();
+
+    const hasMissingData =
+      !profileImage ||
+      !fullName ||
+      !lastName ||
+      !birthDay ||
+      !birthMonth ||
+      !birthYear ||
+      !country ||
+      !phone ||
+      !city ||
+      !state ||
+      !idType ||
+      !idName ||
+      !idNumber ||
+      !idImage ||
+      !email;
+
+    if (hasMissingData) {
+      setShowWarning(true);
+      setServerMessage("");
+      setServerError("");
+      return;
+    }
+
+    setShowWarning(false);
+    setServerMessage("");
+    setServerError("");
+    setIsSendingOtp(true);
+
+    try {
+      const response = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || "تعذر إرسال رمز التحقق"
+        );
+      }
+
+      sessionStorage.setItem(
+        "photoEditorProRegistration",
+        JSON.stringify({
+          fullName,
+          lastName,
+          birthDay,
+          birthMonth,
+          birthYear,
+          country,
+          phone,
+          city,
+          state,
+          zip,
+          idType,
+          idName,
+          idNumber,
+          email,
+        })
+      );
+
+      sessionStorage.setItem(
+        "photoEditorProOtpEmail",
+        email
+      );
+
+      setServerMessage(
+        "تم إرسال رمز التحقق إلى بريدك الإلكتروني"
+      );
+
+      window.location.href =
+        "/user-data/verify?email=" +
+        encodeURIComponent(email);
+    } catch (error) {
+      console.error("OTP send error:", error);
+
+      setServerError(
+        error instanceof Error
+          ? error.message
+          : "حدث خطأ أثناء إرسال رمز التحقق"
+      );
+    } finally {
+      setIsSendingOtp(false);
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-[#0b0b0f] px-4 py-8 text-white sm:px-6">
+      <div className="mx-auto w-full max-w-2xl">
+
+        {/* البطاقة */}
+        <section className="rounded-3xl border border-white/10 bg-[#15151b] p-5 shadow-2xl sm:p-8">
+
+          {/* تنبيه النقص */}
+          {showWarning && (
+            <div
+              role="alert"
+              className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm font-medium text-red-300"
+            >
+              أكمل بياناتك الشخصية
+            </div>
+          )}
+
+          {serverError && (
+            <div
+              role="alert"
+              className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm font-medium text-red-300"
+            >
+              {serverError}
+            </div>
+          )}
+
+          {serverMessage && (
+            <div
+              role="status"
+              className="mb-6 rounded-xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-center text-sm font-medium text-green-300"
+            >
+              {serverMessage}
+            </div>
+          )}
+
+          {/* صورة الملف الشخصي */}
+          <div className="mb-8 flex flex-col items-center">
+
+            <button
+              type="button"
+              onClick={() => profileInputRef.current?.click()}
+              className="group relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#0e0e13] shadow-lg transition hover:scale-[1.03]"
+            >
+              {profileImage ? (
+                <img
+                  src={profileImage}
+                  alt="صورة الملف الشخصي"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-4xl text-gray-500">
+                  👤
+                </span>
+              )}
+
+              <span className="absolute bottom-1 left-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#15151b] bg-white text-lg font-bold text-black">
+                +
+              </span>
+            </button>
+
+            <input
+              ref={profileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              onChange={handleProfileImage}
+              className="hidden"
+            />
+
+            <p className="mt-3 text-xs text-gray-500">
+              إضافة صورة الملف الشخصي
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-5"
+          >
+
+            {/* الاسم */}
+            <div className="grid gap-4 sm:grid-cols-2">
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-200">
+                  الاسم الكامل
+                </label>
+
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder="أدخل اسمك الكامل"
+                  autoComplete="name"
+                  className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-white/30"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-200">
+                  اللقب
+                </label>
+
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="أدخل اللقب"
+                  autoComplete="family-name"
+                  className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-white/30"
+                />
+              </div>
+
+            </div>
+
+            {/* تاريخ الميلاد */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                تاريخ الميلاد
+              </label>
+
+              <div className="grid grid-cols-3 gap-3">
+
+                <select
+                  value={birthDay}
+                  onChange={(e) => setBirthDay(e.target.value)}
+                  className="rounded-xl border border-white/10 bg-[#0e0e13] px-3 py-3 text-sm text-white outline-none focus:border-white/30"
+                >
+                  <option value="">اليوم</option>
+
+                  {Array.from(
+                    { length: 31 },
+                    (_, index) => (
+                      <option
+                        key={index + 1}
+                        value={index + 1}
+                      >
+                        {index + 1}
+                      </option>
+                    )
+                  )}
+                </select>
+
+                <select
+                  value={birthMonth}
+                  onChange={(e) =>
+                    setBirthMonth(e.target.value)
+                  }
+                  className="rounded-xl border border-white/10 bg-[#0e0e13] px-3 py-3 text-sm text-white outline-none focus:border-white/30"
+                >
+                  <option value="">الشهر</option>
+
+                  {months.map((month, index) => (
+                    <option
+                      key={month}
+                      value={index + 1}
+                    >
+                      {month}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={birthYear}
+                  onChange={(e) =>
+                    setBirthYear(e.target.value)
+                  }
+                  className="rounded-xl border border-white/10 bg-[#0e0e13] px-3 py-3 text-sm text-white outline-none focus:border-white/30"
+                >
+                  <option value="">السنة</option>
+
+                  {Array.from(
+                    { length: 71 },
+                    (_, index) => {
+                      const year = 2010 - index;
+
+                      return (
+                        <option
+                          key={year}
+                          value={year}
+                        >
+                          {year}
+                        </option>
+                      );
+                    }
+                  )}
+                </select>
+
+              </div>
+            </div>
+
+            {/* الهاتف */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                رقم الهاتف
+              </label>
+
+              <div className="flex gap-3">
+
+                <select
+                  value={country}
+                  onChange={(e) =>
+                    setCountry(e.target.value)
+                  }
+                  className="w-[38%] rounded-xl border border-white/10 bg-[#0e0e13] px-3 py-3 text-sm text-white outline-none focus:border-white/30"
+                >
+                  <option value="">الدولة</option>
+
+                  {countries.map((item) => (
+                    <option
+                      key={item.code}
+                      value={item.code}
+                    >
+                      {item.name} ({item.code})
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="رقم الهاتف"
+                  autoComplete="tel"
+                  className="flex-1 rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-white/30"
+                />
+
+              </div>
+            </div>
+
+            {/* الموقع */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                الموقع
+              </label>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="المدينة"
+                  className="rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600 focus:border-white/30"
+                />
+
+                <input
+                  type="text"
+                  name="state"
+                  placeholder="المحافظة"
+                  className="rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600 focus:border-white/30"
+                />
+
+                <input
+                  type="text"
+                  name="zip"
+                  placeholder="الرمز البريدي"
+                  className="rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600 focus:border-white/30"
+                />
+
+              </div>
+            </div>
+
+            {/* الهوية */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                بيانات الهوية
+              </label>
+
+              <select
+                value={idType}
+                onChange={(e) =>
+                  setIdType(e.target.value)
+                }
+                className="mb-3 w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none focus:border-white/30"
+              >
+                <option value="">
+                  اختر نوع الهوية
+                </option>
+
+                <option value="national">
+                  البطاقة الوطنية
+                </option>
+
+                <option value="passport">
+                  جواز السفر
+                </option>
+
+                <option value="license">
+                  رخصة القيادة
+                </option>
+              </select>
+
+              {idType && (
+                <div className="grid gap-3 sm:grid-cols-2">
+
+                  <input
+                    type="text"
+                    name="idName"
+                    placeholder="اسم صاحب الهوية"
+                    className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600"
+                  />
+
+                  <input
+                    type="text"
+                    name="idNumber"
+                    placeholder="رقم الهوية"
+                    className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600"
+                  />
+
+                </div>
+              )}
+            </div>
+
+            {/* رفع الهوية */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                صورة الهوية
+              </label>
+
+              <label className="flex cursor-pointer items-center justify-between rounded-xl border border-dashed border-white/15 bg-[#0e0e13] px-4 py-4 transition hover:border-white/30">
+
+                <span className="text-sm text-gray-400">
+                  {idImage
+                    ? "✓ تم اختيار صورة الهوية"
+                    : "اختر صورة الهوية"}
+                </span>
+
+                <span className="rounded-lg bg-white px-3 py-2 text-xs font-bold text-black">
+                  رفع صورة
+                </span>
+
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  onChange={handleIdImage}
+                  className="hidden"
+                />
+
+              </label>
+            </div>
+
+            {/* البريد الإلكتروني */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                البريد الإلكتروني
+              </label>
+
+              <input
+                type="email"
+                name="email"
+                placeholder="أدخل بريدك الإلكتروني"
+                autoComplete="email"
+                className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600"
+              />
+
+              <p className="mt-2 text-xs text-gray-500">
+                سيُستخدم البريد الإلكتروني للتحقق من الحساب.
+              </p>
+            </div>
+
+            {/* إرسال كود التحقق */}
+            <button
+              type="submit"
+              disabled={isSendingOtp}
+              className="w-full rounded-xl bg-white py-3.5 text-sm font-bold text-black transition hover:bg-gray-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSendingOtp
+                ? "جاري إرسال كود التحقق..."
+                : "إرسال كود التحقق"}
+            </button>
+
+          </form>
+        </section>
+
+      </div>
+    </main>
+  );
+}

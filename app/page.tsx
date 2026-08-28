@@ -7,14 +7,6 @@ export default function Home() {
     <>
       <header className="app-header">
         <div className="brand">
-          <button
-            className="icon-button"
-            id="sidebarButton"
-            aria-label="فتح القائمة الجانبية"
-          >
-            ☰
-          </button>
-
           <div className="brand-info">
             <h1>Photo Editor Pro</h1>
             <span>استوديو التصميم والمونتاج</span>
@@ -23,14 +15,23 @@ export default function Home() {
 
         <button
           className="icon-button"
-          id="settingsButton"
-          aria-label="الإعدادات"
+          id="sidebarButton"
+          aria-label="فتح القائمة الجانبية"
         >
-          ⚙️
+          ☰
         </button>
       </header>
 
-      <aside className="sidebar" id="sidebar"></aside>
+      <aside className="sidebar" id="sidebar">
+        <div className="sidebar-profile">
+          <div className="profile-icon" aria-hidden="true">👤</div>
+
+          <div className="profile-info">
+            <strong id="sidebarUserName">المستخدم</strong>
+            <span id="sidebarUserRole">مستخدم</span>
+          </div>
+        </div>
+      </aside>
 
       <main className="app-container">
 

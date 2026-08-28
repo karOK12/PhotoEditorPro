@@ -27,3 +27,42 @@ if (sidebarButton && sidebar) {
         sidebar.classList.toggle('open');
     });
 }
+
+document.addEventListener('click', (event) => {
+    if (!sidebarButton || !sidebar) return;
+
+    const target = event.target;
+
+    if (
+        sidebar.classList.contains('open') &&
+        !sidebar.contains(target) &&
+        !sidebarButton.contains(target)
+    ) {
+        sidebar.classList.remove('open');
+    }
+});
+
+async function loadSidebarUser() {
+    const userName = document.getElementById('sidebarUserName');
+
+    if (!userName) return;
+
+    try {
+        const response = await fetch('/api/auth/me', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+
+        if (data.success && data.authenticated && data.user) {
+            userName.textContent = data.user.fullName || data.user.email || 'المستخدم';
+        }
+    } catch (error) {
+        console.error('خطأ في تحميل بيانات المستخدم:', error);
+    }
+}
+
+loadSidebarUser();

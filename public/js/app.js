@@ -18,3 +18,12 @@ imageEditorButton.addEventListener('click', () => {
 
     input.click();
 });
+
+const sidebarButton = document.getElementById('sidebarButton');
+const sidebar = document.getElementById('sidebar');
+
+if (sidebarButton && sidebar) {
+    sidebarButton.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+    });
+}

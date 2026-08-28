@@ -16,6 +16,9 @@ export default function UserDataPage() {
   const [idType, setIdType] = useState("");
 
   const [showWarning, setShowWarning] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [serverMessage, setServerMessage] = useState("");
+  const [serverError, setServerError] = useState("");
 
   const months = [
     "يناير",
@@ -99,10 +102,12 @@ export default function UserDataPage() {
     reader.readAsDataURL(file);
   }
 
-  function handleSubmit(
+  async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
+
+    if (isSendingOtp) return;
 
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -129,7 +134,7 @@ export default function UserDataPage() {
 
     const email = String(
       formData.get("email") || ""
-    ).trim();
+    ).trim().toLowerCase();
 
     const idName = String(
       formData.get("idName") || ""
@@ -138,6 +143,32 @@ export default function UserDataPage() {
     const idNumber = String(
       formData.get("idNumber") || ""
     ).trim();
+
+    const zip = String(
+      formData.get("zip") || ""
+    ).trim();
+
+    const password = String(
+      formData.get("password") || ""
+    );
+
+    const confirmPassword = String(
+      formData.get("confirmPassword") || ""
+    );
+
+    if (password.length < 8) {
+      setShowWarning(true);
+      setServerMessage("");
+      setServerError("كلمة المرور يجب أن تتكون من 8 أحرف أو أرقام على الأقل");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setShowWarning(true);
+      setServerMessage("");
+      setServerError("كلمتا المرور غير متطابقتين");
+      return;
+    }
 
     const hasMissingData =
       !profileImage ||
@@ -158,23 +189,78 @@ export default function UserDataPage() {
 
     if (hasMissingData) {
       setShowWarning(true);
+      setServerMessage("");
+      setServerError("");
       return;
     }
 
     setShowWarning(false);
+    setServerMessage("");
+    setServerError("");
+    setIsSendingOtp(true);
 
-    /*
-      لاحقًا هنا ستكون الخطوة الحقيقية:
+    try {
+      const response = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      });
 
-      1. إرسال البيانات إلى السيرفر.
-      2. حفظ البيانات في قاعدة البيانات.
-      3. إرسال كود OTP إلى البريد.
-      4. الانتقال إلى صفحة OTP.
+      const result = await response.json();
 
-      حاليًا لا يوجد اتصال بقاعدة البيانات ولا إرسال OTP.
-    */
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || "تعذر إرسال رمز التحقق"
+        );
+      }
 
-    console.log("بيانات الحساب مكتملة.");
+      sessionStorage.setItem(
+        "photoEditorProRegistration",
+        JSON.stringify({
+          fullName,
+          lastName,
+          birthDay,
+          birthMonth,
+          birthYear,
+          country,
+          phone,
+          city,
+          state,
+          zip,
+          idType,
+          idName,
+          idNumber,
+          email,
+        })
+      );
+
+      sessionStorage.setItem(
+        "photoEditorProOtpEmail",
+        email
+      );
+
+      setServerMessage(
+        "تم إرسال رمز التحقق إلى بريدك الإلكتروني"
+      );
+
+      window.location.href =
+        "/user-data/verify?email=" +
+        encodeURIComponent(email);
+    } catch (error) {
+      console.error("OTP send error:", error);
+
+      setServerError(
+        error instanceof Error
+          ? error.message
+          : "حدث خطأ أثناء إرسال رمز التحقق"
+      );
+    } finally {
+      setIsSendingOtp(false);
+    }
   }
 
   return (
@@ -191,6 +277,24 @@ export default function UserDataPage() {
               className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm font-medium text-red-300"
             >
               أكمل بياناتك الشخصية
+            </div>
+          )}
+
+          {serverError && (
+            <div
+              role="alert"
+              className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm font-medium text-red-300"
+            >
+              {serverError}
+            </div>
+          )}
+
+          {serverMessage && (
+            <div
+              role="status"
+              className="mb-6 rounded-xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-center text-sm font-medium text-green-300"
+            >
+              {serverMessage}
             </div>
           )}
 
@@ -416,6 +520,42 @@ export default function UserDataPage() {
               </div>
             </div>
 
+            {/* كلمة المرور */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                كلمة المرور
+              </label>
+
+              <input
+                type="password"
+                name="password"
+                placeholder="أدخل كلمة المرور"
+                autoComplete="new-password"
+                minLength={8}
+                className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3.5 text-base text-white outline-none transition placeholder:text-gray-600 focus:border-white/30"
+              />
+
+              <p className="mt-2 text-xs text-gray-500">
+                يجب أن تتكون كلمة المرور من 8 أحرف أو أرقام على الأقل.
+              </p>
+            </div>
+
+            {/* تأكيد كلمة المرور */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                تأكيد كلمة المرور
+              </label>
+
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="أعد إدخال كلمة المرور"
+                autoComplete="new-password"
+                minLength={8}
+                className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3.5 text-base text-white outline-none transition placeholder:text-gray-600 focus:border-white/30"
+              />
+            </div>
+
             {/* الهوية */}
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-200">
@@ -453,14 +593,14 @@ export default function UserDataPage() {
                     type="text"
                     name="idName"
                     placeholder="اسم صاحب الهوية"
-                    className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600"
+                    className="w-full min-h-[58px] rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-4 text-base text-white outline-none transition placeholder:text-gray-600 focus:border-white/30 focus:ring-1 focus:ring-white/20"
                   />
 
                   <input
                     type="text"
                     name="idNumber"
                     placeholder="رقم الهوية"
-                    className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600"
+                    className="w-full min-h-[58px] rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-4 text-base text-white outline-none transition placeholder:text-gray-600 focus:border-white/30 focus:ring-1 focus:ring-white/20"
                   />
 
                 </div>
@@ -517,9 +657,12 @@ export default function UserDataPage() {
             {/* إرسال كود التحقق */}
             <button
               type="submit"
-              className="w-full rounded-xl bg-white py-3.5 text-sm font-bold text-black transition hover:bg-gray-200 active:scale-[0.99]"
+              disabled={isSendingOtp}
+              className="w-full rounded-xl bg-white py-3.5 text-sm font-bold text-black transition hover:bg-gray-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              إرسال كود التحقق
+              {isSendingOtp
+                ? "جاري إرسال كود التحقق..."
+                : "إرسال كود التحقق"}
             </button>
 
           </form>

@@ -17,15 +17,6 @@ export default function Home() {
 
         <div className="flex items-center gap-2">
           <button
-            className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-black"
-            onClick={() => {
-              window.location.href = "/user-data";
-            }}
-          >
-            إنشاء حساب
-          </button>
-
-          <button
             className="icon-button"
             id="settingsButton"
             aria-label="الإعدادات"

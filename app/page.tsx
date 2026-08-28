@@ -21,6 +21,13 @@ export default function Home() {
           </div>
         </div>
 
+        <button
+          className="icon-button"
+          id="settingsButton"
+          aria-label="الإعدادات"
+        >
+          ⚙️
+        </button>
       </header>
 
       <main className="app-container">

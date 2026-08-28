@@ -7,6 +7,14 @@ export default function Home() {
     <>
       <header className="app-header">
         <div className="brand">
+          <button
+            className="icon-button"
+            id="sidebarButton"
+            aria-label="فتح القائمة الجانبية"
+          >
+            ☰
+          </button>
+
           <div className="brand-info">
             <h1>Photo Editor Pro</h1>
             <span>استوديو التصميم والمونتاج</span>
@@ -15,10 +23,10 @@ export default function Home() {
 
         <button
           className="icon-button"
-          id="sidebarButton"
-          aria-label="فتح القائمة الجانبية"
+          id="settingsButton"
+          aria-label="الإعدادات"
         >
-          ☰
+          ⚙️
         </button>
       </header>
 

@@ -46,7 +46,7 @@ async function loadSidebarUser() {
     const userName = document.getElementById('sidebarUserName');
     const profileImage = document.getElementById('sidebarProfileImage');
 
-    // تحميل صورة البروفايل التي اختارها المستخدم من صفحة /profile
+    // تحميل صورة المستخدم من صفحة /profile
     const savedProfileImage = localStorage.getItem('profileImage');
 
     if (profileImage && savedProfileImage) {
@@ -66,7 +66,10 @@ async function loadSidebarUser() {
         const data = await response.json();
 
         if (data.success && data.authenticated && data.user) {
-            userName.textContent = data.user.fullName || data.user.email || 'المستخدم';
+            userName.textContent =
+                data.user.fullName ||
+                data.user.email ||
+                'المستخدم';
         }
     } catch (error) {
         console.error('خطأ في تحميل بيانات المستخدم:', error);

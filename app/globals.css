@@ -456,7 +456,7 @@ button:focus-visible {
   position: fixed;
   top: 0;
   right: 0;
-  width: 300px;
+  width: 260px;
   height: 100vh;
   background: #111116;
   border-left: 1px solid rgba(255,255,255,.08);

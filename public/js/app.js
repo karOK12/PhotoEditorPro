@@ -44,6 +44,14 @@ document.addEventListener('click', (event) => {
 
 async function loadSidebarUser() {
     const userName = document.getElementById('sidebarUserName');
+    const profileImage = document.getElementById('sidebarProfileImage');
+
+    // تحميل صورة البروفايل التي اختارها المستخدم من صفحة /profile
+    const savedProfileImage = localStorage.getItem('profileImage');
+
+    if (profileImage && savedProfileImage) {
+        profileImage.src = savedProfileImage;
+    }
 
     if (!userName) return;
 

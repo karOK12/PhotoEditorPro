@@ -38,10 +38,20 @@ export default function Home() {
             id="profileButton"
             aria-label="بيانات المستخدم"
             onClick={() => {
-              window.location.href = "/user-data";
+              window.location.href = "/profile";
             }}
           >
-            👤
+            <img
+              id="sidebarProfileImage"
+              src="/assets/images/profile.jpg"
+              alt="صورة المستخدم"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "50%",
+              }}
+            />
           </button>
 
           <div className="profile-info">

@@ -23,9 +23,6 @@ export default function Home() {
         </button>
       </header>
 
-      <aside className="sidebar" id="sidebar">
-      </aside>
-
       <main className="app-container">
 
         <section className="hero-section">

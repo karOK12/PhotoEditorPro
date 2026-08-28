@@ -32,7 +32,17 @@ export default function Home() {
 
       <aside className="sidebar" id="sidebar">
         <div className="sidebar-profile">
-          <div className="profile-icon" aria-hidden="true">👤</div>
+          <button
+            type="button"
+            className="profile-icon"
+            id="profileButton"
+            aria-label="بيانات المستخدم"
+            onClick={() => {
+              window.location.href = "/user-data";
+            }}
+          >
+            👤
+          </button>
 
           <div className="profile-info">
             <strong id="sidebarUserName">المستخدم</strong>

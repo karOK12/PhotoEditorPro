@@ -11,22 +11,43 @@
 <body>
 
 <header class="editor-header">
-    <button class="back-button" onclick="history.back()">→</button>
+    <div class="editor-header-side">
+        <button class="back-button" onclick="history.back()" aria-label="رجوع">
+            →
+        </button>
+    </div>
 
     <div class="editor-title">
         <strong>محرر الصور</strong>
         <span>Photo Editor Pro</span>
     </div>
 
-    <button class="save-button" id="exportButton" disabled>
-        تصدير
-    </button>
+    <div class="editor-header-actions">
+        <button class="header-action" id="undoButton" disabled title="تراجع">
+            ↶
+        </button>
+
+        <button class="header-action" id="redoButton" disabled title="إعادة">
+            ↷
+        </button>
+
+        <button class="save-button" id="exportButton" disabled>
+            تصدير
+        </button>
+    </div>
 </header>
 
 
 <main class="editor-container">
 
     <section class="canvas-area">
+
+        <div class="workspace-toolbar" id="workspaceToolbar">
+            <button type="button" id="zoomOutButton" disabled>−</button>
+            <span id="zoomValue">100%</span>
+            <button type="button" id="zoomInButton" disabled>+</button>
+            <button type="button" id="fitButton" disabled>ملاءمة</button>
+        </div>
 
         <div class="empty-editor" id="emptyEditor">
 
@@ -56,32 +77,32 @@
 
     <section class="editor-tools">
 
-        <button class="editor-tool" disabled>
+        <button class="editor-tool" id="cropButton">
             <span>✂️</span>
             <strong>قص</strong>
         </button>
 
-        <button class="editor-tool" disabled>
+        <button class="editor-tool" id="rotateButton" disabled>
             <span>🔄</span>
             <strong>تدوير</strong>
         </button>
 
-        <button class="editor-tool" disabled>
+        <button class="editor-tool" id="brightnessButton" disabled>
             <span>☀️</span>
             <strong>إضاءة</strong>
         </button>
 
-        <button class="editor-tool" disabled>
+        <button class="editor-tool" id="contrastButton" disabled>
             <span>◐</span>
             <strong>تباين</strong>
         </button>
 
-        <button class="editor-tool" disabled>
+        <button class="editor-tool" id="filterButton" disabled>
             <span>🎨</span>
             <strong>فلاتر</strong>
         </button>
 
-        <button class="editor-tool" disabled>
+        <button class="editor-tool" id="addTextButton">
             <span>🔤</span>
             <strong>نص</strong>
         </button>
@@ -97,41 +118,14 @@
 <section class="timeline-panel" id="timelinePanel">
     <div class="timeline-header">
         <strong>Timeline</strong>
-        <span id="timelineDuration">00:15</span>
+        <span id="timelineDuration">00:00</span>
     </div>
 
-    <div class="timeline-ruler">
-        <span>00:00</span>
-        <span>00:05</span>
-        <span>00:10</span>
-        <span>00:15</span>
-    </div>
+    <div class="timeline-ruler" id="timelineRuler"></div>
 
-    <div class="timeline-track">
-        <div class="timeline-label">الصورة</div>
-        <div class="timeline-clip image-clip">
-            <span>الصورة</span>
-        </div>
-    </div>
-
-    <div class="timeline-track">
-        <div class="timeline-label">النص</div>
-        <div class="timeline-clip text-clip">
-            <span>النص</span>
-        </div>
-    </div>
-
-    <div class="timeline-track">
-        <div class="timeline-label">الشعار</div>
-        <div class="timeline-clip logo-clip">
-            <span>الشعار</span>
-        </div>
-    </div>
-
-    <div class="timeline-track">
-        <div class="timeline-label">الموسيقى</div>
-        <div class="timeline-clip audio-clip">
-            <span>الموسيقى</span>
+    <div class="timeline-tracks" id="timelineTracks">
+        <div class="timeline-empty" id="timelineEmpty">
+            أضف عناصر للمشروع لتظهر هنا
         </div>
     </div>
 </section>

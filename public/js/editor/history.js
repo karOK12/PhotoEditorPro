@@ -1,0 +1,66 @@
+(function () {
+    const MAX_HISTORY = 50;
+
+    let undoStack = [];
+    let redoStack = [];
+
+    function cloneState(state) {
+        return JSON.parse(JSON.stringify(state));
+    }
+
+    function push(state) {
+        undoStack.push(cloneState(state));
+
+        if (undoStack.length > MAX_HISTORY) {
+            undoStack.shift();
+        }
+
+        redoStack = [];
+    }
+
+    function undo(currentState) {
+        if (undoStack.length <= 1) {
+            return null;
+        }
+
+        redoStack.push(cloneState(currentState));
+
+        undoStack.pop();
+
+        return cloneState(undoStack[undoStack.length - 1]);
+    }
+
+    function redo(currentState) {
+        if (!redoStack.length) {
+            return null;
+        }
+
+        const nextState = redoStack.pop();
+
+        undoStack.push(cloneState(nextState));
+
+        return cloneState(nextState);
+    }
+
+    function clear() {
+        undoStack = [];
+        redoStack = [];
+    }
+
+    function canUndo() {
+        return undoStack.length > 1;
+    }
+
+    function canRedo() {
+        return redoStack.length > 0;
+    }
+
+    window.EditorHistory = {
+        push,
+        undo,
+        redo,
+        clear,
+        canUndo,
+        canRedo
+    };
+})();

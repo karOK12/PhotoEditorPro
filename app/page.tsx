@@ -374,10 +374,7 @@ export default function Home() {
               }}
               style={{
               color: "#173b8f",
-              color: "#173b8f",
                 border: "none",
-                background: "transparent",
-                color: "#173b8f",
                 cursor: "pointer",
                 fontSize: "13px",
                 fontWeight: "700",

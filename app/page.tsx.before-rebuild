@@ -1,0 +1,114 @@
+"use client";
+
+import Script from "next/script";
+
+export default function Home() {
+  return (
+    <>
+      <header className="app-header">
+
+        <div className="brand">
+
+          <button
+            className="icon-button"
+            id="sidebarButton"
+            aria-label="فتح القائمة الجانبية"
+          >
+            ☰
+          </button>
+
+          <div className="brand-info">
+            <h1>Photo Editor Pro</h1>
+            <span>استوديو التصميم والمونتاج</span>
+          </div>
+
+        </div>
+
+        <button
+          className="icon-button"
+          id="settingsButton"
+          aria-label="الإعدادات"
+        >
+          ⚙️
+        </button>
+
+      </header>
+
+
+      <aside className="sidebar" id="sidebar">
+
+        <div className="sidebar-profile">
+
+          <button
+            type="button"
+            className="profile-icon"
+            id="profileButton"
+            aria-label="بيانات المستخدم"
+            onClick={() => {
+              window.location.href = "/profile";
+            }}
+          >
+            <img
+              id="sidebarProfileImage"
+              src="/assets/images/profile.jpg"
+              alt="صورة المستخدم"
+            />
+          </button>
+
+          <div className="profile-info">
+            <strong id="sidebarUserName">المستخدم</strong>
+            <span id="sidebarUserRole">مستخدم</span>
+          </div>
+
+        </div>
+
+      </aside>
+
+
+      {/* الوسط فارغ — سنضيف المحتوى لاحقاً */}
+      <main className="app-container">
+      </main>
+
+
+      <nav
+        className="bottom-navigation"
+        id="bottomNavigation"
+      >
+
+        <button
+          type="button"
+          className="bottom-navigation-item active"
+          id="homeButton"
+        >
+          <span>⌂</span>
+          <strong>الرئيسية</strong>
+        </button>
+
+        <button
+          type="button"
+          className="bottom-navigation-item"
+          id="projectsButton"
+        >
+          <span>📁</span>
+          <strong>مشاريعي</strong>
+        </button>
+
+        <button
+          type="button"
+          className="bottom-navigation-item"
+          id="profileNavigationButton"
+          onClick={() => {
+            window.location.href = "/profile";
+          }}
+        >
+          <span>👤</span>
+          <strong>حسابي</strong>
+        </button>
+
+      </nav>
+
+
+      <Script src="/js/app.js" />
+    </>
+  );
+}

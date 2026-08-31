@@ -280,7 +280,7 @@ function loadImage(file) {
 
         pushHistory();
 
-        emptyEditor.hidden = true;
+        if (emptyEditor) emptyEditor.hidden = true;
         imageWorkspace.hidden = false;
 
         exportButton.disabled = false;
@@ -335,16 +335,76 @@ if (rotateButton) {
 
 if (brightnessButton) {
     brightnessButton.addEventListener("click", () => {
-        if (!originalImage) return;
+        if (!originalImage || !window.EditorPanels) return;
 
-        brightness += 10;
+        const originalValue = brightness;
 
-        if (brightness > 100) {
-            brightness = -100;
-        }
+        window.EditorPanels.open(
+            "الإضاءة",
+            `
+                <div class="editor-panel-label">
+                    اضبط إضاءة الصورة بشكل مباشر
+                </div>
 
-        renderCanvas();
-        pushHistory();
+                <div class="editor-range-row">
+                    <input
+                        id="brightnessRange"
+                        class="editor-range"
+                        type="range"
+                        min="-100"
+                        max="100"
+                        step="1"
+                        value="${brightness}"
+                    >
+
+                    <div
+                        id="brightnessValue"
+                        class="editor-range-value"
+                    >${brightness}</div>
+                </div>
+
+                <div class="editor-panel-actions">
+                    <button
+                        type="button"
+                        class="editor-panel-reset"
+                        id="brightnessCancel"
+                    >إلغاء</button>
+
+                    <button
+                        type="button"
+                        class="editor-panel-apply"
+                        id="brightnessApply"
+                    >تطبيق</button>
+                </div>
+            `
+        );
+
+        const range = document.getElementById("brightnessRange");
+        const value = document.getElementById("brightnessValue");
+        const cancel = document.getElementById("brightnessCancel");
+        const apply = document.getElementById("brightnessApply");
+
+        if (!range || !value || !cancel || !apply) return;
+
+        range.addEventListener("input", () => {
+            brightness = Number(range.value);
+            value.textContent = brightness;
+            renderCanvas();
+        });
+
+        cancel.addEventListener("click", () => {
+            brightness = originalValue;
+            renderCanvas();
+            window.EditorPanels.close();
+        });
+
+        apply.addEventListener("click", () => {
+            if (brightness !== originalValue) {
+                pushHistory();
+            }
+
+            window.EditorPanels.close();
+        });
     });
 }
 
@@ -355,16 +415,76 @@ if (brightnessButton) {
 
 if (contrastButton) {
     contrastButton.addEventListener("click", () => {
-        if (!originalImage) return;
+        if (!originalImage || !window.EditorPanels) return;
 
-        contrast += 10;
+        const originalValue = contrast;
 
-        if (contrast > 100) {
-            contrast = -100;
-        }
+        window.EditorPanels.open(
+            "التباين",
+            `
+                <div class="editor-panel-label">
+                    اضبط تباين الصورة بشكل مباشر
+                </div>
 
-        renderCanvas();
-        pushHistory();
+                <div class="editor-range-row">
+                    <input
+                        id="contrastRange"
+                        class="editor-range"
+                        type="range"
+                        min="-100"
+                        max="100"
+                        step="1"
+                        value="${contrast}"
+                    >
+
+                    <div
+                        id="contrastValue"
+                        class="editor-range-value"
+                    >${contrast}</div>
+                </div>
+
+                <div class="editor-panel-actions">
+                    <button
+                        type="button"
+                        class="editor-panel-reset"
+                        id="contrastCancel"
+                    >إلغاء</button>
+
+                    <button
+                        type="button"
+                        class="editor-panel-apply"
+                        id="contrastApply"
+                    >تطبيق</button>
+                </div>
+            `
+        );
+
+        const range = document.getElementById("contrastRange");
+        const value = document.getElementById("contrastValue");
+        const cancel = document.getElementById("contrastCancel");
+        const apply = document.getElementById("contrastApply");
+
+        if (!range || !value || !cancel || !apply) return;
+
+        range.addEventListener("input", () => {
+            contrast = Number(range.value);
+            value.textContent = contrast;
+            renderCanvas();
+        });
+
+        cancel.addEventListener("click", () => {
+            contrast = originalValue;
+            renderCanvas();
+            window.EditorPanels.close();
+        });
+
+        apply.addEventListener("click", () => {
+            if (contrast !== originalValue) {
+                pushHistory();
+            }
+
+            window.EditorPanels.close();
+        });
     });
 }
 
@@ -1063,6 +1183,99 @@ window.addEventListener(
         }
     }
 );
+
+
+/* =========================================================
+   Public Editor Engine API
+========================================================= */
+
+window.EditorEngine = {
+    hasImage() {
+        return !!originalImage;
+    },
+
+    getState() {
+        return createState();
+    },
+
+    setBrightness(value) {
+        if (!originalImage) return false;
+
+        brightness = Math.max(-100, Math.min(100, Number(value)));
+        renderCanvas();
+        return true;
+    },
+
+    setContrast(value) {
+        if (!originalImage) return false;
+
+        contrast = Math.max(-100, Math.min(100, Number(value)));
+        renderCanvas();
+        return true;
+    },
+
+    applyHistory() {
+        pushHistory();
+    },
+
+    rotate(direction = 90) {
+        if (!originalImage) return false;
+
+        rotation = (rotation + direction + 360) % 360;
+        renderCanvas();
+        pushHistory();
+
+        return true;
+    },
+
+    undo() {
+        undo();
+    },
+
+    redo() {
+        redo();
+    },
+
+    zoomIn() {
+        if (!originalImage) return false;
+
+        zoom = Math.min(zoom + 0.1, 3);
+        applyZoom();
+
+        return true;
+    },
+
+    zoomOut() {
+        if (!originalImage) return false;
+
+        zoom = Math.max(zoom - 0.1, 0.25);
+        applyZoom();
+
+        return true;
+    },
+
+    fit() {
+        if (!originalImage) return false;
+
+        fitCanvas();
+        return true;
+    },
+
+    export() {
+        if (!editorCanvas.width || !editorCanvas.height) {
+            return false;
+        }
+
+        const link = document.createElement("a");
+
+        link.download = "photo-editor-pro.png";
+        link.href = editorCanvas.toDataURL("image/png");
+
+        link.click();
+
+        return true;
+    }
+};
 
 
 /* =========================================================

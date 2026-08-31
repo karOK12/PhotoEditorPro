@@ -109,27 +109,6 @@
             color: #111;
         }
 
-        .editor-filter-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .editor-filter {
-            min-height: 62px;
-            border: 1px solid rgba(255,255,255,.10);
-            border-radius: 12px;
-            background: rgba(255,255,255,.06);
-            color: #fff;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .editor-filter.active {
-            border-color: #fff;
-            background: rgba(255,255,255,.14);
-        }
-
         .editor-rotate-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -146,21 +125,18 @@
             font-weight: 700;
         }
 
-        .editor-text-input {
-            width: 100%;
-            min-height: 48px;
-            box-sizing: border-box;
-            border: 1px solid rgba(255,255,255,.12);
-            border-radius: 12px;
-            background: rgba(255,255,255,.06);
-            color: #fff;
-            padding: 12px;
-            outline: none;
-        }
-
         .editor-panel-label {
             font-size: 13px;
             opacity: .7;
+        }
+
+        .editor-panel-status {
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.06);
+            font-size: 13px;
+            opacity: .8;
         }
 
         @media (max-width: 600px) {
@@ -198,14 +174,17 @@
             >×</button>
         </div>
 
-        <div class="editor-panel-content" id="editorPanelContent"></div>
+        <div
+            class="editor-panel-content"
+            id="editorPanelContent"
+        ></div>
     `;
 
     canvasArea.appendChild(panel);
 
-    const title = document.getElementById("editorPanelTitle");
-    const content = document.getElementById("editorPanelContent");
-    const close = document.getElementById("editorPanelClose");
+    const title = panel.querySelector("#editorPanelTitle");
+    const content = panel.querySelector("#editorPanelContent");
+    const close = panel.querySelector("#editorPanelClose");
 
     function openPanel(name, html) {
         title.textContent = name;
@@ -226,9 +205,289 @@
         element: panel
     };
 
+    function engine() {
+        return window.EditorEngine || null;
+    }
+
+    function requireImage() {
+        const e = engine();
+
+        if (!e || !e.hasImage()) {
+            alert("اختَر صورة أولاً.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function openBrightness() {
+        if (!requireImage()) return;
+
+        const e = engine();
+        const original = e.getState().brightness;
+
+        openPanel(
+            "الإضاءة",
+            `
+                <div class="editor-panel-label">
+                    تعديل إضاءة الصورة مباشرة
+                </div>
+
+                <div class="editor-range-row">
+                    <input
+                        id="panelBrightness"
+                        class="editor-range"
+                        type="range"
+                        min="-100"
+                        max="100"
+                        step="1"
+                        value="${original}"
+                    >
+
+                    <div
+                        id="panelBrightnessValue"
+                        class="editor-range-value"
+                    >${original}</div>
+                </div>
+
+                <div class="editor-panel-actions">
+                    <button
+                        type="button"
+                        class="editor-panel-reset"
+                        id="panelBrightnessCancel"
+                    >إلغاء</button>
+
+                    <button
+                        type="button"
+                        class="editor-panel-apply"
+                        id="panelBrightnessApply"
+                    >تطبيق</button>
+                </div>
+            `
+        );
+
+        const range = content.querySelector("#panelBrightness");
+        const value = content.querySelector("#panelBrightnessValue");
+
+        range.addEventListener("input", () => {
+            const v = Number(range.value);
+            value.textContent = v;
+            e.setBrightness(v);
+        });
+
+        content.querySelector("#panelBrightnessCancel")
+            .addEventListener("click", () => {
+                e.setBrightness(original);
+                closePanel();
+            });
+
+        content.querySelector("#panelBrightnessApply")
+            .addEventListener("click", () => {
+                e.applyHistory();
+                closePanel();
+            });
+    }
+
+    function openContrast() {
+        if (!requireImage()) return;
+
+        const e = engine();
+        const original = e.getState().contrast;
+
+        openPanel(
+            "التباين",
+            `
+                <div class="editor-panel-label">
+                    تعديل تباين الصورة مباشرة
+                </div>
+
+                <div class="editor-range-row">
+                    <input
+                        id="panelContrast"
+                        class="editor-range"
+                        type="range"
+                        min="-100"
+                        max="100"
+                        step="1"
+                        value="${original}"
+                    >
+
+                    <div
+                        id="panelContrastValue"
+                        class="editor-range-value"
+                    >${original}</div>
+                </div>
+
+                <div class="editor-panel-actions">
+                    <button
+                        type="button"
+                        class="editor-panel-reset"
+                        id="panelContrastCancel"
+                    >إلغاء</button>
+
+                    <button
+                        type="button"
+                        class="editor-panel-apply"
+                        id="panelContrastApply"
+                    >تطبيق</button>
+                </div>
+            `
+        );
+
+        const range = content.querySelector("#panelContrast");
+        const value = content.querySelector("#panelContrastValue");
+
+        range.addEventListener("input", () => {
+            const v = Number(range.value);
+            value.textContent = v;
+            e.setContrast(v);
+        });
+
+        content.querySelector("#panelContrastCancel")
+            .addEventListener("click", () => {
+                e.setContrast(original);
+                closePanel();
+            });
+
+        content.querySelector("#panelContrastApply")
+            .addEventListener("click", () => {
+                e.applyHistory();
+                closePanel();
+            });
+    }
+
+    function openRotate() {
+        if (!requireImage()) return;
+
+        openPanel(
+            "تدوير الصورة",
+            `
+                <div class="editor-panel-label">
+                    اختر اتجاه التدوير
+                </div>
+
+                <div class="editor-rotate-grid">
+                    <button type="button" id="rotateLeft">
+                        ↶ 90° يسار
+                    </button>
+
+                    <button type="button" id="rotateRight">
+                        ↷ 90° يمين
+                    </button>
+
+                    <button type="button" id="rotate180">
+                        180°
+                    </button>
+
+                    <button type="button" id="rotateClose">
+                        تم
+                    </button>
+                </div>
+            `
+        );
+
+        const e = engine();
+
+        content.querySelector("#rotateLeft")
+            .addEventListener("click", () => e.rotate(-90));
+
+        content.querySelector("#rotateRight")
+            .addEventListener("click", () => e.rotate(90));
+
+        content.querySelector("#rotate180")
+            .addEventListener("click", () => e.rotate(180));
+
+        content.querySelector("#rotateClose")
+            .addEventListener("click", closePanel);
+    }
+
+    function openFilter() {
+        if (!requireImage()) return;
+
+        openPanel(
+            "الفلاتر",
+            `
+                <div class="editor-panel-status">
+                    محرك الفلاتر قيد البناء — لن نعرض فلاتر وهمية.
+                </div>
+            `
+        );
+    }
+
+    function openCrop() {
+        if (!requireImage()) return;
+
+        openPanel(
+            "قص الصورة",
+            `
+                <div class="editor-panel-status">
+                    أداة القص الحالية تعمل على مساحة الصورة.
+                </div>
+
+                <div class="editor-panel-actions">
+                    <button
+                        type="button"
+                        class="editor-panel-reset"
+                        id="cropPanelClose"
+                    >إغلاق</button>
+                </div>
+            `
+        );
+
+        content.querySelector("#cropPanelClose")
+            .addEventListener("click", closePanel);
+    }
+
+    function openText() {
+        if (!requireImage()) return;
+
+        openPanel(
+            "النص",
+            `
+                <div class="editor-panel-status">
+                    نظام النص سيتم ربطه بالمحرك الطبقي بدل استخدام
+                    prompt أو عناصر وهمية.
+                </div>
+
+                <div class="editor-panel-actions">
+                    <button
+                        type="button"
+                        class="editor-panel-reset"
+                        id="textPanelClose"
+                    >إغلاق</button>
+                </div>
+            `
+        );
+
+        content.querySelector("#textPanelClose")
+            .addEventListener("click", closePanel);
+    }
+
     /*
-     * لا نشغّل الأدوات هنا بالقوة.
-     * هذا الملف مسؤول عن واجهة اللوحات،
-     * والمحرك الأساسي يحتفظ بالتحكم في الصورة.
+     * Capture يمنع المستمعات القديمة من تنفيذ نفس الزر مرتين.
+     * عند الضغط على الزر، هذا المدير هو المسؤول عن فتح القسم.
      */
+    document.addEventListener("click", function (event) {
+        const button = event.target.closest(".editor-tool");
+
+        if (!button) return;
+
+        const actions = {
+            cropButton: openCrop,
+            rotateButton: openRotate,
+            brightnessButton: openBrightness,
+            contrastButton: openContrast,
+            filterButton: openFilter,
+            addTextButton: openText
+        };
+
+        const action = actions[button.id];
+
+        if (!action) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        action();
+    }, true);
 })();

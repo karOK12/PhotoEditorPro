@@ -1,73 +1,219 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0b0b0f">
-    <title>محرر الصور - Photo Editor Pro</title>
+
+    <title>Photo Editor Pro</title>
+
     <link rel="stylesheet" href="/css/editor.css">
 </head>
 
-<body>
+<body class="dashboard-page">
 
 <header class="editor-header">
+
     <div class="editor-header-side">
-        <button class="back-button" onclick="history.back()" aria-label="رجوع">
-            →
-        </button>
+
+        <button
+            class="back-button"
+            onclick="history.back()"
+            aria-label="رجوع"
+        >→</button>
+
     </div>
+
 
     <div class="editor-title">
-        <strong>محرر الصور</strong>
-        <span>Photo Editor Pro</span>
+
+        <strong>Photo Editor Pro</strong>
+
+        <span>استوديو التصميم والمونتاج</span>
+
     </div>
+
 
     <div class="editor-header-actions">
-        <button class="header-action" id="undoButton" disabled title="تراجع">
-            ↶
-        </button>
 
-        <button class="header-action" id="redoButton" disabled title="إعادة">
-            ↷
-        </button>
+        <button
+            class="header-action profile-button"
+            id="profileButton"
+            title="الملف الشخصي"
+        >👤</button>
 
-        <button class="save-button" id="exportButton" disabled>
-            تصدير
-        </button>
+        <button
+            class="header-action"
+            id="settingsButton"
+            title="الإعدادات"
+        >⚙️</button>
+
+        <button
+            class="header-action"
+            id="undoButton"
+            disabled
+            title="تراجع"
+        >↶</button>
+
+        <button
+            class="header-action"
+            id="redoButton"
+            disabled
+            title="إعادة"
+        >↷</button>
+
+        <button
+            class="save-button"
+            id="exportButton"
+            disabled
+        >تصدير</button>
+
     </div>
+
 </header>
 
 
-<main class="editor-container">
+<main class="editor-shell">
 
-    <section class="canvas-area">
 
-        <div class="workspace-toolbar" id="workspaceToolbar">
-            <button type="button" id="zoomOutButton" disabled>−</button>
-            <span id="zoomValue">100%</span>
-            <button type="button" id="zoomInButton" disabled>+</button>
-            <button type="button" id="fitButton" disabled>ملاءمة</button>
+    <!-- =========================
+         WORKSPACE
+    ========================== -->
+
+    <section class="editor-preview">
+
+
+        <div class="preview-topbar">
+
+            <div class="preview-name">
+
+                <strong id="previewStatus">
+                    جاهز
+                </strong>
+
+                <span>
+                    مساحة العمل
+                </span>
+
+            </div>
+
+
+            <div class="preview-actions">
+
+                <button
+                    type="button"
+                    id="zoomOutButton"
+                    disabled
+                >−</button>
+
+                <span id="zoomValue">
+                    100%
+                </span>
+
+                <button
+                    type="button"
+                    id="zoomInButton"
+                    disabled
+                >+</button>
+
+                <button
+                    type="button"
+                    id="fitButton"
+                    disabled
+                >⛶</button>
+
+            </div>
+
         </div>
 
-        <div class="empty-editor" id="emptyEditor">
 
-            <div class="empty-editor-icon">🖼️</div>
+        <div class="canvas-area">
 
-            <h2>ابدأ بتعديل صورة</h2>
+            <div
+                class="image-workspace"
+                id="imageWorkspace"
+                hidden
+            >
 
-            <p>اختر صورة من جهازك لفتحها داخل المحرر</p>
+                <div class="image-container">
 
-            <button class="select-image-button" id="selectImageButton">
-                اختيار صورة
-            </button>
+                    <canvas
+                        id="editorCanvas"
+                    ></canvas>
+
+                </div>
+
+            </div>
 
         </div>
 
 
-        <div class="image-workspace" id="imageWorkspace" hidden>
+        <!-- التحكم بالتشغيل داخل نفس الواجهة -->
 
-            <div class="image-container">
-                <canvas id="editorCanvas"></canvas>
+        <div class="preview-controls">
+
+            <button
+                type="button"
+                class="preview-control"
+                id="previousFrameButton"
+            >‹</button>
+
+
+            <button
+                type="button"
+                class="preview-play"
+                id="playButton"
+            >▶</button>
+
+
+            <button
+                type="button"
+                class="preview-control"
+                id="nextFrameButton"
+            >›</button>
+
+        </div>
+
+
+        <!-- Timeline مدمج -->
+
+        <div
+            class="timeline-panel"
+            id="timelinePanel"
+        >
+
+            <div class="timeline-header">
+
+                <strong>
+                    المخطط الزمني
+                </strong>
+
+                <span id="timelineDuration">
+                    00:00
+                </span>
+
+            </div>
+
+
+            <div
+                class="timeline-ruler"
+                id="timelineRuler"
+            ></div>
+
+
+            <div
+                class="timeline-tracks"
+                id="timelineTracks"
+            >
+
+                <div
+                    class="timeline-empty"
+                    id="timelineEmpty"
+                >
+                    أضف صورة أو فيديو للمشروع
+                </div>
+
             </div>
 
         </div>
@@ -75,65 +221,210 @@
     </section>
 
 
-    <section class="editor-tools">
-
-        <button class="editor-tool" id="cropButton">
-            <span>✂️</span>
-            <strong>قص</strong>
-        </button>
-
-        <button class="editor-tool" id="rotateButton" disabled>
-            <span>🔄</span>
-            <strong>تدوير</strong>
-        </button>
-
-        <button class="editor-tool" id="brightnessButton" disabled>
-            <span>☀️</span>
-            <strong>إضاءة</strong>
-        </button>
-
-        <button class="editor-tool" id="contrastButton" disabled>
-            <span>◐</span>
-            <strong>تباين</strong>
-        </button>
-
-        <button class="editor-tool" id="filterButton" disabled>
-            <span>🎨</span>
-            <strong>فلاتر</strong>
-        </button>
-
-        <button class="editor-tool" id="addTextButton">
-            <span>🔤</span>
-            <strong>نص</strong>
-        </button>
-
-        <button class="editor-tool" disabled>
-            <span>🏷️</span>
-            <strong>شعار</strong>
-        </button>
-
-    </section>
-
 </main>
-<section class="timeline-panel" id="timelinePanel">
-    <div class="timeline-header">
-        <strong>Timeline</strong>
-        <span id="timelineDuration">00:00</span>
-    </div>
-
-    <div class="timeline-ruler" id="timelineRuler"></div>
-
-    <div class="timeline-tracks" id="timelineTracks">
-        <div class="timeline-empty" id="timelineEmpty">
-            أضف عناصر للمشروع لتظهر هنا
-        </div>
-    </div>
-</section>
 
 
+<!-- =========================
+     EDITOR TOOLS
+========================== -->
+
+<nav
+    class="editor-bottom-tools"
+    id="editorBottomTools"
+>
+
+
+    <button
+        class="bottom-tool primary"
+        id="addMediaButton"
+    >
+
+        <span>＋</span>
+
+        <strong>
+            إضافة
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="cropButton"
+    >
+
+        <span>✂</span>
+
+        <strong>
+            قص
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="splitButton"
+    >
+
+        <span>✂</span>
+
+        <strong>
+            تقسيم
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="rotateButton"
+        disabled
+    >
+
+        <span>↻</span>
+
+        <strong>
+            تدوير
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="brightnessButton"
+        disabled
+    >
+
+        <span>☀</span>
+
+        <strong>
+            إضاءة
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="contrastButton"
+        disabled
+    >
+
+        <span>◐</span>
+
+        <strong>
+            تباين
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="filterButton"
+        disabled
+    >
+
+        <span>🎨</span>
+
+        <strong>
+            فلاتر
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="addTextButton"
+    >
+
+        <span>T</span>
+
+        <strong>
+            نص
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="addLogoButton"
+    >
+
+        <span>▣</span>
+
+        <strong>
+            شعار
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="musicButton"
+    >
+
+        <span>♫</span>
+
+        <strong>
+            صوت
+        </strong>
+
+    </button>
+
+
+    <button
+        class="bottom-tool"
+        id="moreToolsButton"
+    >
+
+        <span>•••</span>
+
+        <strong>
+            المزيد
+        </strong>
+
+    </button>
+
+
+</nav>
+
+
+<script src="/js/editor/project-state.js"></script>
 <script src="/js/editor/history.js"></script>
 <script src="/js/editor/panels.js"></script>
 <script src="/js/editor/core.js"></script>
+<script src="/js/editor/montage-dashboard.js"></script>
+<script src="/js/editor/editor-shell.js"></script>
+
+
+<script>
+
+window.addEventListener("load", function () {
+
+    console.log(
+        "===== PHOTO EDITOR PRO ====="
+    );
+
+    console.log(
+        "EditorEngine:",
+        window.EditorEngine
+    );
+
+    console.log(
+        "ProjectState:",
+        window.ProjectState
+    );
+
+});
+
+</script>
+
 
 </body>
 </html>

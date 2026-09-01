@@ -200,24 +200,6 @@ export default function UserDataPage() {
     setIsSendingOtp(true);
 
     try {
-      const response = await fetch("/api/otp/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(
-          result.message || "تعذر إرسال رمز التحقق"
-        );
-      }
-
       const pendingResponse = await fetch("/api/auth/register/pending", {
         method: "POST",
         headers: {
@@ -249,6 +231,24 @@ export default function UserDataPage() {
       if (!pendingResponse.ok || !pendingResult.success) {
         throw new Error(
           pendingResult.message || "تعذر حفظ بيانات التسجيل"
+        );
+      }
+
+      const response = await fetch("/api/otp/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || "تعذر إرسال رمز التحقق"
         );
       }
 

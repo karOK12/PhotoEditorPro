@@ -148,6 +148,28 @@ export default function UserDataPage() {
       formData.get("zip") || ""
     ).trim();
 
+    const password = String(
+      formData.get("password") || ""
+    );
+
+    const confirmPassword = String(
+      formData.get("confirmPassword") || ""
+    );
+
+    if (password.length < 8) {
+      setShowWarning(true);
+      setServerMessage("");
+      setServerError("كلمة المرور يجب أن تتكون من 8 أحرف أو أرقام على الأقل");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setShowWarning(true);
+      setServerMessage("");
+      setServerError("كلمتا المرور غير متطابقتين");
+      return;
+    }
+
     const hasMissingData =
       !profileImage ||
       !fullName ||
@@ -196,6 +218,40 @@ export default function UserDataPage() {
         );
       }
 
+      const pendingResponse = await fetch("/api/auth/register/pending", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName,
+          lastName,
+          birthDay,
+          birthMonth,
+          birthYear,
+          country,
+          phone,
+          city,
+          state,
+          zip,
+          idType,
+          idName,
+          idNumber,
+          email,
+          password,
+          profileImage,
+          idImage,
+        }),
+      });
+
+      const pendingResult = await pendingResponse.json();
+
+      if (!pendingResponse.ok || !pendingResult.success) {
+        throw new Error(
+          pendingResult.message || "تعذر حفظ بيانات التسجيل"
+        );
+      }
+
       sessionStorage.setItem(
         "photoEditorProRegistration",
         JSON.stringify({
@@ -213,6 +269,9 @@ export default function UserDataPage() {
           idName,
           idNumber,
           email,
+          password,
+          profileImage,
+          idImage,
         })
       );
 
@@ -498,6 +557,42 @@ export default function UserDataPage() {
               </div>
             </div>
 
+            {/* كلمة المرور */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                كلمة المرور
+              </label>
+
+              <input
+                type="password"
+                name="password"
+                placeholder="أدخل كلمة المرور"
+                autoComplete="new-password"
+                minLength={8}
+                className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3.5 text-base text-white outline-none transition placeholder:text-gray-600 focus:border-white/30"
+              />
+
+              <p className="mt-2 text-xs text-gray-500">
+                يجب أن تتكون كلمة المرور من 8 أحرف أو أرقام على الأقل.
+              </p>
+            </div>
+
+            {/* تأكيد كلمة المرور */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                تأكيد كلمة المرور
+              </label>
+
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="أعد إدخال كلمة المرور"
+                autoComplete="new-password"
+                minLength={8}
+                className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3.5 text-base text-white outline-none transition placeholder:text-gray-600 focus:border-white/30"
+              />
+            </div>
+
             {/* الهوية */}
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-200">
@@ -535,14 +630,14 @@ export default function UserDataPage() {
                     type="text"
                     name="idName"
                     placeholder="اسم صاحب الهوية"
-                    className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600"
+                    className="w-full min-h-[58px] rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-4 text-base text-white outline-none transition placeholder:text-gray-600 focus:border-white/30 focus:ring-1 focus:ring-white/20"
                   />
 
                   <input
                     type="text"
                     name="idNumber"
                     placeholder="رقم الهوية"
-                    className="w-full rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600"
+                    className="w-full min-h-[58px] rounded-xl border border-white/10 bg-[#0e0e13] px-4 py-4 text-base text-white outline-none transition placeholder:text-gray-600 focus:border-white/30 focus:ring-1 focus:ring-white/20"
                   />
 
                 </div>

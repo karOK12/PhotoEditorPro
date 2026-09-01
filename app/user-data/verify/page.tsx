@@ -55,43 +55,21 @@ export default function VerifyOtpPage() {
         );
       }
 
-      const savedRegistration =
-        sessionStorage.getItem("photoEditorProRegistration");
+      sessionStorage.setItem(
+        "photoEditorProOtpVerified",
+        "true"
+      );
 
-      if (!savedRegistration) {
-        throw new Error(
-          "لم يتم العثور على بيانات التسجيل، يرجى إعادة التسجيل"
-        );
-      }
+      sessionStorage.removeItem("photoEditorProRegistration");
+      sessionStorage.removeItem("photoEditorProOtpEmail");
 
-      let registration;
+      setMessage(
+        result.message || "تم التحقق من البريد وإنشاء الحساب بنجاح"
+      );
 
-      try {
-        registration = JSON.parse(savedRegistration);
-      } catch {
-        throw new Error(
-          "بيانات التسجيل غير صالحة، يرجى إعادة التسجيل"
-        );
-      }
-
-      const registerResponse = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...registration,
-          email,
-        }),
-      });
-
-      const registerResult = await registerResponse.json();
-
-      if (!registerResponse.ok || !registerResult.success) {
-        throw new Error(
-          registerResult.message || "تعذر إنشاء الحساب"
-        );
-      }
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
 
       sessionStorage.setItem(
         "photoEditorProOtpVerified",

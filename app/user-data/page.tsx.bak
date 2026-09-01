@@ -218,40 +218,6 @@ export default function UserDataPage() {
         );
       }
 
-      const pendingResponse = await fetch("/api/auth/register/pending", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName,
-          lastName,
-          birthDay,
-          birthMonth,
-          birthYear,
-          country,
-          phone,
-          city,
-          state,
-          zip,
-          idType,
-          idName,
-          idNumber,
-          email,
-          password,
-          profileImage,
-          idImage,
-        }),
-      });
-
-      const pendingResult = await pendingResponse.json();
-
-      if (!pendingResponse.ok || !pendingResult.success) {
-        throw new Error(
-          pendingResult.message || "تعذر حفظ بيانات التسجيل"
-        );
-      }
-
       sessionStorage.setItem(
         "photoEditorProRegistration",
         JSON.stringify({

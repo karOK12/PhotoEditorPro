@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import { db } from "@/app/lib/db";
 import {
   createSessionToken,
@@ -13,10 +14,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const email = String(body?.email ?? "")
-      .trim()
-      .toLowerCase();
-
+    const email = String(body?.email ?? "").trim().toLowerCase();
     const otp = String(body?.otp ?? "").trim();
 
     if (!email || !otp) {
@@ -24,16 +22,6 @@ export async function POST(request: Request) {
         {
           success: false,
           message: "البريد الإلكتروني ورمز التحقق مطلوبان",
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "البريد الإلكتروني غير صالح",
         },
         { status: 400 }
       );
@@ -49,9 +37,8 @@ export async function POST(request: Request) {
       );
     }
 
-    /*
-     * البحث عن أحدث رمز تسجيل غير مستخدم.
-     */
+    await client.query("BEGIN");
+
     const otpResult = await client.query(
       `SELECT id, code_hash, attempts, expires_at
        FROM otp_codes
@@ -59,11 +46,14 @@ export async function POST(request: Request) {
          AND purpose = $2
          AND used_at IS NULL
        ORDER BY created_at DESC
-       LIMIT 1`,
+       LIMIT 1
+       FOR UPDATE`,
       [email, "register"]
     );
 
     if (otpResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+
       return NextResponse.json(
         {
           success: false,
@@ -73,28 +63,27 @@ export async function POST(request: Request) {
       );
     }
 
-    const otpRecord = otpResult.rows[0];
+    const record = otpResult.rows[0];
 
-    if (
-      new Date(otpRecord.expires_at).getTime() <=
-      Date.now()
-    ) {
+    if (new Date(record.expires_at).getTime() <= Date.now()) {
+      await client.query("ROLLBACK");
+
       return NextResponse.json(
         {
           success: false,
-          message:
-            "انتهت صلاحية رمز التحقق، اطلب رمزًا جديدًا",
+          message: "انتهت صلاحية رمز التحقق، اطلب رمزًا جديدًا",
         },
         { status: 400 }
       );
     }
 
-    if (otpRecord.attempts >= 5) {
+    if (record.attempts >= 5) {
+      await client.query("ROLLBACK");
+
       return NextResponse.json(
         {
           success: false,
-          message:
-            "تم تجاوز عدد محاولات التحقق، اطلب رمزًا جديدًا",
+          message: "تم تجاوز عدد محاولات التحقق، اطلب رمزًا جديدًا",
         },
         { status: 429 }
       );
@@ -105,13 +94,15 @@ export async function POST(request: Request) {
       .update(otp)
       .digest("hex");
 
-    if (codeHash !== otpRecord.code_hash) {
+    if (codeHash !== record.code_hash) {
       await client.query(
         `UPDATE otp_codes
          SET attempts = attempts + 1
          WHERE id = $1`,
-        [otpRecord.id]
+        [record.id]
       );
+
+      await client.query("COMMIT");
 
       return NextResponse.json(
         {
@@ -122,9 +113,6 @@ export async function POST(request: Request) {
       );
     }
 
-    /*
-     * جلب بيانات التسجيل المعلّق.
-     */
     const pendingResult = await client.query(
       `SELECT
          id,
@@ -146,17 +134,19 @@ export async function POST(request: Request) {
          profile_image,
          id_image
        FROM pending_registrations
-       WHERE email = $1
-       LIMIT 1`,
+       WHERE LOWER(email) = LOWER($1)
+       LIMIT 1
+       FOR UPDATE`,
       [email]
     );
 
     if (pendingResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+
       return NextResponse.json(
         {
           success: false,
-          message:
-            "لم يتم العثور على بيانات التسجيل المعلّقة، يرجى إعادة التسجيل",
+          message: "لم يتم العثور على بيانات التسجيل، يرجى إعادة التسجيل",
         },
         { status: 400 }
       );
@@ -164,14 +154,6 @@ export async function POST(request: Request) {
 
     const pending = pendingResult.rows[0];
 
-    /*
-     * بدء العملية كاملة داخل Transaction.
-     */
-    await client.query("BEGIN");
-
-    /*
-     * التأكد من أن البريد لم يُستخدم أثناء انتظار OTP.
-     */
     const existingUser = await client.query(
       `SELECT id
        FROM users
@@ -181,7 +163,20 @@ export async function POST(request: Request) {
     );
 
     if (existingUser.rows.length > 0) {
-      await client.query("ROLLBACK");
+      await client.query(
+        `UPDATE otp_codes
+         SET used_at = NOW()
+         WHERE id = $1`,
+        [record.id]
+      );
+
+      await client.query(
+        `DELETE FROM pending_registrations
+         WHERE id = $1`,
+        [pending.id]
+      );
+
+      await client.query("COMMIT");
 
       return NextResponse.json(
         {
@@ -192,9 +187,6 @@ export async function POST(request: Request) {
       );
     }
 
-    /*
-     * إنشاء المستخدم الحقيقي.
-     */
     const userResult = await client.query(
       `INSERT INTO users
        (
@@ -204,15 +196,8 @@ export async function POST(request: Request) {
          phone,
          email_verified
        )
-       VALUES
-       ($1, $2, $3, $4, true)
-       RETURNING
-         id,
-         full_name,
-         email,
-         phone,
-         email_verified,
-         created_at`,
+       VALUES ($1, $2, $3, $4, true)
+       RETURNING id, full_name, email, phone, email_verified, created_at`,
       [
         pending.full_name,
         pending.email,
@@ -223,9 +208,6 @@ export async function POST(request: Request) {
 
     const user = userResult.rows[0];
 
-    /*
-     * إنشاء الملف الشخصي.
-     */
     await client.query(
       `INSERT INTO user_profiles
        (
@@ -265,19 +247,13 @@ export async function POST(request: Request) {
       ]
     );
 
-    /*
-     * اعتبار OTP مستخدمًا.
-     */
     await client.query(
       `UPDATE otp_codes
        SET used_at = NOW()
        WHERE id = $1`,
-      [otpRecord.id]
+      [record.id]
     );
 
-    /*
-     * حذف التسجيل المعلّق بعد نجاح إنشاء الحساب.
-     */
     await client.query(
       `DELETE FROM pending_registrations
        WHERE id = $1`,
@@ -286,9 +262,6 @@ export async function POST(request: Request) {
 
     await client.query("COMMIT");
 
-    /*
-     * تسجيل الدخول تلقائيًا.
-     */
     const sessionToken = createSessionToken(user.id);
 
     const response = NextResponse.json({
@@ -320,7 +293,7 @@ export async function POST(request: Request) {
       await client.query("ROLLBACK");
     } catch {}
 
-    console.error("OTP verify error:", error);
+    console.error("OTP verify/register error:", error);
 
     return NextResponse.json(
       {

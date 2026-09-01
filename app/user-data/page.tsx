@@ -235,6 +235,9 @@ export default function UserDataPage() {
           idName,
           idNumber,
           email,
+          password,
+          profileImage,
+          idImage,
         })
       );
 

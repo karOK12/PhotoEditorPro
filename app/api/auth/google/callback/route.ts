@@ -185,7 +185,7 @@ export async function GET(request: Request) {
       const sessionToken = createSessionToken(userId);
 
       const response = NextResponse.redirect(
-        new URL("/", request.url)
+        new URL("/dashboard", request.url)
       );
 
       response.cookies.set({

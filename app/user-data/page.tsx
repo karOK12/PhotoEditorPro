@@ -88,7 +88,7 @@ export default function UserDataPage() {
         sessionStorage.getItem("photoEditorProVerifiedRegistration");
 
       const otpVerified =
-        sessionStorage.getItem("photoEditorProOtpVerified") === "true";
+        localStorage.getItem("photoEditorProOtpVerified") === "true";
 
       const originalData: RegistrationData = saved
         ? JSON.parse(saved)
@@ -410,7 +410,7 @@ export default function UserDataPage() {
           "photoEditorProOtpEmail"
         );
 
-        sessionStorage.removeItem(
+        localStorage.removeItem(
           "photoEditorProOtpVerified"
         );
 
@@ -568,7 +568,7 @@ export default function UserDataPage() {
         email
       );
 
-      sessionStorage.removeItem(
+      localStorage.removeItem(
         "photoEditorProOtpVerified"
       );
 

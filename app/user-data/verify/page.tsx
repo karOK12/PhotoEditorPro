@@ -59,7 +59,7 @@ export default function VerifyOtpPage() {
        * نحافظ على بيانات التسجيل الموجودة في sessionStorage
        * لأن صفحة التسجيل تحتاجها بعد العودة إليها.
        */
-      sessionStorage.setItem(
+      localStorage.setItem(
         "photoEditorProOtpVerified",
         "true"
       );

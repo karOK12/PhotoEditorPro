@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { db } from "@/app/lib/db";
-import {
-  createSessionToken,
-  getSessionCookieName,
-  getSessionMaxAge,
-} from "@/lib/auth-session";
 
 export async function POST(request: Request) {
   const client = await db.connect();
@@ -53,7 +48,11 @@ export async function POST(request: Request) {
      * البحث عن أحدث رمز تسجيل غير مستخدم.
      */
     const otpResult = await client.query(
-      `SELECT id, code_hash, attempts, expires_at
+      `SELECT
+         id,
+         code_hash,
+         attempts,
+         expires_at
        FROM otp_codes
        WHERE email = $1
          AND purpose = $2
@@ -75,15 +74,11 @@ export async function POST(request: Request) {
 
     const otpRecord = otpResult.rows[0];
 
-    if (
-      new Date(otpRecord.expires_at).getTime() <=
-      Date.now()
-    ) {
+    if (new Date(otpRecord.expires_at).getTime() <= Date.now()) {
       return NextResponse.json(
         {
           success: false,
-          message:
-            "انتهت صلاحية رمز التحقق، اطلب رمزًا جديدًا",
+          message: "انتهت صلاحية رمز التحقق، اطلب رمزًا جديدًا",
         },
         { status: 400 }
       );
@@ -93,8 +88,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          message:
-            "تم تجاوز عدد محاولات التحقق، اطلب رمزًا جديدًا",
+          message: "تم تجاوز عدد محاولات التحقق، اطلب رمزًا جديدًا",
         },
         { status: 429 }
       );
@@ -131,7 +125,6 @@ export async function POST(request: Request) {
          full_name,
          last_name,
          email,
-         password_hash,
          phone,
          country_code,
          birth_day,
@@ -144,9 +137,10 @@ export async function POST(request: Request) {
          id_name,
          id_number,
          profile_image,
-         id_image
+         id_image,
+         email_verified
        FROM pending_registrations
-       WHERE email = $1
+       WHERE LOWER(email) = LOWER($1)
        LIMIT 1`,
       [email]
     );
@@ -165,12 +159,7 @@ export async function POST(request: Request) {
     const pending = pendingResult.rows[0];
 
     /*
-     * بدء العملية كاملة داخل Transaction.
-     */
-    await client.query("BEGIN");
-
-    /*
-     * التأكد من أن البريد لم يُستخدم أثناء انتظار OTP.
+     * التأكد من أن البريد غير مستخدم بحساب حقيقي.
      */
     const existingUser = await client.query(
       `SELECT id
@@ -181,8 +170,6 @@ export async function POST(request: Request) {
     );
 
     if (existingUser.rows.length > 0) {
-      await client.query("ROLLBACK");
-
       return NextResponse.json(
         {
           success: false,
@@ -193,80 +180,21 @@ export async function POST(request: Request) {
     }
 
     /*
-     * إنشاء المستخدم الحقيقي.
+     * تحديث حالة التحقق فقط.
+     * لا يتم إنشاء الحساب هنا.
      */
-    const userResult = await client.query(
-      `INSERT INTO users
-       (
-         full_name,
-         email,
-         password_hash,
-         phone,
-         email_verified
-       )
-       VALUES
-       ($1, $2, $3, $4, true)
-       RETURNING
-         id,
-         full_name,
-         email,
-         phone,
-         email_verified,
-         created_at`,
-      [
-        pending.full_name,
-        pending.email,
-        pending.password_hash,
-        pending.phone,
-      ]
-    );
+    await client.query("BEGIN");
 
-    const user = userResult.rows[0];
-
-    /*
-     * إنشاء الملف الشخصي.
-     */
     await client.query(
-      `INSERT INTO user_profiles
-       (
-         user_id,
-         birth_day,
-         birth_month,
-         birth_year,
-         country_code,
-         city,
-         state,
-         zip,
-         id_type,
-         id_name,
-         id_number,
-         profile_image,
-         id_image
-       )
-       VALUES
-       (
-         $1, $2, $3, $4, $5, $6, $7,
-         $8, $9, $10, $11, $12, $13
-       )`,
-      [
-        user.id,
-        pending.birth_day,
-        pending.birth_month,
-        pending.birth_year,
-        pending.country_code,
-        pending.city,
-        pending.state,
-        pending.zip || null,
-        pending.id_type,
-        pending.id_name,
-        pending.id_number,
-        pending.profile_image || null,
-        pending.id_image || null,
-      ]
+      `UPDATE pending_registrations
+       SET email_verified = TRUE,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [pending.id]
     );
 
     /*
-     * اعتبار OTP مستخدمًا.
+     * اعتبار OTP مستخدمًا بعد نجاح التحقق.
      */
     await client.query(
       `UPDATE otp_codes
@@ -275,46 +203,39 @@ export async function POST(request: Request) {
       [otpRecord.id]
     );
 
-    /*
-     * حذف التسجيل المعلّق بعد نجاح إنشاء الحساب.
-     */
-    await client.query(
-      `DELETE FROM pending_registrations
-       WHERE id = $1`,
-      [pending.id]
-    );
-
     await client.query("COMMIT");
 
     /*
-     * تسجيل الدخول تلقائيًا.
+     * إعادة بيانات التسجيل للواجهة.
+     * كلمة المرور لا يتم إرسالها من الخادم.
      */
-    const sessionToken = createSessionToken(user.id);
-
-    const response = NextResponse.json({
-      success: true,
-      message: "تم التحقق من البريد وإنشاء الحساب بنجاح",
-      user: {
-        id: user.id,
-        fullName: user.full_name,
-        email: user.email,
-        phone: user.phone,
-        emailVerified: user.email_verified,
-        createdAt: user.created_at,
+    return NextResponse.json(
+      {
+        success: true,
+        message: "تم التحقق من البريد الإلكتروني بنجاح",
+        verified: true,
+        registration: {
+          fullName: pending.full_name,
+          lastName: pending.last_name,
+          phone: pending.phone,
+          country: pending.country_code,
+          birthDay: pending.birth_day,
+          birthMonth: pending.birth_month,
+          birthYear: pending.birth_year,
+          city: pending.city,
+          state: pending.state,
+          zip: pending.zip || "",
+          idType: pending.id_type,
+          idName: pending.id_name,
+          idNumber: pending.id_number,
+          profileImage: pending.profile_image || "",
+          idImage: pending.id_image || "",
+          email: pending.email,
+          emailVerified: true,
+        },
       },
-    });
-
-    response.cookies.set({
-      name: getSessionCookieName(),
-      value: sessionToken,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: getSessionMaxAge(),
-    });
-
-    return response;
+      { status: 200 }
+    );
   } catch (error) {
     try {
       await client.query("ROLLBACK");
@@ -325,7 +246,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: false,
-        message: "حدث خطأ أثناء التحقق وإنشاء الحساب",
+        message: "حدث خطأ أثناء التحقق من البريد الإلكتروني",
       },
       { status: 500 }
     );

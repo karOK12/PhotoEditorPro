@@ -7,7 +7,6 @@ export default function VerifyOtpPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
-
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -55,35 +54,36 @@ export default function VerifyOtpPage() {
         );
       }
 
+      /*
+       * الخادم أكد أن البريد تم التحقق منه.
+       * نحافظ على بيانات التسجيل الموجودة في sessionStorage
+       * لأن صفحة التسجيل تحتاجها بعد العودة إليها.
+       */
       sessionStorage.setItem(
         "photoEditorProOtpVerified",
         "true"
       );
 
-      sessionStorage.removeItem("photoEditorProRegistration");
-      sessionStorage.removeItem("photoEditorProOtpEmail");
+      sessionStorage.setItem(
+        "photoEditorProVerifiedRegistration",
+        JSON.stringify(result.registration || {})
+      );
+
+      sessionStorage.setItem(
+        "photoEditorProOtpEmail",
+        email
+      );
 
       setMessage(
-        result.message || "تم التحقق من البريد وإنشاء الحساب بنجاح"
+        result.message || "تم التحقق من البريد الإلكتروني بنجاح"
       );
 
+      /*
+       * العودة إلى نموذج التسجيل لإكمال إنشاء الحساب.
+       */
       setTimeout(() => {
-        window.location.href = "/";
-      }, 1000);
-
-      sessionStorage.setItem(
-        "photoEditorProOtpVerified",
-        "true"
-      );
-
-      sessionStorage.removeItem("photoEditorProRegistration");
-      sessionStorage.removeItem("photoEditorProOtpEmail");
-
-      setMessage("تم إنشاء حسابك بنجاح");
-
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 1000);
+        window.location.href = "/user-data";
+      }, 800);
     } catch (error) {
       setError(
         error instanceof Error

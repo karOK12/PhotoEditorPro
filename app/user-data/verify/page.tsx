@@ -81,9 +81,7 @@ export default function VerifyOtpPage() {
       /*
        * العودة إلى نموذج التسجيل لإكمال إنشاء الحساب.
        */
-      setTimeout(() => {
-        window.location.href = "/user-data";
-      }, 800);
+      window.location.href = "/user-data";
     } catch (error) {
       setError(
         error instanceof Error

@@ -1,9 +1,30 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+type RegistrationData = {
+  fullName?: string;
+  lastName?: string;
+  birthDay?: string;
+  birthMonth?: string;
+  birthYear?: string;
+  country?: string;
+  phone?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  idType?: string;
+  idName?: string;
+  idNumber?: string;
+  email?: string;
+  password?: string;
+  profileImage?: string | null;
+  idImage?: string | null;
+};
 
 export default function UserDataPage() {
   const profileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [idImage, setIdImage] = useState<string | null>(null);
@@ -19,6 +40,11 @@ export default function UserDataPage() {
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
   const [serverError, setServerError] = useState("");
+
+  const [isVerified, setIsVerified] = useState(false);
+  const [savedRegistration, setSavedRegistration] =
+    useState<RegistrationData | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const months = [
     "يناير",
@@ -49,6 +75,116 @@ export default function UserDataPage() {
     { code: "+216", name: "تونس" },
     { code: "+967", name: "اليمن" },
   ];
+
+  /*
+   * استرجاع بيانات التسجيل بعد الرجوع من صفحة OTP.
+   */
+  useEffect(() => {
+    try {
+      const saved =
+        sessionStorage.getItem("photoEditorProRegistration");
+
+      const verifiedData =
+        sessionStorage.getItem("photoEditorProVerifiedRegistration");
+
+      const otpVerified =
+        sessionStorage.getItem("photoEditorProOtpVerified") === "true";
+
+      const originalData: RegistrationData = saved
+        ? JSON.parse(saved)
+        : {};
+
+      const serverData: RegistrationData = verifiedData
+        ? JSON.parse(verifiedData)
+        : {};
+
+      /*
+       * بيانات الخادم لها الأولوية،
+       * لكن كلمة المرور تبقى من بيانات التسجيل الأصلية.
+       */
+      const merged: RegistrationData = {
+        ...originalData,
+        ...serverData,
+        password: originalData.password,
+      };
+
+      if (merged.email) {
+        setSavedRegistration(merged);
+      }
+
+      if (otpVerified) {
+        setIsVerified(true);
+      }
+
+      if (merged.profileImage) {
+        setProfileImage(merged.profileImage);
+      }
+
+      if (merged.idImage) {
+        setIdImage(merged.idImage);
+      }
+
+      if (merged.birthDay) {
+        setBirthDay(String(merged.birthDay));
+      }
+
+      if (merged.birthMonth) {
+        setBirthMonth(String(merged.birthMonth));
+      }
+
+      if (merged.birthYear) {
+        setBirthYear(String(merged.birthYear));
+      }
+
+      if (merged.country) {
+        setCountry(String(merged.country));
+      }
+
+      if (merged.idType) {
+        setIdType(String(merged.idType));
+      }
+
+      setIsLoaded(true);
+    } catch (error) {
+      console.error("Registration restore error:", error);
+      setIsLoaded(true);
+    }
+  }, []);
+
+  /*
+   * تعبئة الحقول النصية المحفوظة تلقائيًا.
+   * الحقول نفسها Uncontrolled، لذلك نضع القيم مباشرة داخلها.
+   */
+  useEffect(() => {
+    if (!isLoaded || !savedRegistration || !formRef.current) {
+      return;
+    }
+
+    const form = formRef.current;
+
+    const setValue = (name: string, value?: string) => {
+      const element = form.elements.namedItem(name);
+
+      if (
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLTextAreaElement
+      ) {
+        element.value = value ?? "";
+      }
+    };
+
+    setValue("fullName", savedRegistration.fullName);
+    setValue("lastName", savedRegistration.lastName);
+    setValue("phone", savedRegistration.phone);
+    setValue("city", savedRegistration.city);
+    setValue("state", savedRegistration.state);
+    setValue("zip", savedRegistration.zip);
+    setValue("idName", savedRegistration.idName);
+    setValue("idNumber", savedRegistration.idNumber);
+    setValue("email", savedRegistration.email);
+    setValue("password", savedRegistration.password);
+    setValue("confirmPassword", savedRegistration.password);
+  }, [isLoaded, savedRegistration, idType]);
 
   function handleProfileImage(
     event: React.ChangeEvent<HTMLInputElement>
@@ -156,10 +292,88 @@ export default function UserDataPage() {
       formData.get("confirmPassword") || ""
     );
 
+    /*
+     * إذا تم التحقق مسبقًا:
+     * لا نرسل OTP مرة ثانية.
+     * نطلب من الخادم إكمال إنشاء الحساب.
+     */
+    if (isVerified) {
+      if (!email) {
+        setServerError("لم يتم العثور على البريد الإلكتروني");
+        return;
+      }
+
+      setShowWarning(false);
+      setServerMessage("");
+      setServerError("");
+      setIsSendingOtp(true);
+
+      try {
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(
+            result.message || "تعذر إنشاء الحساب"
+          );
+        }
+
+        sessionStorage.removeItem(
+          "photoEditorProRegistration"
+        );
+
+        sessionStorage.removeItem(
+          "photoEditorProVerifiedRegistration"
+        );
+
+        sessionStorage.removeItem(
+          "photoEditorProOtpEmail"
+        );
+
+        sessionStorage.removeItem(
+          "photoEditorProOtpVerified"
+        );
+
+        setServerMessage(
+          result.message || "تم إنشاء حسابك بنجاح"
+        );
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1000);
+      } catch (error) {
+        console.error("Final registration error:", error);
+
+        setServerError(
+          error instanceof Error
+            ? error.message
+            : "حدث خطأ أثناء إنشاء الحساب"
+        );
+      } finally {
+        setIsSendingOtp(false);
+      }
+
+      return;
+    }
+
+    /*
+     * التسجيل الأولي قبل التحقق.
+     */
     if (password.length < 8) {
       setShowWarning(true);
       setServerMessage("");
-      setServerError("كلمة المرور يجب أن تتكون من 8 أحرف أو أرقام على الأقل");
+      setServerError(
+        "كلمة المرور يجب أن تتكون من 8 أحرف أو أرقام على الأقل"
+      );
       return;
     }
 
@@ -200,40 +414,55 @@ export default function UserDataPage() {
     setIsSendingOtp(true);
 
     try {
-      const pendingResponse = await fetch("/api/auth/register/pending", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName,
-          lastName,
-          birthDay,
-          birthMonth,
-          birthYear,
-          country,
-          phone,
-          city,
-          state,
-          zip,
-          idType,
-          idName,
-          idNumber,
-          email,
-          password,
-          profileImage,
-          idImage,
-        }),
-      });
+      const registrationData = {
+        fullName,
+        lastName,
+        birthDay,
+        birthMonth,
+        birthYear,
+        country,
+        phone,
+        city,
+        state,
+        zip,
+        idType,
+        idName,
+        idNumber,
+        email,
+        password,
+        profileImage,
+        idImage,
+      };
+
+      /*
+       * أولًا نحفظ البيانات في pending_registrations.
+       */
+      const pendingResponse = await fetch(
+        "/api/auth/register/pending",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(registrationData),
+        }
+      );
 
       const pendingResult = await pendingResponse.json();
 
-      if (!pendingResponse.ok || !pendingResult.success) {
+      if (
+        !pendingResponse.ok ||
+        !pendingResult.success
+      ) {
         throw new Error(
-          pendingResult.message || "تعذر حفظ بيانات التسجيل"
+          pendingResult.message ||
+            "تعذر حفظ بيانات التسجيل"
         );
       }
 
+      /*
+       * بعدها نرسل OTP.
+       */
       const response = await fetch("/api/otp/send", {
         method: "POST",
         headers: {
@@ -248,36 +477,27 @@ export default function UserDataPage() {
 
       if (!response.ok || !result.success) {
         throw new Error(
-          result.message || "تعذر إرسال رمز التحقق"
+          result.message ||
+            "تعذر إرسال رمز التحقق"
         );
       }
 
       sessionStorage.setItem(
         "photoEditorProRegistration",
-        JSON.stringify({
-          fullName,
-          lastName,
-          birthDay,
-          birthMonth,
-          birthYear,
-          country,
-          phone,
-          city,
-          state,
-          zip,
-          idType,
-          idName,
-          idNumber,
-          email,
-          password,
-          profileImage,
-          idImage,
-        })
+        JSON.stringify(registrationData)
       );
 
       sessionStorage.setItem(
         "photoEditorProOtpEmail",
         email
+      );
+
+      sessionStorage.removeItem(
+        "photoEditorProOtpVerified"
+      );
+
+      sessionStorage.removeItem(
+        "photoEditorProVerifiedRegistration"
       );
 
       setServerMessage(
@@ -374,6 +594,7 @@ export default function UserDataPage() {
           </div>
 
           <form
+            ref={formRef}
             onSubmit={handleSubmit}
             className="space-y-5"
           >
@@ -420,8 +641,11 @@ export default function UserDataPage() {
               <div className="grid grid-cols-3 gap-3">
 
                 <select
+                  name="birthDay"
                   value={birthDay}
-                  onChange={(e) => setBirthDay(e.target.value)}
+                  onChange={(e) =>
+                    setBirthDay(e.target.value)
+                  }
                   className="rounded-xl border border-white/10 bg-[#0e0e13] px-3 py-3 text-sm text-white outline-none focus:border-white/30"
                 >
                   <option value="">اليوم</option>
@@ -440,6 +664,7 @@ export default function UserDataPage() {
                 </select>
 
                 <select
+                  name="birthMonth"
                   value={birthMonth}
                   onChange={(e) =>
                     setBirthMonth(e.target.value)
@@ -459,6 +684,7 @@ export default function UserDataPage() {
                 </select>
 
                 <select
+                  name="birthYear"
                   value={birthYear}
                   onChange={(e) =>
                     setBirthYear(e.target.value)
@@ -496,6 +722,7 @@ export default function UserDataPage() {
               <div className="flex gap-3">
 
                 <select
+                  name="country"
                   value={country}
                   onChange={(e) =>
                     setCountry(e.target.value)
@@ -600,6 +827,7 @@ export default function UserDataPage() {
               </label>
 
               <select
+                name="idType"
                 value={idType}
                 onChange={(e) =>
                   setIdType(e.target.value)
@@ -691,15 +919,19 @@ export default function UserDataPage() {
               </p>
             </div>
 
-            {/* إرسال كود التحقق */}
+            {/* زر التسجيل */}
             <button
               type="submit"
               disabled={isSendingOtp}
               className="w-full rounded-xl bg-white py-3.5 text-sm font-bold text-black transition hover:bg-gray-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSendingOtp
-                ? "جاري إرسال كود التحقق..."
-                : "إرسال كود التحقق"}
+                ? isVerified
+                  ? "جاري إنشاء الحساب..."
+                  : "جاري إرسال كود التحقق..."
+                : isVerified
+                  ? "إنشاء الحساب"
+                  : "إرسال كود التحقق"}
             </button>
 
           </form>

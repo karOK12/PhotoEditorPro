@@ -82,7 +82,7 @@ export default function VerifyOtpPage() {
        * العودة إلى نموذج التسجيل لإكمال إنشاء الحساب.
        */
       setTimeout(() => {
-        window.location.href = "/user-data";
+        window.location.href = "/";
       }, 800);
     } catch (error) {
       setError(
@@ -171,16 +171,7 @@ export default function VerifyOtpPage() {
                 : "تأكيد رمز التحقق"}
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                window.location.href = "/user-data";
-              }}
-              disabled={isVerifying}
-              className="w-full rounded-xl border border-white/10 bg-transparent py-3.5 text-sm font-bold text-gray-300 transition hover:bg-white/5 hover:text-white active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              عودة للتسجيل
-            </button>
+
           </form>
         </section>
       </div>

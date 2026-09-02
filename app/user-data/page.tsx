@@ -186,7 +186,66 @@ export default function UserDataPage() {
     setValue("confirmPassword", savedRegistration.password);
   }, [isLoaded, savedRegistration, idType]);
 
-  function handleProfileImage(
+  async function compressImage(
+    file: File,
+    maxWidth: number,
+    maxHeight: number,
+    quality: number
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const image = new Image();
+
+        image.onload = () => {
+          let width = image.width;
+          let height = image.height;
+
+          const scale = Math.min(
+            1,
+            maxWidth / width,
+            maxHeight / height
+          );
+
+          width = Math.max(1, Math.round(width * scale));
+          height = Math.max(1, Math.round(height * scale));
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+
+          const context = canvas.getContext("2d");
+
+          if (!context) {
+            reject(new Error("تعذر معالجة الصورة"));
+            return;
+          }
+
+          context.drawImage(image, 0, 0, width, height);
+
+          const result = canvas.toDataURL("image/jpeg", quality);
+
+          URL.revokeObjectURL(image.src);
+          resolve(result);
+        };
+
+        image.onerror = () => {
+          reject(new Error("تعذر قراءة الصورة"));
+        };
+
+        image.src = reader.result as string;
+      };
+
+      reader.onerror = () => {
+        reject(new Error("تعذر قراءة ملف الصورة"));
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleProfileImage(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     const file = event.target.files?.[0];
@@ -203,16 +262,22 @@ export default function UserDataPage() {
       return;
     }
 
-    const reader = new FileReader();
+    try {
+      const compressed = await compressImage(
+        file,
+        900,
+        900,
+        0.65
+      );
 
-    reader.onload = () => {
-      setProfileImage(reader.result as string);
-    };
-
-    reader.readAsDataURL(file);
+      setProfileImage(compressed);
+    } catch (error) {
+      console.error("Profile image compression error:", error);
+      alert("تعذر معالجة صورة الملف الشخصي.");
+    }
   }
 
-  function handleIdImage(
+  async function handleIdImage(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     const file = event.target.files?.[0];
@@ -229,13 +294,19 @@ export default function UserDataPage() {
       return;
     }
 
-    const reader = new FileReader();
+    try {
+      const compressed = await compressImage(
+        file,
+        1200,
+        1200,
+        0.65
+      );
 
-    reader.onload = () => {
-      setIdImage(reader.result as string);
-    };
-
-    reader.readAsDataURL(file);
+      setIdImage(compressed);
+    } catch (error) {
+      console.error("ID image compression error:", error);
+      alert("تعذر معالجة صورة الهوية.");
+    }
   }
 
   async function handleSubmit(

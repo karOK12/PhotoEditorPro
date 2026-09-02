@@ -158,26 +158,6 @@ export async function POST(request: Request) {
 
     const pending = pendingResult.rows[0];
 
-    /*
-     * التأكد من أن البريد غير مستخدم بحساب حقيقي.
-     */
-    const existingUser = await client.query(
-      `SELECT id
-       FROM users
-       WHERE LOWER(email) = LOWER($1)
-       LIMIT 1`,
-      [email]
-    );
-
-    if (existingUser.rows.length > 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "هذا البريد الإلكتروني مستخدم مسبقًا",
-        },
-        { status: 409 }
-      );
-    }
 
     /*
      * تحديث حالة التحقق فقط.

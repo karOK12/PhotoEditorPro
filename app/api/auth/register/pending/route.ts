@@ -116,24 +116,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const existingUser = await db.query(
-      `SELECT id
-       FROM users
-       WHERE email = $1
-       LIMIT 1`,
-      [email]
-    );
-
-    if (existingUser.rows.length > 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "هذا البريد الإلكتروني مستخدم مسبقًا",
-        },
-        { status: 409 }
-      );
-    }
-
     const passwordHash = await bcrypt.hash(password, 12);
 
     await db.query(
@@ -180,6 +162,7 @@ export async function POST(request: Request) {
          id_number = EXCLUDED.id_number,
          profile_image = EXCLUDED.profile_image,
          id_image = EXCLUDED.id_image,
+         email_verified = FALSE,
          updated_at = NOW()`,
       [
         fullName,

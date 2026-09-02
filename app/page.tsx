@@ -1,12 +1,18 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [registrationCompleted, setRegistrationCompleted] = useState(false);
+
+  useEffect(() => {
+    const completed = localStorage.getItem("photoeditorpro_registration_completed");
+    setRegistrationCompleted(completed === "true");
+  }, []);
   const [message, setMessage] = useState("");
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
@@ -433,6 +439,8 @@ export default function Home() {
           </div>
         )}
 
+          {!registrationCompleted && (
+            <>
         <div
           style={{
             display: "flex",
@@ -533,7 +541,9 @@ export default function Home() {
 
           <span>متابعة باستخدام Google</span>
         </button>
+            </>
 
+          )}
         <div
           style={{
             textAlign: "center",

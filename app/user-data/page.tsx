@@ -418,6 +418,11 @@ export default function UserDataPage() {
           result.message || "تم إنشاء حسابك بنجاح"
         );
 
+        localStorage.setItem(
+          "photoeditorpro_registration_completed",
+          "true"
+        );
+
         setTimeout(() => {
           window.location.href = "/";
         }, 1000);

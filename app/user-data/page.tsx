@@ -364,84 +364,6 @@ export default function UserDataPage() {
     );
 
     /*
-     * إذا تم التحقق مسبقًا:
-     * لا نرسل OTP مرة ثانية.
-     * نطلب من الخادم إكمال إنشاء الحساب.
-     */
-    if (isVerified) {
-      if (!email) {
-        setServerError("لم يتم العثور على البريد الإلكتروني");
-        return;
-      }
-
-      setShowWarning(false);
-      setServerMessage("");
-      setServerError("");
-      setIsSendingOtp(true);
-
-      try {
-        const response = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-          }),
-        });
-
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(
-            result.message || "تعذر إنشاء الحساب"
-          );
-        }
-
-        sessionStorage.removeItem(
-          "photoEditorProRegistration"
-        );
-
-        sessionStorage.removeItem(
-          "photoEditorProVerifiedRegistration"
-        );
-
-        sessionStorage.removeItem(
-          "photoEditorProOtpEmail"
-        );
-
-        localStorage.removeItem(
-          "photoEditorProOtpVerified"
-        );
-
-        setServerMessage(
-          result.message || "تم إنشاء حسابك بنجاح"
-        );
-
-        localStorage.setItem(
-          "photoeditorpro_registration_completed",
-          "true"
-        );
-
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1000);
-      } catch (error) {
-        console.error("Final registration error:", error);
-
-        setServerError(
-          error instanceof Error
-            ? error.message
-            : "حدث خطأ أثناء إنشاء الحساب"
-        );
-      } finally {
-        setIsSendingOtp(false);
-      }
-
-      return;
-    }
-
-    /*
      * التسجيل الأولي قبل التحقق.
      */
     if (password.length < 8) {
@@ -1002,12 +924,8 @@ export default function UserDataPage() {
               className="w-full rounded-xl bg-white py-3.5 text-sm font-bold text-black transition hover:bg-gray-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSendingOtp
-                ? isVerified
-                  ? "جاري إنشاء الحساب..."
-                  : "جاري إرسال كود التحقق..."
-                : isVerified
-                  ? "إنشاء الحساب"
-                  : "إرسال كود التحقق"}
+                ? "جاري إرسال كود التحقق..."
+                : "إرسال كود التحقق"}
             </button>
 
           </form>

@@ -21,8 +21,9 @@ export default function Home() {
 
         const data = await response.json();
 
-        if (response.ok && data?.authenticated && data?.user?.id) {
+        if (response.ok) {
           setRegistrationCompleted(
+            data?.registrationCompleted === true ||
             data?.user?.registrationCompleted === true
           );
         } else {

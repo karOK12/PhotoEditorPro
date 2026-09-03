@@ -6,6 +6,10 @@ import {
   getSessionCookieName,
   getSessionMaxAge,
 } from "@/lib/auth-session";
+import {
+  createRegistrationStatusToken,
+  COOKIE_NAME as REGISTRATION_COOKIE_NAME,
+} from "@/lib/registration-status";
 
 export async function POST(request: Request) {
   const client = await db.connect();
@@ -334,6 +338,16 @@ export async function POST(request: Request) {
       sameSite: "lax",
       path: "/",
       maxAge: getSessionMaxAge(),
+    });
+
+    response.cookies.set({
+      name: REGISTRATION_COOKIE_NAME,
+      value: createRegistrationStatusToken(user.id),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
     });
 
     return response;

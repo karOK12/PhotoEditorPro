@@ -4,6 +4,10 @@ import {
   getSessionCookieName,
   verifySessionToken,
 } from "@/lib/auth-session";
+import {
+  COOKIE_NAME as REGISTRATION_COOKIE_NAME,
+  verifyRegistrationStatusToken,
+} from "@/lib/registration-status";
 
 export async function GET(request: Request) {
   try {
@@ -30,28 +34,27 @@ export async function GET(request: Request) {
 
     const sessionToken = cookies[getSessionCookieName()];
 
+    const registrationToken = cookies[REGISTRATION_COOKIE_NAME];
+    const registrationUserId = registrationToken
+      ? verifyRegistrationStatusToken(registrationToken)
+      : null;
+
     if (!sessionToken) {
-      return NextResponse.json(
-        {
-          success: false,
-          authenticated: false,
-          message: "غير مسجل الدخول",
-        },
-        { status: 401 }
-      );
+      return NextResponse.json({
+        success: true,
+        authenticated: false,
+        registrationCompleted: Boolean(registrationUserId),
+      });
     }
 
     const session = verifySessionToken(sessionToken);
 
     if (!session) {
-      return NextResponse.json(
-        {
-          success: false,
-          authenticated: false,
-          message: "جلسة الدخول غير صالحة أو منتهية",
-        },
-        { status: 401 }
-      );
+      return NextResponse.json({
+        success: true,
+        authenticated: false,
+        registrationCompleted: Boolean(registrationUserId),
+      });
     }
 
     const result = await db.query(
@@ -84,6 +87,9 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       authenticated: true,
+      registrationCompleted:
+        user.registration_completed === true ||
+        registrationUserId === user.id,
       user: {
         id: user.id,
         fullName: user.full_name,

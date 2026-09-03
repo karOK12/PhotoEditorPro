@@ -459,6 +459,9 @@ export default function Home() {
           <button
             type="button"
             onClick={() => {
+              localStorage.removeItem(
+                "photoeditorpro_registration_completed"
+              );
               window.location.href = "/user-data";
             }}
             style={{

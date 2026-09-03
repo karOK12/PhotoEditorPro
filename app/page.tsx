@@ -21,16 +21,10 @@ export default function Home() {
 
         const data = await response.json();
 
-        const localRegistrationCompleted =
-          localStorage.getItem("photoeditorpro_registration_completed") === "true";
-
         if (
-          localRegistrationCompleted ||
-          (
-            response.ok &&
-            data?.authenticated === true &&
-            data?.user?.registrationCompleted === true
-          )
+          response.ok &&
+          data?.authenticated === true &&
+          data?.user?.registrationCompleted === true
         ) {
           setRegistrationCompleted(true);
         } else {
@@ -491,9 +485,6 @@ export default function Home() {
           <button
             type="button"
             onClick={() => {
-              localStorage.removeItem(
-                "photoeditorpro_registration_completed"
-              );
               window.location.href = "/user-data";
             }}
             style={{

@@ -63,17 +63,9 @@ export default function VerifyOtpPage() {
        * نحفظ علامة إكمال التسجيل حتى تخفي الواجهة
        * خيارات إنشاء الحساب وGoogle.
        */
-      if (result?.user?.id) {
-        localStorage.setItem(
-          `photoeditorpro_registration_completed_${result.user.id}`,
-          "true"
-        );
+      // حالة التسجيل محفوظة في قاعدة البيانات والجلسة.
+      // لا نعتمد على localStorage لتحديد حالة الحساب.
 
-        localStorage.setItem(
-          "photoeditorpro_registration_completed",
-          "true"
-        );
-      }
 
       sessionStorage.removeItem(
         "photoEditorProRegistration"

@@ -55,33 +55,61 @@ export default function VerifyOtpPage() {
       }
 
       /*
-       * الخادم أكد أن البريد تم التحقق منه.
-       * نحافظ على بيانات التسجيل الموجودة في sessionStorage
-       * لأن صفحة التسجيل تحتاجها بعد العودة إليها.
+       * تم التحقق من البريد الإلكتروني.
+       * الآن نكمل إنشاء الحساب تلقائيًا.
+       */
+      const registerResponse = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      });
+
+      const registerResult = await registerResponse.json();
+
+      if (!registerResponse.ok || !registerResult.success) {
+        throw new Error(
+          registerResult.message || "تعذر إنشاء الحساب"
+        );
+      }
+
+      /*
+       * تم إنشاء الحساب بنجاح.
+       * نحفظ علامة إكمال التسجيل حتى تخفي الواجهة
+       * خيارات إنشاء الحساب وGoogle.
        */
       localStorage.setItem(
-        "photoEditorProOtpVerified",
+        "photoeditorpro_registration_completed",
         "true"
       );
 
-      sessionStorage.setItem(
-        "photoEditorProVerifiedRegistration",
-        JSON.stringify(result.registration || {})
+      sessionStorage.removeItem(
+        "photoEditorProRegistration"
       );
 
-      sessionStorage.setItem(
-        "photoEditorProOtpEmail",
-        email
+      sessionStorage.removeItem(
+        "photoEditorProVerifiedRegistration"
+      );
+
+      sessionStorage.removeItem(
+        "photoEditorProOtpEmail"
+      );
+
+      localStorage.removeItem(
+        "photoEditorProOtpVerified"
       );
 
       setMessage(
-        result.message || "تم التحقق من البريد الإلكتروني بنجاح"
+        registerResult.message || "تم إنشاء حسابك بنجاح"
       );
 
       /*
-       * العودة إلى نموذج التسجيل لإكمال إنشاء الحساب.
+       * العودة إلى واجهة تسجيل الدخول الرئيسية.
        */
-      window.location.href = "/user-data";
+      window.location.href = "/";
     } catch (error) {
       setError(
         error instanceof Error

@@ -11,9 +11,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const email = String(body?.email ?? "")
-      .trim()
-      .toLowerCase();
+    const login = String(body?.email ?? "").trim();
+    const email = login.toLowerCase();
 
     const password = String(body?.password ?? "");
 
@@ -37,6 +36,7 @@ export async function POST(request: Request) {
          email_verified
        FROM users
        WHERE LOWER(email) = LOWER($1)
+          OR LOWER(full_name) = LOWER($1)
        LIMIT 1`,
       [email]
     );

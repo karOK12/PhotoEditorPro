@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { db } from "@/app/lib/db";
+import {
+  createSessionToken,
+  getSessionCookieName,
+  getSessionMaxAge,
+} from "@/lib/auth-session";
 
 export async function POST(request: Request) {
   const client = await db.connect();
@@ -299,7 +304,9 @@ export async function POST(request: Request) {
 
     await client.query("COMMIT");
 
-    return NextResponse.json(
+    const sessionToken = createSessionToken(user.id);
+
+    const response = NextResponse.json(
       {
         success: true,
         verified: true,
@@ -316,6 +323,18 @@ export async function POST(request: Request) {
       },
       { status: 201 }
     );
+
+    response.cookies.set({
+      name: getSessionCookieName(),
+      value: sessionToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: getSessionMaxAge(),
+    });
+
+    return response;
   } catch (error) {
     try {
       await client.query("ROLLBACK");

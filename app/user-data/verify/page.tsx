@@ -55,27 +55,9 @@ export default function VerifyOtpPage() {
       }
 
       /*
-       * تم التحقق من البريد الإلكتروني.
-       * الآن نكمل إنشاء الحساب تلقائيًا.
+       * التحقق من OTP يقوم بإنشاء الحساب مباشرةً من الخادم.
+       * لا توجد خطوة ثانية لإنشاء الحساب من الواجهة.
        */
-      const registerResponse = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-        }),
-      });
-
-      const registerResult = await registerResponse.json();
-
-      if (!registerResponse.ok || !registerResult.success) {
-        throw new Error(
-          registerResult.message || "تعذر إنشاء الحساب"
-        );
-      }
-
       /*
        * تم إنشاء الحساب بنجاح.
        * نحفظ علامة إكمال التسجيل حتى تخفي الواجهة
@@ -103,7 +85,7 @@ export default function VerifyOtpPage() {
       );
 
       setMessage(
-        registerResult.message || "تم إنشاء حسابك بنجاح"
+        result.message || "تم إنشاء حسابك بنجاح"
       );
 
       /*

@@ -21,11 +21,12 @@ export default function Home() {
 
         const data = await response.json();
 
-        if (response.ok) {
-          setRegistrationCompleted(
-            data?.registrationCompleted === true ||
-            data?.user?.registrationCompleted === true
-          );
+        if (
+          response.ok &&
+          data?.authenticated === true &&
+          data?.user?.registrationCompleted === true
+        ) {
+          setRegistrationCompleted(true);
         } else {
           setRegistrationCompleted(false);
         }

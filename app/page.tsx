@@ -22,10 +22,9 @@ export default function Home() {
         const data = await response.json();
 
         if (response.ok && data?.authenticated && data?.user?.id) {
-          const userKey = `photoeditorpro_registration_completed_${data.user.id}`;
-          const completed = localStorage.getItem(userKey);
-
-          setRegistrationCompleted(completed === "true");
+          setRegistrationCompleted(
+            data?.user?.registrationCompleted === true
+          );
         } else {
           setRegistrationCompleted(false);
         }

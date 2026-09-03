@@ -60,7 +60,8 @@ export async function GET(request: Request) {
          full_name,
          email,
          phone,
-         email_verified
+         email_verified,
+         registration_completed
        FROM users
        WHERE id = $1
        LIMIT 1`,
@@ -89,6 +90,7 @@ export async function GET(request: Request) {
         email: user.email,
         phone: user.phone,
         emailVerified: user.email_verified,
+        registrationCompleted: user.registration_completed,
       },
     });
   } catch (error) {

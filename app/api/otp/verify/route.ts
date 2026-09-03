@@ -219,15 +219,17 @@ export async function POST(request: Request) {
          email,
          password_hash,
          phone,
-         email_verified
+         email_verified,
+         registration_completed
        )
-       VALUES ($1, $2, $3, $4, true)
+       VALUES ($1, $2, $3, $4, true, true)
        RETURNING
          id,
          full_name,
          email,
          phone,
          email_verified,
+         registration_completed,
          created_at`,
       [
         pending.full_name,

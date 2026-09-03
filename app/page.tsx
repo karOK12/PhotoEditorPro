@@ -21,10 +21,16 @@ export default function Home() {
 
         const data = await response.json();
 
+        const localRegistrationCompleted =
+          localStorage.getItem("photoeditorpro_registration_completed") === "true";
+
         if (
-          response.ok &&
-          data?.authenticated === true &&
-          data?.user?.registrationCompleted === true
+          localRegistrationCompleted ||
+          (
+            response.ok &&
+            data?.authenticated === true &&
+            data?.user?.registrationCompleted === true
+          )
         ) {
           setRegistrationCompleted(true);
         } else {
@@ -100,7 +106,7 @@ export default function Home() {
           "Arial, Tahoma, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         position: "relative",
         overflow: "hidden",
-        visibility: authStateLoaded ? "visible" : "hidden",
+        visibility: "visible",
       }}
     >
       <div

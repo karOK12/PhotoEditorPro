@@ -68,6 +68,11 @@ export default function VerifyOtpPage() {
           `photoeditorpro_registration_completed_${result.user.id}`,
           "true"
         );
+
+        localStorage.setItem(
+          "photoeditorpro_registration_completed",
+          "true"
+        );
       }
 
       sessionStorage.removeItem(

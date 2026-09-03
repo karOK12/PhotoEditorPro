@@ -201,7 +201,9 @@ export async function POST(request: Request) {
 
       await client.query("COMMIT");
 
-      return NextResponse.json(
+      const sessionToken = createSessionToken(existingUser.rows[0].id);
+
+      const response = NextResponse.json(
         {
           success: true,
           verified: true,
@@ -214,6 +216,28 @@ export async function POST(request: Request) {
         },
         { status: 200 }
       );
+
+      response.cookies.set({
+        name: getSessionCookieName(),
+        value: sessionToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: getSessionMaxAge(),
+      });
+
+      response.cookies.set({
+        name: REGISTRATION_COOKIE_NAME,
+        value: createRegistrationStatusToken(existingUser.rows[0].id),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+      });
+
+      return response;
     }
 
     const userResult = await client.query(

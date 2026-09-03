@@ -11,9 +11,33 @@ export default function Home() {
   const [authStateLoaded, setAuthStateLoaded] = useState(false);
 
   useEffect(() => {
-    const completed = localStorage.getItem("photoeditorpro_registration_completed");
-    setRegistrationCompleted(completed === "true");
-    setAuthStateLoaded(true);
+    async function loadAuthState() {
+      try {
+        const response = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data?.authenticated && data?.user?.id) {
+          const userKey = `photoeditorpro_registration_completed_${data.user.id}`;
+          const completed = localStorage.getItem(userKey);
+
+          setRegistrationCompleted(completed === "true");
+        } else {
+          setRegistrationCompleted(false);
+        }
+      } catch (error) {
+        console.error("Auth state error:", error);
+        setRegistrationCompleted(false);
+      } finally {
+        setAuthStateLoaded(true);
+      }
+    }
+
+    loadAuthState();
   }, []);
   const [message, setMessage] = useState("");
 

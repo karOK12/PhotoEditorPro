@@ -130,6 +130,12 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: "تم إرسال رمز التحقق إلى بريدك الإلكتروني",
+      smtp: {
+        messageId: mailInfo.messageId,
+        accepted: mailInfo.accepted,
+        rejected: mailInfo.rejected,
+        response: mailInfo.response,
+      },
     });
   } catch (error) {
     console.error("OTP send error:", error);

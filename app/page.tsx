@@ -8,10 +8,12 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [registrationCompleted, setRegistrationCompleted] = useState(false);
+  const [authStateLoaded, setAuthStateLoaded] = useState(false);
 
   useEffect(() => {
     const completed = localStorage.getItem("photoeditorpro_registration_completed");
     setRegistrationCompleted(completed === "true");
+    setAuthStateLoaded(true);
   }, []);
   const [message, setMessage] = useState("");
 
@@ -439,7 +441,7 @@ export default function Home() {
           </div>
         )}
 
-          {!registrationCompleted && (
+          {authStateLoaded && !registrationCompleted && (
             <>
         <div
           style={{

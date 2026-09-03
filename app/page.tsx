@@ -99,6 +99,7 @@ export default function Home() {
           "Arial, Tahoma, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         position: "relative",
         overflow: "hidden",
+        visibility: authStateLoaded ? "visible" : "hidden",
       }}
     >
       <div

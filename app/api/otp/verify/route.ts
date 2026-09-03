@@ -177,14 +177,33 @@ export async function POST(request: Request) {
     );
 
     if (existingUser.rows.length > 0) {
-      await client.query("ROLLBACK");
+      await client.query(
+        `UPDATE otp_codes
+         SET used_at = NOW()
+         WHERE id = $1`,
+        [otpRecord.id]
+      );
+
+      await client.query(
+        `DELETE FROM pending_registrations
+         WHERE id = $1`,
+        [pending.id]
+      );
+
+      await client.query("COMMIT");
 
       return NextResponse.json(
         {
-          success: false,
-          message: "هذا البريد الإلكتروني مستخدم مسبقًا",
+          success: true,
+          verified: true,
+          accountCreated: false,
+          message: "تم التحقق من البريد الإلكتروني بنجاح",
+          user: {
+            id: existingUser.rows[0].id,
+            email,
+          },
         },
-        { status: 409 }
+        { status: 200 }
       );
     }
 

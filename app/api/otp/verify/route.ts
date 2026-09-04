@@ -187,6 +187,16 @@ export async function POST(request: Request) {
 
     if (existingUser.rows.length > 0) {
       await client.query(
+        `UPDATE users
+         SET
+           email_verified = true,
+           registration_completed = true,
+           updated_at = NOW()
+         WHERE id = $1`,
+        [existingUser.rows[0].id]
+      );
+
+      await client.query(
         `UPDATE otp_codes
          SET used_at = NOW()
          WHERE id = $1`,

@@ -462,7 +462,7 @@ export default function Home() {
           </div>
         )}
 
-          {authStateLoaded && !registrationCompleted && (
+          {!registrationCompleted && (
             <>
         <div
           style={{

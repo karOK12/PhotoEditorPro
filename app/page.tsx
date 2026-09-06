@@ -7,8 +7,7 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [registrationCompleted, setRegistrationCompleted] = useState<boolean | null>(null);
-  const [authStateLoaded, setAuthStateLoaded] = useState(false);
+  const [registrationCompleted, setRegistrationCompleted] = useState(false);
 
   useEffect(() => {
     async function loadAuthState() {
@@ -29,7 +28,6 @@ export default function Home() {
         console.error("Auth state error:", error);
         setRegistrationCompleted(false);
       } finally {
-        setAuthStateLoaded(true);
       }
     }
 
@@ -467,7 +465,7 @@ export default function Home() {
               minHeight: "102px",
             }}
           >
-            {registrationCompleted !== true && (
+            {!registrationCompleted && (
               <>
                 <div
                   style={{

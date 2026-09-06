@@ -7,7 +7,7 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [registrationCompleted, setRegistrationCompleted] = useState(false);
+  const [registrationCompleted, setRegistrationCompleted] = useState<boolean | null>(null);
   const [authStateLoaded, setAuthStateLoaded] = useState(false);
 
   useEffect(() => {
@@ -467,7 +467,7 @@ export default function Home() {
               minHeight: "102px",
             }}
           >
-          {!registrationCompleted && (
+          {registrationCompleted === false && (
             <>
         <div
           style={{

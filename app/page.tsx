@@ -464,7 +464,7 @@ export default function Home() {
 
           <div
             style={{
-              minHeight: registrationCompleted ? "0px" : "102px",
+              minHeight: "102px",
             }}
           >
           {authStateLoaded && !registrationCompleted && (

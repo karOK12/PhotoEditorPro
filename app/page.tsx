@@ -462,6 +462,11 @@ export default function Home() {
           </div>
         )}
 
+          <div
+            style={{
+              minHeight: registrationCompleted ? "0px" : "102px",
+            }}
+          >
           {authStateLoaded && !registrationCompleted && (
             <>
         <div
@@ -565,8 +570,9 @@ export default function Home() {
           <span>متابعة باستخدام Google</span>
         </button>
             </>
-
           )}
+          </div>
+
         <div
           style={{
             textAlign: "center",

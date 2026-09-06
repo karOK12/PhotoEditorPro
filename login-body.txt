@@ -1,0 +1,1 @@
+{"success":true,"message":"تم تسجيل الدخول بنجاح","user":{"id":"47f36a07-8149-4924-ae4b-19a45907e1d6","fullName":"PhotoEditorPro","email":"pphotoeditor23@gmail.com","phone":null,"emailVerified":true}}

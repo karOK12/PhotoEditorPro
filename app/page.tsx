@@ -21,15 +21,10 @@ export default function Home() {
 
         const data = await response.json();
 
-        if (
+        setRegistrationCompleted(
           response.ok &&
-          data?.authenticated === true &&
-          data?.user?.registrationCompleted === true
-        ) {
-          setRegistrationCompleted(true);
-        } else {
-          setRegistrationCompleted(false);
-        }
+          data?.registrationCompleted === true
+        );
       } catch (error) {
         console.error("Auth state error:", error);
         setRegistrationCompleted(false);
@@ -467,7 +462,7 @@ export default function Home() {
           </div>
         )}
 
-          {!registrationCompleted && (
+          {authStateLoaded && !registrationCompleted && (
             <>
         <div
           style={{

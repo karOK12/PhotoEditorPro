@@ -465,114 +465,113 @@ export default function Home() {
           <div
             style={{
               minHeight: "102px",
-              visibility: registrationCompleted === null || registrationCompleted === true ? "hidden" : "visible",
             }}
           >
-          {registrationCompleted !== true && (
-            <>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "6px",
-            marginTop: "14px",
-            fontSize: "12px",
-            color: "#94a3b8",
-          }}
-        >
-          <span>ليس لديك حساب؟</span>
+            {registrationCompleted !== true && (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
+                    marginTop: "14px",
+                    fontSize: "12px",
+                    color: "#94a3b8",
+                  }}
+                >
+                  <span>ليس لديك حساب؟</span>
 
-          <button
-            type="button"
-            onClick={() => {
-              window.location.href = "/user-data";
-            }}
-            style={{
-              border: "none",
-              background: "transparent",
-              color: "#173b8f",
-              cursor: "pointer",
-              fontSize: "12px",
-              fontWeight: "800",
-              padding: "2px",
-            }}
-          >
-            إنشاء حساب
-          </button>
-        </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.href = "/user-data";
+                    }}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      color: "#173b8f",
+                      cursor: "pointer",
+                      fontSize: "12px",
+                      fontWeight: "800",
+                      padding: "2px",
+                    }}
+                  >
+                    إنشاء حساب
+                  </button>
+                </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            margin: "16px 0 11px",
-            color: "#64748b",
-            fontSize: "13px",
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              height: "1px",
-              background: "#263244",
-            }}
-          />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    margin: "16px 0 11px",
+                    color: "#64748b",
+                    fontSize: "13px",
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      height: "1px",
+                      background: "#263244",
+                    }}
+                  />
 
-          <span>أو المتابعة باستخدام</span>
+                  <span>أو المتابعة باستخدام</span>
 
-          <div
-            style={{
-              flex: 1,
-              height: "1px",
-              background: "#263244",
-            }}
-          />
-        </div>
+                  <div
+                    style={{
+                      flex: 1,
+                      height: "1px",
+                      background: "#263244",
+                    }}
+                  />
+                </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            window.location.href = "/api/auth/google";
-          }}
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.location.href = "/api/auth/google";
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "43px",
+                    borderRadius: "10px",
+                    border: "1px solid #334155",
+                    background: "#ffffff",
+                    color: "#1f2937",
+                    cursor: "pointer",
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "9px",
+                  }}
+                >
+                  <span
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "17px",
+                      fontWeight: "900",
+                      fontFamily: "Arial, sans-serif",
+                    }}
+                  >
+                    <span style={{ color: "#4285F4" }}>G</span>
+                  </span>
 
-          style={{
-            width: "100%",
-            height: "43px",
-            borderRadius: "10px",
-            border: "1px solid #334155",
-            background: "#ffffff",
-            color: "#1f2937",
-            cursor: "not-allowed",
-            fontSize: "13px",
-            fontWeight: "700",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "9px",
-          }}
-        >
-          <span
-            style={{
-              width: "20px",
-              height: "20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "17px",
-              fontWeight: "900",
-              fontFamily: "Arial, sans-serif",
-            }}
-          >
-            <span style={{ color: "#4285F4" }}>G</span>
-          </span>
-
-          <span>متابعة باستخدام Google</span>
-        </button>
-            </>
-          )}
+                  <span>متابعة باستخدام Google</span>
+                </button>
+              </>
+            )}
           </div>
+
 
         <div
           style={{

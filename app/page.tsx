@@ -467,7 +467,7 @@ export default function Home() {
               minHeight: "102px",
             }}
           >
-          {authStateLoaded && !registrationCompleted && (
+          {!registrationCompleted && (
             <>
         <div
           style={{

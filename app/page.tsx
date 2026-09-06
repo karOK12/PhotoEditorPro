@@ -465,9 +465,10 @@ export default function Home() {
           <div
             style={{
               minHeight: "102px",
+              visibility: registrationCompleted === null || registrationCompleted === true ? "hidden" : "visible",
             }}
           >
-          {registrationCompleted === false && (
+          {registrationCompleted !== true && (
             <>
         <div
           style={{

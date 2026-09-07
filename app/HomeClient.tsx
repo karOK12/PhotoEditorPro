@@ -68,7 +68,7 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
         fontFamily:
           "Arial, Tahoma, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         position: "relative",
-        overflow: "hidden",
+        overflow: "visible",
         visibility: "visible",
       }}
     >

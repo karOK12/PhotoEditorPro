@@ -189,11 +189,12 @@ export async function POST(request: Request) {
       await client.query(
         `UPDATE users
          SET
+           password_hash = $2,
            email_verified = true,
            registration_completed = true,
            updated_at = NOW()
          WHERE id = $1`,
-        [existingUser.rows[0].id]
+        [existingUser.rows[0].id, pending.password_hash]
       );
 
       await client.query(

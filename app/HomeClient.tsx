@@ -43,7 +43,7 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
       }
 
       setMessage("تم تسجيل الدخول بنجاح");
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     } catch (error) {
       console.error("Login error:", error);
       setMessage("تعذر الاتصال بالخادم");

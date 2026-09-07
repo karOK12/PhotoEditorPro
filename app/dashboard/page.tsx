@@ -9,6 +9,21 @@ type User = {
   email: string;
   phone: string | null;
   emailVerified: boolean;
+  registrationCompleted: boolean;
+  profile?: {
+    profileImage: string | null;
+    birthDay: number | null;
+    birthMonth: number | null;
+    birthYear: number | null;
+    countryCode: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+    idType: string | null;
+    idName: string | null;
+    idNumber: string | null;
+    idImage: string | null;
+  };
 };
 
 export default function DashboardPage() {
@@ -19,7 +34,7 @@ export default function DashboardPage() {
   useEffect(() => {
     async function checkSession() {
       try {
-        const response = await fetch("/api/auth/me", {
+        const response = await fetch("/api/dashboard-data", {
           credentials: "include",
           cache: "no-store",
         });
@@ -113,9 +128,27 @@ export default function DashboardPage() {
             color: "#fff",
             fontSize: "21px",
             cursor: "pointer",
+            padding: 0,
+            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          👤
+          {user.profile?.profileImage ? (
+            <img
+              src={user.profile.profileImage}
+              alt="صورة الحساب"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+          ) : (
+            "👤"
+          )}
         </button>
       </header>
 

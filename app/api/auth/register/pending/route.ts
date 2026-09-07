@@ -10,6 +10,7 @@ export async function POST(request: Request) {
     const lastName = String(body?.lastName ?? "").trim();
     const email = String(body?.email ?? "").trim().toLowerCase();
     const password = String(body?.password ?? "");
+    const confirmPassword = String(body?.confirmPassword ?? "");
 
     const birthDay = Number(body?.birthDay);
     const birthMonth = Number(body?.birthMonth);
@@ -67,6 +68,16 @@ export async function POST(request: Request) {
         {
           success: false,
           message: "كلمة المرور يجب أن تتكون من 8 أحرف أو أرقام على الأقل",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (password !== confirmPassword) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "كلمتا المرور غير متطابقتين",
         },
         { status: 400 }
       );

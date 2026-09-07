@@ -1,15 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 
 export default function Home({ initialRegistrationCompleted }: { initialRegistrationCompleted: boolean }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [registrationCompleted, setRegistrationCompleted] = useState(
-    initialRegistrationCompleted
-  );
+  const registrationCompleted = initialRegistrationCompleted;
 
   const [message, setMessage] = useState("");
 

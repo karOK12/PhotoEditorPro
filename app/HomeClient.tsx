@@ -463,7 +463,7 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
           </div>
         )}
 
-          {!registrationCompleted && (
+          {(
             <div
               style={{
                 width: "100%",

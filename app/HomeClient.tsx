@@ -11,15 +11,6 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
     initialRegistrationCompleted
   );
 
-  useEffect(() => {
-    const localRegistrationCompleted =
-      localStorage.getItem("photoeditorpro_registration_completed") === "true";
-
-    if (localRegistrationCompleted) {
-      setRegistrationCompleted(true);
-    }
-  }, []);
-
   const [message, setMessage] = useState("");
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {

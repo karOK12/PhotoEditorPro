@@ -1,6 +1,4 @@
 import { cookies } from "next/headers";
-
-export const dynamic = "force-dynamic";
 import HomeClient from "./HomeClient";
 import {
   COOKIE_NAME as REGISTRATION_COOKIE_NAME,

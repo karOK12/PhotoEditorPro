@@ -7,7 +7,7 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [registrationCompleted] = useState(initialRegistrationCompleted);
+  const registrationCompleted = initialRegistrationCompleted;
 
   const [message, setMessage] = useState("");
 

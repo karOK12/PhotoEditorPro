@@ -56,19 +56,20 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
     <main
       dir="rtl"
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         width: "100%",
         background: "linear-gradient(135deg, #ffffff 0%, #f3f3f3 22%, #171717 58%, #050505 100%)",
         color: "#fff",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "20px",
+        padding: "10px",
         boxSizing: "border-box",
+        overflowX: "hidden",
         fontFamily:
           "Arial, Tahoma, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         position: "relative",
-        overflow: "visible",
+          overflowY: "auto",
         visibility: "visible",
       }}
     >
@@ -101,16 +102,20 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
       />
 
       <section
+        className="login-card"
         style={{
-          width: "100%",
-          maxWidth: "380px",
+          width: "calc(100vw - 24px)",
+          maxWidth: "420px",
+          minWidth: 0,
+
           position: "relative",
           zIndex: 2,
           background: "linear-gradient(145deg, #ffffff 0%, #f8fbff 55%, #eaf3ff 100%)",
           border: "1px solid rgba(255,255,255,.12)",
           borderRadius: "18px",
-          padding: "21px",
+          padding: "18px",
           boxSizing: "border-box",
+          overflow: "hidden",
           boxShadow:
             "0 18px 55px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.025)",
           backdropFilter: "blur(18px)",
@@ -118,87 +123,23 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
       >
 
       <style>{`
-        .registration-interface {
-          width: 100%;
-          min-height: 102px;
-          margin-top: 14px;
+        @media (max-width: 400px) {
+          .login-card {
+            width: calc(100vw - 20px) !important;
+            max-width: none !important;
+          }
         }
 
-        .registration-create-row {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          color: #94a3b8;
-          font-size: 12px;
+        @media (max-width: 360px) {
+          .login-card {
+            width: calc(100vw - 12px) !important;
+          }
         }
 
-        .registration-create-button {
-          border: 0;
-          background: transparent;
-          color: #173b8f;
-          cursor: pointer;
-          font-size: 12px;
-          font-weight: 800;
-          padding: 2px;
-        }
-
-        .registration-create-button:hover {
-          color: #2563eb;
-        }
-
-        .registration-divider {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin: 16px 0 11px;
-          color: #64748b;
-          font-size: 13px;
-        }
-
-        .registration-divider span {
-          flex: 1;
-          height: 1px;
-          background: #263244;
-        }
-
-        .registration-divider strong {
-          font-weight: 500;
-          white-space: nowrap;
-        }
-
-        .registration-google-button {
-          width: 100%;
-          height: 43px;
-          border-radius: 10px;
-          border: 1px solid #334155;
-          background: #ffffff;
-          color: #1f2937;
-          cursor: pointer;
-          font-size: 13px;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 9px;
-          transition: background .15s ease, border-color .15s ease;
-        }
-
-        .registration-google-button:hover {
-          background: #f8fafc;
-          border-color: #475569;
-        }
-
-        .google-icon {
-          width: 20px;
-          height: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 17px;
-          font-weight: 900;
-          font-family: Arial, sans-serif;
-          color: #4285F4;
+        .login-card input,
+        .login-card button {
+          max-width: 100%;
+          box-sizing: border-box;
         }
       `}</style>
 
@@ -228,7 +169,7 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
               alt="Photo Editor Pro"
               style={{
                 width: "100%",
-                height: "100%",
+                minHeight: "100dvh",
                 objectFit: "contain",
                 padding: "8px",
                 boxSizing: "border-box",
@@ -523,36 +464,142 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
         )}
 
           {!registrationCompleted && (
-            <div className="registration-interface">
-              <div className="registration-create-row">
+            <div
+              style={{
+                width: "100%",
+                marginTop: "14px",
+                boxSizing: "border-box",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexWrap: "wrap",
+                  gap: "5px",
+                  color: "#94a3b8",
+                  fontSize: "12px",
+                  lineHeight: "20px",
+                  textAlign: "center",
+                }}
+              >
                 <span>ليس لديك حساب؟</span>
 
                 <button
                   type="button"
-                  className="registration-create-button"
                   onClick={() => {
                     window.location.href = "/user-data";
+                  }}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    color: "#173b8f",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    fontWeight: "800",
+                    padding: "2px 4px",
+                    margin: 0,
+                    whiteSpace: "nowrap",
                   }}
                 >
                   إنشاء حساب
                 </button>
               </div>
 
-              <div className="registration-divider">
-                <span></span>
-                <strong>أو المتابعة باستخدام</strong>
-                <span></span>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "9px",
+                  margin: "15px 0 11px",
+                  boxSizing: "border-box",
+                }}
+              >
+                <span
+                  style={{
+                    flex: "1 1 0",
+                    minWidth: 0,
+                    height: "1px",
+                    background: "#cbd5e1",
+                  }}
+                />
+
+                <strong
+                  style={{
+                    flex: "0 0 auto",
+                    color: "#64748b",
+                    fontSize: "12px",
+                    fontWeight: "500",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  أو المتابعة باستخدام
+                </strong>
+
+                <span
+                  style={{
+                    flex: "1 1 0",
+                    minWidth: 0,
+                    height: "1px",
+                    background: "#cbd5e1",
+                  }}
+                />
               </div>
 
               <button
                 type="button"
-                className="registration-google-button"
                 onClick={() => {
                   window.location.href = "/api/auth/google";
                 }}
+                style={{
+                  width: "100%",
+                  maxWidth: "100%",
+                  height: "43px",
+                  boxSizing: "border-box",
+                  borderRadius: "10px",
+                  border: "1px solid #cbd5e1",
+                  background: "#ffffff",
+                  color: "#1f2937",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  fontWeight: "700",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "9px",
+                  padding: "0 12px",
+                  overflow: "hidden",
+                }}
               >
-                <span className="google-icon">G</span>
-                <span>متابعة باستخدام Google</span>
+                <span
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    flex: "0 0 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "17px",
+                    fontWeight: "900",
+                    fontFamily: "Arial, sans-serif",
+                    color: "#4285F4",
+                  }}
+                >
+                  G
+                </span>
+
+                <span
+                  style={{
+                    minWidth: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  متابعة باستخدام Google
+                </span>
               </button>
             </div>
           )}

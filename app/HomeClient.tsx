@@ -116,6 +116,92 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
           backdropFilter: "blur(18px)",
         }}
       >
+
+      <style>{`
+        .registration-interface {
+          width: 100%;
+          min-height: 102px;
+          margin-top: 14px;
+        }
+
+        .registration-create-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          color: #94a3b8;
+          font-size: 12px;
+        }
+
+        .registration-create-button {
+          border: 0;
+          background: transparent;
+          color: #173b8f;
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: 800;
+          padding: 2px;
+        }
+
+        .registration-create-button:hover {
+          color: #2563eb;
+        }
+
+        .registration-divider {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin: 16px 0 11px;
+          color: #64748b;
+          font-size: 13px;
+        }
+
+        .registration-divider span {
+          flex: 1;
+          height: 1px;
+          background: #263244;
+        }
+
+        .registration-divider strong {
+          font-weight: 500;
+          white-space: nowrap;
+        }
+
+        .registration-google-button {
+          width: 100%;
+          height: 43px;
+          border-radius: 10px;
+          border: 1px solid #334155;
+          background: #ffffff;
+          color: #1f2937;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          transition: background .15s ease, border-color .15s ease;
+        }
+
+        .registration-google-button:hover {
+          background: #f8fafc;
+          border-color: #475569;
+        }
+
+        .google-icon {
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 17px;
+          font-weight: 900;
+          font-family: Arial, sans-serif;
+          color: #4285F4;
+        }
+      `}</style>
+
         <div
           style={{
             textAlign: "center",
@@ -436,116 +522,40 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
           </div>
         )}
 
-          <div
-            style={{
-              minHeight: "102px",
-            }}
-          >
-            {!registrationCompleted && (
-              <>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "6px",
-                    marginTop: "14px",
-                    fontSize: "12px",
-                    color: "#94a3b8",
-                  }}
-                >
-                  <span>ليس لديك حساب؟</span>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      window.location.href = "/user-data";
-                    }}
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      color: "#173b8f",
-                      cursor: "pointer",
-                      fontSize: "12px",
-                      fontWeight: "800",
-                      padding: "2px",
-                    }}
-                  >
-                    إنشاء حساب
-                  </button>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    margin: "16px 0 11px",
-                    color: "#64748b",
-                    fontSize: "13px",
-                  }}
-                >
-                  <div
-                    style={{
-                      flex: 1,
-                      height: "1px",
-                      background: "#263244",
-                    }}
-                  />
-
-                  <span>أو المتابعة باستخدام</span>
-
-                  <div
-                    style={{
-                      flex: 1,
-                      height: "1px",
-                      background: "#263244",
-                    }}
-                  />
-                </div>
+          {!registrationCompleted && (
+            <div className="registration-interface">
+              <div className="registration-create-row">
+                <span>ليس لديك حساب؟</span>
 
                 <button
                   type="button"
+                  className="registration-create-button"
                   onClick={() => {
-                    window.location.href = "/api/auth/google";
-                  }}
-                  style={{
-                    width: "100%",
-                    height: "43px",
-                    borderRadius: "10px",
-                    border: "1px solid #334155",
-                    background: "#ffffff",
-                    color: "#1f2937",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    fontWeight: "700",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "9px",
+                    window.location.href = "/user-data";
                   }}
                 >
-                  <span
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "17px",
-                      fontWeight: "900",
-                      fontFamily: "Arial, sans-serif",
-                    }}
-                  >
-                    <span style={{ color: "#4285F4" }}>G</span>
-                  </span>
-
-                  <span>متابعة باستخدام Google</span>
+                  إنشاء حساب
                 </button>
-              </>
-            )}
-          </div>
+              </div>
 
+              <div className="registration-divider">
+                <span></span>
+                <strong>أو المتابعة باستخدام</strong>
+                <span></span>
+              </div>
+
+              <button
+                type="button"
+                className="registration-google-button"
+                onClick={() => {
+                  window.location.href = "/api/auth/google";
+                }}
+              >
+                <span className="google-icon">G</span>
+                <span>متابعة باستخدام Google</span>
+              </button>
+            </div>
+          )}
 
         <div
           style={{

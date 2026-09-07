@@ -5,6 +5,10 @@ import {
   getSessionCookieName,
   verifySessionToken,
 } from "@/lib/auth-session";
+import {
+  COOKIE_NAME as REGISTRATION_COOKIE_NAME,
+  verifyRegistrationStatusToken,
+} from "@/lib/registration-status";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +16,14 @@ export default async function Home() {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get(getSessionCookieName())?.value;
 
-  let registrationCompleted = false;
+  const registrationToken =
+    cookieStore.get(REGISTRATION_COOKIE_NAME)?.value;
+
+  const registrationUserId = registrationToken
+    ? verifyRegistrationStatusToken(registrationToken)
+    : null;
+
+  let registrationCompleted = Boolean(registrationUserId);
 
   if (sessionToken) {
     const session = verifySessionToken(sessionToken);
@@ -28,8 +39,9 @@ export default async function Home() {
         );
 
         registrationCompleted =
-          result.rows.length > 0 &&
-          result.rows[0].registration_completed === true;
+          registrationCompleted ||
+          (result.rows.length > 0 &&
+            result.rows[0].registration_completed === true);
       } catch (error) {
         console.error("Home auth state error:", error);
         registrationCompleted = false;

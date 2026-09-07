@@ -7,7 +7,18 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const registrationCompleted = false;
+  const [registrationCompleted, setRegistrationCompleted] = useState(
+    initialRegistrationCompleted
+  );
+
+  useEffect(() => {
+    const localRegistrationCompleted =
+      localStorage.getItem("photoeditorpro_registration_completed") === "true";
+
+    if (localRegistrationCompleted) {
+      setRegistrationCompleted(true);
+    }
+  }, []);
 
   const [message, setMessage] = useState("");
 

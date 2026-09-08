@@ -34,7 +34,7 @@ export default function DashboardPage() {
   useEffect(() => {
     async function checkSession() {
       try {
-        const response = await fetch("/api/dashboard-data", {
+        const response = await fetch("/api/auth/me", {
           credentials: "include",
           cache: "no-store",
         });
@@ -44,6 +44,23 @@ export default function DashboardPage() {
         if (!response.ok || !data?.authenticated) {
           router.replace("/");
           return;
+        }
+
+        const dashboardResponse = await fetch("/api/dashboard-data", {
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        if (dashboardResponse.ok) {
+          const dashboardData = await dashboardResponse.json();
+
+          if (dashboardData?.success && dashboardData?.user) {
+            setUser({
+              ...data.user,
+              ...dashboardData.user,
+            });
+            return;
+          }
         }
 
         setUser(data.user);

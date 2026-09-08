@@ -314,7 +314,11 @@ export default function DashboardPage() {
               fontSize: "12px",
             }}
           >
-            <div style={{ fontSize: "21px" }}>🏠</div>
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: "0 auto 4px", display: "block" }}>
+              <path d="M3 10.5 12 3l9 7.5" />
+              <path d="M5 9.5V21h14V9.5" />
+              <path d="M9 21v-6h6v6" />
+            </svg>
             الرئيسية
           </button>
 
@@ -328,7 +332,12 @@ export default function DashboardPage() {
               fontSize: "12px",
             }}
           >
-            <div style={{ fontSize: "21px" }}>✨</div>
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: "0 auto 4px", display: "block" }}>
+              <path d="M12 3v18" />
+              <path d="M3 12h18" />
+              <path d="M5 5l14 14" />
+              <path d="M19 5 5 19" />
+            </svg>
             الأدوات
           </button>
 
@@ -342,7 +351,9 @@ export default function DashboardPage() {
               fontSize: "12px",
             }}
           >
-            <div style={{ fontSize: "21px" }}>📁</div>
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: "0 auto 4px", display: "block" }}>
+              <path d="M3 6h7l2 2h9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            </svg>
             مشاريعي
           </button>
 

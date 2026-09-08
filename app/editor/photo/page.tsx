@@ -1,122 +1,156 @@
 "use client";
 
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import PhotoCanvas from "./components/PhotoCanvas";
+import PhotoToolbar from "./components/PhotoToolbar";
+import Adjustments from "./components/Adjustments";
+import Filters from "./components/Filters";
 
-type FilterName = "normal" | "grayscale" | "sepia" | "contrast" | "bright";
+type FilterName =
+  | "normal"
+  | "grayscale"
+  | "sepia"
+  | "warm"
+  | "cool"
+  | "highContrast";
 
-const filters: Record<FilterName, string> = {
-  normal: "none",
+const filterMap: Record<FilterName, string> = {
+  normal: "",
   grayscale: "grayscale(100%)",
   sepia: "sepia(85%)",
-  contrast: "contrast(135%)",
-  bright: "brightness(125%)",
+  warm: "sepia(25%) saturate(125%)",
+  cool: "saturate(90%) hue-rotate(12deg)",
+  highContrast: "contrast(135%) saturate(115%)",
 };
 
 export default function PhotoEditorPage() {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [image, setImage] = useState<HTMLImageElement | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [filter, setFilter] = useState<FilterName>("normal");
-  const [rotation, setRotation] = useState(0);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
+  const [saturation, setSaturation] = useState(100);
+  const [rotation, setRotation] = useState(0);
   const [flipX, setFlipX] = useState(false);
   const [flipY, setFlipY] = useState(false);
+  const [activeFilter, setActiveFilter] =
+    useState<FilterName>("normal");
 
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl);
+      }
     };
-  }, [previewUrl]);
+  }, [imageUrl]);
 
-  function selectImage(event: ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
-    if (!file || !file.type.startsWith("image/")) return;
+    if (!file) return;
 
-    const url = URL.createObjectURL(file);
+    if (!file.type.startsWith("image/")) {
+      alert("يرجى اختيار صورة فقط");
+      return;
+    }
 
-    const img = new Image();
+    if (imageUrl) {
+      URL.revokeObjectURL(imageUrl);
+    }
 
-    img.onload = () => {
-      setImage(img);
-      setPreviewUrl(url);
-      setFilter("normal");
-      setBrightness(100);
-      setContrast(100);
-      setRotation(0);
-      setFlipX(false);
-      setFlipY(false);
-    };
+    setImageUrl(URL.createObjectURL(file));
 
-    img.src = url;
-  }
-
-  function resetEditor() {
-    setFilter("normal");
     setBrightness(100);
     setContrast(100);
+    setSaturation(100);
     setRotation(0);
     setFlipX(false);
     setFlipY(false);
+    setActiveFilter("normal");
+  }
+
+  function resetEditor() {
+    setBrightness(100);
+    setContrast(100);
+    setSaturation(100);
+    setRotation(0);
+    setFlipX(false);
+    setFlipY(false);
+    setActiveFilter("normal");
+  }
+
+  function openFilePicker() {
+    fileInputRef.current?.click();
   }
 
   function exportImage() {
-    if (!image || !canvasRef.current) return;
+    if (!imageUrl) {
+      alert("اختر صورة أولاً");
+      return;
+    }
 
-    const canvas = canvasRef.current;
-    const angle = ((rotation % 360) + 360) % 360;
+    const image = new Image();
 
-    const rotated =
-      angle === 90 || angle === 270;
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
-    canvas.width = rotated ? image.naturalHeight : image.naturalWidth;
-    canvas.height = rotated ? image.naturalWidth : image.naturalHeight;
+      if (!ctx) return;
 
-    const ctx = canvas.getContext("2d");
+      const rotated = rotation % 180 !== 0;
 
-    if (!ctx) return;
+      canvas.width = rotated ? image.height : image.width;
+      canvas.height = rotated ? image.width : image.height;
 
-    ctx.save();
+      ctx.save();
 
-    ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
 
-    ctx.rotate((angle * Math.PI) / 180);
+      ctx.filter = `
+        brightness(${brightness}%)
+        contrast(${contrast}%)
+        saturate(${saturation}%)
+        ${filterMap[activeFilter]}
+      `;
 
-    ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+      ctx.drawImage(
+        image,
+        -image.width / 2,
+        -image.height / 2,
+        image.width,
+        image.height
+      );
 
-    ctx.filter = [
-      filters[filter],
-      `brightness(${brightness}%)`,
-      `contrast(${contrast}%)`,
-    ].join(" ");
+      ctx.restore();
 
-    ctx.drawImage(
-      image,
-      -image.naturalWidth / 2,
-      -image.naturalHeight / 2
-    );
+      canvas.toBlob((blob) => {
+        if (!blob) return;
 
-    ctx.restore();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
 
-    const link = document.createElement("a");
+        link.href = url;
+        link.download = "photoeditorpro-image.png";
+        link.click();
 
-    link.download = "photoeditorpro-image.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+        URL.revokeObjectURL(url);
+      }, "image/png");
+    };
+
+    image.src = imageUrl;
   }
 
   return (
     <main
       dir="rtl"
       style={{
-        minHeight: "100dvh",
-        background:
-          "radial-gradient(circle at top right, #172554 0%, #0b1020 35%, #08090c 70%)",
+        minHeight: "100vh",
+        background: "#08090c",
         color: "#fff",
-        fontFamily: "Arial, Tahoma, sans-serif",
         paddingBottom: "30px",
       }}
     >
@@ -125,308 +159,164 @@ export default function PhotoEditorPage() {
           height: "64px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          gap: "12px",
           padding: "0 16px",
           borderBottom: "1px solid rgba(255,255,255,.08)",
-          background: "rgba(8,9,12,.9)",
+          background: "rgba(8,9,12,.92)",
           position: "sticky",
           top: 0,
-          zIndex: 10,
+          zIndex: 20,
         }}
       >
-        <strong style={{ fontSize: "19px" }}>تحرير الصور</strong>
-
         <button
           type="button"
-          onClick={() => window.history.back()}
+          onClick={() => router.back()}
           style={{
-            border: "1px solid rgba(255,255,255,.12)",
-            background: "rgba(255,255,255,.06)",
+            width: "42px",
+            height: "42px",
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,.1)",
+            background: "#15171d",
             color: "#fff",
-            borderRadius: "10px",
-            padding: "8px 12px",
             cursor: "pointer",
+            fontSize: "20px",
           }}
         >
-          رجوع
+          →
         </button>
+
+        <strong style={{ fontSize: "18px" }}>
+          تحرير الصور
+        </strong>
       </header>
 
-      <section
+      <div
         style={{
+          width: "100%",
           maxWidth: "1000px",
           margin: "0 auto",
-          padding: "20px 16px",
+          padding: "16px",
+          display: "grid",
+          gap: "14px",
         }}
       >
-        {!image ? (
-          <div
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+        />
+
+        {!imageUrl ? (
+          <button
+            type="button"
+            onClick={openFilePicker}
             style={{
-              minHeight: "65vh",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              minHeight: "180px",
+              borderRadius: "20px",
+              border: "1px dashed rgba(255,255,255,.2)",
+              background: "#111318",
+              color: "#fff",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: 700,
             }}
           >
-            <div
-              style={{
-                width: "100%",
-                maxWidth: "520px",
-                padding: "40px 24px",
-                textAlign: "center",
-                borderRadius: "24px",
-                border: "1px solid rgba(255,255,255,.1)",
-                background: "rgba(255,255,255,.05)",
-              }}
-            >
-              <div style={{ fontSize: "56px", marginBottom: "18px" }}>
-                🖼️
-              </div>
-
-              <h1 style={{ margin: "0 0 10px", fontSize: "28px" }}>
-                محرر الصور
-              </h1>
-
-              <p
-                style={{
-                  color: "#94a3b8",
-                  fontSize: "14px",
-                  lineHeight: 1.8,
-                }}
-              >
-                اختر صورة من هاتفك وابدأ التعديل عليها مباشرة.
-              </p>
-
-              <input
-                ref={inputRef}
-                type="file"
-                accept="image/*"
-                onChange={selectImage}
-                style={{ display: "none" }}
-              />
-
-              <button
-                type="button"
-                onClick={() => inputRef.current?.click()}
-                style={{
-                  marginTop: "20px",
-                  width: "100%",
-                  padding: "14px",
-                  border: 0,
-                  borderRadius: "14px",
-                  background: "#2563eb",
-                  color: "#fff",
-                  fontSize: "16px",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                }}
-              >
-                اختيار صورة من الهاتف
-              </button>
-            </div>
-          </div>
+            + اختر صورة من الهاتف
+          </button>
         ) : (
           <>
-            <div
-              style={{
-                borderRadius: "22px",
-                padding: "12px",
-                background: "rgba(0,0,0,.3)",
-                border: "1px solid rgba(255,255,255,.08)",
-                display: "flex",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              <img
-                src={previewUrl || ""}
-                alt="الصورة المحددة"
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "55vh",
-                  objectFit: "contain",
-                  filter: [
-                    filters[filter],
-                    `brightness(${brightness}%)`,
-                    `contrast(${contrast}%)`,
-                  ].join(" "),
-                  transform: `rotate(${rotation}deg) scaleX(${
-                    flipX ? -1 : 1
-                  }) scaleY(${flipY ? -1 : 1})`,
-                  borderRadius: "14px",
-                }}
-              />
-            </div>
+            <PhotoCanvas
+              imageUrl={imageUrl}
+              brightness={brightness}
+              contrast={contrast}
+              saturation={saturation}
+              rotation={rotation}
+              flipX={flipX}
+              flipY={flipY}
+            />
 
-            <div
+            <PhotoToolbar
+              onRotate={() =>
+                setRotation((value) => (value + 90) % 360)
+              }
+              onFlipX={() => setFlipX((value) => !value)}
+              onFlipY={() => setFlipY((value) => !value)}
+              onReset={resetEditor}
+            />
+
+            <Adjustments
+              brightness={brightness}
+              contrast={contrast}
+              saturation={saturation}
+              onBrightnessChange={setBrightness}
+              onContrastChange={setContrast}
+              onSaturationChange={setSaturation}
+            />
+
+            <section
               style={{
                 display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit, minmax(120px, 1fr))",
                 gap: "10px",
-                marginTop: "16px",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => setRotation((value) => value + 90)}
-                style={toolButton}
-              >
-                ↻ تدوير
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setFlipX((value) => !value)}
-                style={toolButton}
-              >
-                ↔ قلب أفقي
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setFlipY((value) => !value)}
-                style={toolButton}
-              >
-                ↕ قلب عمودي
-              </button>
-
-              <button
-                type="button"
-                onClick={resetEditor}
-                style={toolButton}
-              >
-                إعادة ضبط
-              </button>
-            </div>
-
-            <div
-              style={{
-                marginTop: "18px",
-                padding: "18px",
+                padding: "16px",
                 borderRadius: "18px",
-                background: "rgba(255,255,255,.05)",
+                background: "#111318",
                 border: "1px solid rgba(255,255,255,.08)",
               }}
             >
-              <label style={labelStyle}>
-                السطوع: {brightness}%
-                <input
-                  type="range"
-                  min="50"
-                  max="160"
-                  value={brightness}
-                  onChange={(e) =>
-                    setBrightness(Number(e.target.value))
-                  }
-                  style={{ width: "100%", marginTop: "10px" }}
-                />
-              </label>
+              <strong style={{ fontSize: "14px" }}>
+                الفلاتر
+              </strong>
 
-              <label style={{ ...labelStyle, marginTop: "18px" }}>
-                التباين: {contrast}%
-                <input
-                  type="range"
-                  min="50"
-                  max="160"
-                  value={contrast}
-                  onChange={(e) =>
-                    setContrast(Number(e.target.value))
-                  }
-                  style={{ width: "100%", marginTop: "10px" }}
-                />
-              </label>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                overflowX: "auto",
-                marginTop: "18px",
-                paddingBottom: "5px",
-              }}
-            >
-              {(Object.keys(filters) as FilterName[]).map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  onClick={() => setFilter(name)}
-                  style={{
-                    ...toolButton,
-                    minWidth: "100px",
-                    border:
-                      filter === name
-                        ? "1px solid #3b82f6"
-                        : "1px solid rgba(255,255,255,.1)",
-                  }}
-                >
-                  {name === "normal" && "عادي"}
-                  {name === "grayscale" && "أبيض وأسود"}
-                  {name === "sepia" && "سيبيا"}
-                  {name === "contrast" && "تباين"}
-                  {name === "bright" && "إضاءة"}
-                </button>
-              ))}
-            </div>
+              <Filters
+                activeFilter={activeFilter}
+                onFilterChange={setActiveFilter}
+              />
+            </section>
 
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "10px",
-                marginTop: "18px",
               }}
             >
               <button
                 type="button"
-                onClick={() => inputRef.current?.click()}
-                style={toolButton}
+                onClick={openFilePicker}
+                style={{
+                  height: "50px",
+                  borderRadius: "14px",
+                  border: "1px solid rgba(255,255,255,.1)",
+                  background: "#15171d",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                }}
               >
-                اختيار صورة أخرى
+                تغيير الصورة
               </button>
 
               <button
                 type="button"
                 onClick={exportImage}
                 style={{
-                  ...toolButton,
-                  background: "#2563eb",
-                  border: "1px solid #3b82f6",
+                  height: "50px",
+                  borderRadius: "14px",
+                  border: 0,
+                  background: "#fff",
+                  color: "#08090c",
+                  cursor: "pointer",
+                  fontWeight: 800,
                 }}
               >
-                حفظ الصورة
+                تصدير PNG
               </button>
             </div>
-
-            <canvas ref={canvasRef} style={{ display: "none" }} />
-
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              onChange={selectImage}
-              style={{ display: "none" }}
-            />
           </>
         )}
-      </section>
+      </div>
     </main>
   );
 }
-
-const toolButton: React.CSSProperties = {
-  padding: "12px",
-  borderRadius: "12px",
-  border: "1px solid rgba(255,255,255,.1)",
-  background: "rgba(255,255,255,.06)",
-  color: "#fff",
-  cursor: "pointer",
-  fontSize: "13px",
-};
-
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  color: "#e2e8f0",
-  fontSize: "14px",
-};

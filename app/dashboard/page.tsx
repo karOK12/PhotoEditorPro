@@ -387,15 +387,45 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={() => router.push("/profile")}
+            aria-label="الملف الشخصي"
             style={{
               background: "transparent",
               border: 0,
               color: "#94a3b8",
               cursor: "pointer",
               fontSize: "12px",
+              padding: 0,
             }}
           >
-            <div style={{ fontSize: "21px" }}>👤</div>
+            <div
+              style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: "1px solid rgba(255,255,255,.18)",
+                background: "rgba(255,255,255,.08)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 4px",
+              }}
+            >
+              {user.profile?.profileImage ? (
+                <img
+                  src={user.profile.profileImage}
+                  alt="صورة الحساب"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+              ) : (
+                <span style={{ fontSize: "18px" }}>👤</span>
+              )}
+            </div>
             حسابي
           </button>
         </div>

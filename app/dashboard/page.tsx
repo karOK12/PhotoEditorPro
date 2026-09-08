@@ -203,7 +203,7 @@ export default function DashboardPage() {
                     <path d="M4 20h4" />
                   </svg>
                 ),
-                path: "/editor/tools",
+                path: "/tools",
               },
             ].map((item) => (
               <button
@@ -383,126 +383,184 @@ export default function DashboardPage() {
 
       {/* الشريط السفلي */}
       <nav
+        aria-label="التنقل الرئيسي"
         style={{
           position: "fixed",
-          bottom: 0,
           right: 0,
+          bottom: 0,
           left: 0,
-          height: "74px",
-          background: "rgba(8,9,12,.94)",
-          borderTop: "1px solid rgba(255,255,255,.1)",
-          backdropFilter: "blur(18px)",
-          display: "flex",
-          justifyContent: "center",
-          zIndex: 30,
+          height: "76px",
+          paddingBottom: "env(safe-area-inset-bottom)",
+          boxSizing: "border-box",
+          background: "rgba(8,9,12,.96)",
+          borderTop: "1px solid rgba(255,255,255,.08)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          zIndex: 100,
         }}
       >
         <div
           style={{
             width: "100%",
             maxWidth: "700px",
+            height: "100%",
+            margin: "0 auto",
             display: "grid",
             gridTemplateColumns: "repeat(4, 1fr)",
-            alignItems: "center",
+            alignItems: "stretch",
           }}
         >
-          <button
-            type="button"
-            style={{
-              background: "transparent",
-              border: 0,
-              color: "#fff",
-              cursor: "pointer",
-              fontSize: "12px",
-            }}
-          >
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: "0 auto 4px", display: "block" }}>
-              <path d="M3 10.5 12 3l9 7.5" />
-              <path d="M5 9.5V21h14V9.5" />
-              <path d="M9 21v-6h6v6" />
-            </svg>
-            الرئيسية
-          </button>
-
-          <button
-            type="button"
-            style={{
-              background: "transparent",
-              border: 0,
-              color: "#94a3b8",
-              cursor: "pointer",
-              fontSize: "12px",
-            }}
-          >
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: "0 auto 4px", display: "block" }}>
-              <path d="M12 3v18" />
-              <path d="M3 12h18" />
-              <path d="M5 5l14 14" />
-              <path d="M19 5 5 19" />
-            </svg>
-            الأدوات
-          </button>
-
-          <button
-            type="button"
-            style={{
-              background: "transparent",
-              border: 0,
-              color: "#94a3b8",
-              cursor: "pointer",
-              fontSize: "12px",
-            }}
-          >
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: "0 auto 4px", display: "block" }}>
-              <path d="M3 6h7l2 2h9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            </svg>
-            مشاريعي
-          </button>
-
-          <button
-            type="button"
-            onClick={() => router.push("/profile")}
-            aria-label="الملف الشخصي"
-            style={{
-              background: "transparent",
-              border: 0,
-              color: "#94a3b8",
-              cursor: "pointer",
-              fontSize: "12px",
-              padding: 0,
-            }}
-          >
-            <div
-              style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                overflow: "hidden",
-                border: "1px solid rgba(255,255,255,.18)",
-                background: "rgba(255,255,255,.08)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 auto 4px",
-              }}
-            >
-              {user.profile?.profileImage ? (
+          {[
+            {
+              label: "الرئيسية",
+              path: "/dashboard",
+              icon: (
+                <svg width="23" height="23" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3.5 10.7 12 3.5l8.5 7.2V20a1 1 0 0 1-1 1h-5.2v-6.2H9.7V21H4.5a1 1 0 0 1-1-1V10.7Z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ),
+            },
+            {
+              label: "الأدوات",
+              path: "/tools",
+              icon: (
+                <svg width="23" height="23" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M14.8 5.2a5.2 5.2 0 0 0 6.1 6.1l-8.7 8.7a2.8 2.8 0 1 1-4-4l8.7-8.7a5.2 5.2 0 0 0-6.1-6.1l3.2 3.2-2.7 2.7-3.2-3.2a5.2 5.2 0 0 0 6.7 7.9"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ),
+            },
+            {
+              label: "مشاريعي",
+              path: "/projects",
+              icon: (
+                <svg width="23" height="23" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M3.5 7.5A2.5 2.5 0 0 1 6 5h4l2 2h6.5A2.5 2.5 0 0 1 21 9.5v8A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5v-10Z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M3.7 10h16.6"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                  />
+                </svg>
+              ),
+            },
+            {
+              label: "حسابي",
+              path: "/profile",
+              icon: user.profile?.profileImage ? (
                 <img
                   src={user.profile.profileImage}
-                  alt="صورة الحساب"
+                  alt=""
                   style={{
-                    width: "100%",
-                    height: "100%",
+                    width: "25px",
+                    height: "25px",
+                    borderRadius: "50%",
                     objectFit: "cover",
-                    display: "block",
+                    border: "1px solid rgba(255,255,255,.22)",
                   }}
                 />
               ) : (
-                <span style={{ fontSize: "18px" }}>👤</span>
-              )}
-            </div>
-            حسابي
-          </button>
+                <svg width="23" height="23" viewBox="0 0 24 24" fill="none">
+                  <circle
+                    cx="12"
+                    cy="8"
+                    r="3.2"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                  <path
+                    d="M5 21c.8-4 3.1-6 7-6s6.2 2 7 6"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ),
+            },
+          ].map((item) => {
+            const active = item.path === "/dashboard";
+
+            return (
+              <button
+                key={item.path}
+                type="button"
+                onClick={() => router.push(item.path)}
+                aria-label={item.label}
+                style={{
+                  position: "relative",
+                  border: 0,
+                  outline: "none",
+                  background: "transparent",
+                  color: active ? "#fff" : "#7f8a9a",
+                  cursor: "pointer",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "5px",
+                  minWidth: 0,
+                  padding: "7px 4px",
+                  transition: "color .18s ease, transform .12s ease",
+                  WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                {active && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      width: "30px",
+                      height: "3px",
+                      borderRadius: "0 0 5px 5px",
+                      background: "#fff",
+                    }}
+                  />
+                )}
+
+                <span
+                  style={{
+                    width: "38px",
+                    height: "32px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "11px",
+                    background: active
+                      ? "rgba(255,255,255,.08)"
+                      : "transparent",
+                  }}
+                >
+                  {item.icon}
+                </span>
+
+                <span
+                  style={{
+                    fontSize: "11px",
+                    lineHeight: 1,
+                    fontWeight: active ? 800 : 600,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </nav>
     </main>

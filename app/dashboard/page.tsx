@@ -127,9 +127,6 @@ export default function DashboardPage() {
           <div style={{ fontSize: "20px", fontWeight: 800 }}>
             PhotoEditorPro
           </div>
-          <div style={{ color: "#94a3b8", fontSize: "12px", marginTop: "3px" }}>
-            أهلاً {user.fullName}
-          </div>
         </div>
 
       </header>

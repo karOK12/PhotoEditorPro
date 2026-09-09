@@ -27,6 +27,10 @@ export default function VideoEditorPage() {
   const [playing, setPlaying] = useState(false);
   const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [trimStart, setTrimStart] = useState(0);
+  const [trimEnd, setTrimEnd] = useState(0);
+  const [splitPoints, setSplitPoints] = useState<number[]>([]);
+  const [trimDragging, setTrimDragging] = useState<"start" | "end" | null>(null);
 
   useEffect(() => {
     return () => {
@@ -115,7 +119,11 @@ export default function VideoEditorPage() {
     const video = videoRef.current;
     if (!video) return;
 
-    setDuration(video.duration || 0);
+    const videoDuration = video.duration || 0;
+    setDuration(videoDuration);
+    setTrimStart(0);
+    setTrimEnd(videoDuration);
+    setSplitPoints([]);
     await generateThumbnails(video);
   };
 
@@ -135,6 +143,9 @@ export default function VideoEditorPage() {
     setDuration(0);
     setCurrentTime(0);
     setPlaying(false);
+    setTrimStart(0);
+    setTrimEnd(0);
+    setSplitPoints([]);
     setThumbnails([]);
   };
 
@@ -161,8 +172,9 @@ export default function VideoEditorPage() {
       Math.max(0, (clientX - rect.left) / rect.width)
     );
 
-    video.currentTime = position * duration;
-    setCurrentTime(position * duration);
+    const nextTime = position * duration;
+    video.currentTime = Math.min(trimEnd || duration, Math.max(trimStart, nextTime));
+    setCurrentTime(video.currentTime);
   };
 
   const handleTimelinePointerDown = (event: PointerEvent<HTMLDivElement>) => {
@@ -180,9 +192,105 @@ export default function VideoEditorPage() {
 
   const handleTimelinePointerUp = () => {
     setDragging(false);
+    setTrimDragging(null);
+  };
+
+  const handleTrimPointerDown = (
+    event: PointerEvent<HTMLDivElement>,
+    side: "start" | "end"
+  ) => {
+    if (!videoUrl || !duration) return;
+
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setTrimDragging(side);
+  };
+
+  const handleTrimPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!trimDragging || !duration || !timelineRef.current) return;
+
+    const rect = timelineRef.current.getBoundingClientRect();
+    const position = Math.min(
+      1,
+      Math.max(0, (event.clientX - rect.left) / rect.width)
+    );
+    const time = position * duration;
+
+    if (trimDragging === "start") {
+      const nextStart = Math.min(time, trimEnd - 0.05);
+      setTrimStart(Math.max(0, nextStart));
+
+      if (videoRef.current) {
+        videoRef.current.currentTime = Math.max(
+          0,
+          Math.min(videoRef.current.currentTime, nextStart)
+        );
+      }
+    } else {
+      const nextEnd = Math.max(time, trimStart + 0.05);
+      setTrimEnd(Math.min(duration, nextEnd));
+
+      if (videoRef.current) {
+        videoRef.current.currentTime = Math.min(
+          videoRef.current.currentTime,
+          nextEnd
+        );
+      }
+    }
   };
 
   const progress = duration ? (currentTime / duration) * 100 : 0;
+  const trimStartPercent = duration ? (trimStart / duration) * 100 : 0;
+  const trimEndPercent = duration ? (trimEnd / duration) * 100 : 100;
+
+  const splitClip = () => {
+    if (!videoUrl || !duration) return;
+
+    const point = Math.min(trimEnd, Math.max(trimStart, currentTime));
+
+    if (
+      point <= trimStart + 0.05 ||
+      point >= trimEnd - 0.05 ||
+      splitPoints.some((item) => Math.abs(item - point) < 0.05)
+    ) {
+      return;
+    }
+
+    setSplitPoints((items) =>
+      [...items, point].sort((a, b) => a - b)
+    );
+  };
+
+  const deleteSelectedSection = () => {
+    if (!videoUrl || !duration) return;
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    const point = Math.min(trimEnd, Math.max(trimStart, currentTime));
+
+    if (point <= trimStart + 0.05 || point >= trimEnd - 0.05) {
+      return;
+    }
+
+    const leftDistance = point - trimStart;
+    const rightDistance = trimEnd - point;
+
+    if (leftDistance >= rightDistance) {
+      setTrimEnd(point);
+      video.currentTime = Math.min(video.currentTime, point);
+      setCurrentTime(video.currentTime);
+    } else {
+      setTrimStart(point);
+      video.currentTime = point;
+      setCurrentTime(point);
+    }
+  };
+
+  const duplicateClip = () => {
+    if (!videoUrl || !duration) return;
+    alert("تم تجهيز المقطع للتكرار. سيتم ربط التكرار الحقيقي عند إضافة نظام المقاطع المتعددة.");
+  };
 
   return (
     <main dir="rtl" className="video-editor">
@@ -435,11 +543,55 @@ export default function VideoEditorPage() {
 
         .clip-border {
           position: absolute;
-          inset: 0;
-          border: 2px solid rgba(255, 255, 255, 0.22);
+          top: 0;
+          bottom: 0;
+          border: 2px solid #fff;
           border-radius: 8px;
           pointer-events: none;
           z-index: 2;
+        }
+
+        .trim-mask {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.62);
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .trim-handle {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          width: 10px;
+          background: #fff;
+          border-radius: 5px;
+          z-index: 4;
+          cursor: ew-resize;
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+        }
+
+        .trim-handle::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 3px;
+          height: 28px;
+          border-radius: 3px;
+          background: #111;
+          transform: translate(-50%, -50%);
+        }
+
+        .split-marker {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          width: 2px;
+          background: #ff3b30;
+          z-index: 3;
+          pointer-events: none;
         }
 
         .tools {
@@ -607,7 +759,10 @@ export default function VideoEditorPage() {
           ref={timelineRef}
           className="timeline"
           onPointerDown={handleTimelinePointerDown}
-          onPointerMove={handleTimelinePointerMove}
+          onPointerMove={(event) => {
+            handleTimelinePointerMove(event);
+            handleTrimPointerMove(event);
+          }}
           onPointerUp={handleTimelinePointerUp}
           onPointerCancel={handleTimelinePointerUp}
         >
@@ -625,7 +780,55 @@ export default function VideoEditorPage() {
                 ))}
               </div>
 
-              <div className="clip-border" />
+              <div
+                className="trim-mask"
+                style={{
+                  left: 0,
+                  width: `${trimStartPercent}%`,
+                }}
+              />
+
+              <div
+                className="trim-mask"
+                style={{
+                  left: `${trimEndPercent}%`,
+                  right: 0,
+                }}
+              />
+
+              <div
+                className="clip-border"
+                style={{
+                  left: `${trimStartPercent}%`,
+                  right: `${100 - trimEndPercent}%`,
+                }}
+              />
+
+              {splitPoints.map((point) => (
+                <div
+                  key={point}
+                  className="split-marker"
+                  style={{
+                    left: `${(point / duration) * 100}%`,
+                  }}
+                />
+              ))}
+
+              <div
+                className="trim-handle"
+                style={{ left: `calc(${trimStartPercent}% - 5px)` }}
+                onPointerDown={(event) =>
+                  handleTrimPointerDown(event, "start")
+                }
+              />
+
+              <div
+                className="trim-handle"
+                style={{ left: `calc(${trimEndPercent}% - 5px)` }}
+                onPointerDown={(event) =>
+                  handleTrimPointerDown(event, "end")
+                }
+              />
 
               <div
                 className="playhead"
@@ -650,10 +853,40 @@ export default function VideoEditorPage() {
             ＋ إضافة فيديو
           </button>
 
-          <button className="tool" type="button">✂ قص</button>
-          <button className="tool" type="button">⌁ تقسيم</button>
-          <button className="tool" type="button">⌫ حذف</button>
-          <button className="tool" type="button">↻ تكرار</button>
+          <button
+            className="tool"
+            type="button"
+            onClick={() => {
+              if (!videoUrl || !videoRef.current) return;
+              setTrimStart(currentTime);
+            }}
+          >
+            ✂ قص من هنا
+          </button>
+
+          <button
+            className="tool"
+            type="button"
+            onClick={splitClip}
+          >
+            ⌁ تقسيم
+          </button>
+
+          <button
+            className="tool"
+            type="button"
+            onClick={deleteSelectedSection}
+          >
+            ⌫ حذف
+          </button>
+
+          <button
+            className="tool"
+            type="button"
+            onClick={duplicateClip}
+          >
+            ↻ تكرار
+          </button>
           <button className="tool" type="button">♫ صوت</button>
           <button className="tool" type="button">T نص</button>
         </div>

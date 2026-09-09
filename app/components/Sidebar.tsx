@@ -237,11 +237,11 @@ export default function Sidebar() {
                     <img
                       src={profileImage}
                       alt="صورة الحساب"
-                      width={23}
-                      height={23}
+                      width={38}
+                      height={38}
                       style={{
-                        width: 23,
-                        height: 23,
+                        width: 38,
+                        height: 38,
                         borderRadius: "50%",
                         objectFit: "cover",
                         display: "block",

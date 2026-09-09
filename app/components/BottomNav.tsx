@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function HomeIcon({ active }: { active: boolean }) {
   return (
@@ -59,7 +60,34 @@ function ProjectsIcon({ active }: { active: boolean }) {
   );
 }
 
-function ProfileIcon({ active }: { active: boolean }) {
+function ProfileIcon({
+  active,
+  profileImage,
+}: {
+  active: boolean;
+  profileImage?: string | null;
+}) {
+  if (profileImage) {
+    return (
+      <img
+        src={profileImage}
+        alt="صورة الحساب"
+        width={23}
+        height={23}
+        style={{
+          width: "23px",
+          height: "23px",
+          borderRadius: "50%",
+          objectFit: "cover",
+          display: "block",
+          border: active
+            ? "2px solid #ffffff"
+            : "2px solid rgba(255,255,255,0.18)",
+        }}
+      />
+    );
+  }
+
   return (
     <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <circle
@@ -91,6 +119,21 @@ const items = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadProfileImage = () => {
+      setProfileImage(localStorage.getItem("profileImage"));
+    };
+
+    loadProfileImage();
+
+    window.addEventListener("profileUpdated", loadProfileImage);
+
+    return () => {
+      window.removeEventListener("profileUpdated", loadProfileImage);
+    };
+  }, []);
 
   return (
     <nav
@@ -146,7 +189,14 @@ export default function BottomNav() {
                 WebkitTapHighlightColor: "transparent",
               }}
             >
-              <Icon active={active} />
+              {href === "/profile" ? (
+                <ProfileIcon
+                  active={active}
+                  profileImage={profileImage}
+                />
+              ) : (
+                <Icon active={active} />
+              )}
               <span
                 style={{
                   fontSize: "11px",

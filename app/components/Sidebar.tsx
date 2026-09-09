@@ -12,9 +12,9 @@ function Icon({
   return (
     <span
       style={{
-        width: 46,
-        height: 46,
-        minWidth: 46,
+        width: 54,
+        height: 54,
+        minWidth: 54,
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
@@ -237,11 +237,11 @@ export default function Sidebar() {
                     <img
                       src={profileImage}
                       alt="صورة الحساب"
-                      width={46}
-                      height={46}
+                      width={54}
+                      height={54}
                       style={{
-                        width: 46,
-                        height: 46,
+                        width: 54,
+                        height: 54,
                         borderRadius: "50%",
                         objectFit: "cover",
                         display: "block",

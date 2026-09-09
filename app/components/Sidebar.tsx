@@ -12,9 +12,9 @@ function Icon({
   return (
     <span
       style={{
-        width: 70,
-        height: 70,
-        minWidth: 70,
+        width: 78,
+        height: 78,
+        minWidth: 78,
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
@@ -219,7 +219,7 @@ export default function Sidebar() {
                   display: "flex",
                   alignItems: "center",
                   gap: 13,
-                  minHeight: 70,
+                  minHeight: 78,
                   padding: "0 13px",
                   borderRadius: 12,
                   color: active ? "#fff" : "rgba(255,255,255,.78)",
@@ -237,11 +237,11 @@ export default function Sidebar() {
                     <img
                       src={profileImage}
                       alt="صورة الحساب"
-                      width={70}
-                      height={70}
+                      width={78}
+                      height={78}
                       style={{
-                        width: 70,
-                        height: 70,
+                        width: 78,
+                        height: 78,
                         borderRadius: "50%",
                         objectFit: "cover",
                         display: "block",
@@ -274,7 +274,7 @@ export default function Sidebar() {
           disabled={loggingOut}
           style={{
             width: "100%",
-            minHeight: 70,
+            minHeight: 78,
             display: "flex",
             alignItems: "center",
             gap: 13,

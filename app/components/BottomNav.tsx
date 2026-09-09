@@ -83,7 +83,7 @@ function ProfileIcon({ active }: { active: boolean }) {
 }
 
 const items = [
-  { href: "/", label: "الرئيسية", Icon: HomeIcon },
+  { href: "/dashboard", label: "الرئيسية", Icon: HomeIcon },
   { href: "/tools", label: "الأدوات", Icon: ToolsIcon },
   { href: "/projects", label: "مشاريعي", Icon: ProjectsIcon },
   { href: "/profile", label: "حسابي", Icon: ProfileIcon },
@@ -121,7 +121,7 @@ export default function BottomNav() {
       >
         {items.map(({ href, label, Icon }) => {
           const active =
-            href === "/" ? pathname === "/" : pathname.startsWith(href);
+            pathname === href || pathname.startsWith(href + "/");
 
           return (
             <Link

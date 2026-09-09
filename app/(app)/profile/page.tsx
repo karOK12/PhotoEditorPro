@@ -26,23 +26,31 @@ useEffect(() => {
 
   const savedImage = localStorage.getItem("profileImage");
 
-if (savedImage) {
-  setProfileLoading(true);
+  // جلب صورة الحساب من قاعدة البيانات أولاً
+  fetch("/api/dashboard-data", {
+    credentials: "include",
+    cache: "no-store",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const dbImage = data?.user?.profile?.profileImage;
 
-  const img = new Image();
+      if (dbImage) {
+        setProfileImage(dbImage);
+        localStorage.setItem("profileImage", dbImage);
+        return;
+      }
 
-  img.onload = () => {
-    setProfileImage(savedImage);
+      if (savedImage) {
+        setProfileImage(savedImage);
+      }
+    })
+    .catch(() => {
+      if (savedImage) {
+        setProfileImage(savedImage);
+      }
+    });
 
-    setProfileLoading(false);
-  };
-
-  img.onerror = () => {
-    setProfileLoading(false);
-  };
-
-  img.src = savedImage;
-}
   const savedHobbies = localStorage.getItem("hobbies");
   if (savedHobbies) {
     try {
@@ -229,18 +237,51 @@ const profileUpload = async (
 
       const data = await res.json();
 
-      clearInterval(fakeLoader);
-
-      setProfileProgress(100);
-
       if (!data?.ok || !data?.url) {
 
+        clearInterval(fakeLoader);
+
         alert("فشل رفع الصورة");
+
+        setProfileLoading(false);
+
+        setProfileProgress(0);
 
         return;
 
       }
 
+      // ✅ حفظ الصورة فعلياً في حساب المستخدم
+      const saveRes = await fetch("/api/profile/image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          image: data.url,
+        }),
+      });
+
+      const saveData = await saveRes.json();
+
+      clearInterval(fakeLoader);
+
+      setProfileProgress(100);
+
+      if (!saveRes.ok || !saveData?.ok) {
+
+        alert(saveData?.message || "فشل حفظ صورة الحساب");
+
+        setProfileLoading(false);
+
+        setProfileProgress(0);
+
+        return;
+
+      }
+
+      // ✅ تحديث الصورة مباشرة في الواجهة
       setProfileImage(data.url);
 
       localStorage.setItem(
@@ -267,6 +308,8 @@ const profileUpload = async (
     } catch (err) {
 
       console.error(err);
+
+      clearInterval(fakeLoader);
 
       alert("حدث خطأ");
 
@@ -2273,4 +2316,5 @@ marginTop:"20px"
 
 </div>
 );
+
 }

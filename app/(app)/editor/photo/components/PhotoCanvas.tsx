@@ -7,6 +7,7 @@ type PhotoCanvasProps = {
   brightness: number;
   contrast: number;
   saturation: number;
+  temperature: number;
   rotation: number;
   flipX: boolean;
   flipY: boolean;
@@ -18,6 +19,7 @@ export default function PhotoCanvas({
   brightness,
   contrast,
   saturation,
+  temperature,
   rotation,
   flipX,
   flipY,
@@ -53,10 +55,18 @@ export default function PhotoCanvas({
         flipY ? -1 : 1
       );
 
+      const temperatureFilter =
+        temperature > 0
+          ? `sepia(${temperature * 0.35}%) saturate(${100 + temperature * 0.15}%)`
+          : temperature < 0
+            ? `hue-rotate(${temperature * 0.35}deg) saturate(${100 + Math.abs(temperature) * 0.08}%)`
+            : "";
+
       ctx.filter = `
         brightness(${brightness}%)
         contrast(${contrast}%)
         saturate(${saturation}%)
+        ${temperatureFilter}
       `;
 
       ctx.drawImage(
@@ -76,6 +86,7 @@ export default function PhotoCanvas({
     brightness,
     contrast,
     saturation,
+    temperature,
     rotation,
     flipX,
     flipY,

@@ -34,6 +34,7 @@ export default function PhotoEditorPage() {
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
+  const [temperature, setTemperature] = useState(0);
   const [rotation, setRotation] = useState(0);
   const [flipX, setFlipX] = useState(false);
   const [flipY, setFlipY] = useState(false);
@@ -68,6 +69,7 @@ export default function PhotoEditorPage() {
     setBrightness(100);
     setContrast(100);
     setSaturation(100);
+    setTemperature(0);
     setRotation(0);
     setFlipX(false);
     setFlipY(false);
@@ -78,6 +80,7 @@ export default function PhotoEditorPage() {
     setBrightness(100);
     setContrast(100);
     setSaturation(100);
+    setTemperature(0);
     setRotation(0);
     setFlipX(false);
     setFlipY(false);
@@ -180,10 +183,18 @@ export default function PhotoEditorPage() {
       ctx.rotate((rotation * Math.PI) / 180);
       ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
 
+      const temperatureFilter =
+        temperature > 0
+          ? `sepia(${temperature * 0.35}%) saturate(${100 + temperature * 0.15}%)`
+          : temperature < 0
+            ? `hue-rotate(${temperature * 0.35}deg) saturate(${100 + Math.abs(temperature) * 0.08}%)`
+            : "";
+
       ctx.filter = `
         brightness(${brightness}%)
         contrast(${contrast}%)
         saturate(${saturation}%)
+        ${temperatureFilter}
         ${filterMap[activeFilter]}
       `;
 
@@ -308,6 +319,7 @@ export default function PhotoEditorPage() {
                 brightness={brightness}
                 contrast={contrast}
                 saturation={saturation}
+                temperature={temperature}
                 rotation={rotation}
                 flipX={flipX}
                 flipY={flipY}
@@ -344,9 +356,11 @@ export default function PhotoEditorPage() {
               brightness={brightness}
               contrast={contrast}
               saturation={saturation}
+              temperature={temperature}
               onBrightnessChange={setBrightness}
               onContrastChange={setContrast}
               onSaturationChange={setSaturation}
+              onTemperatureChange={setTemperature}
             />
 
             <section

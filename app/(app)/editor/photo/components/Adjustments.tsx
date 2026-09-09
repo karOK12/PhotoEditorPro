@@ -4,18 +4,22 @@ type AdjustmentsProps = {
   brightness: number;
   contrast: number;
   saturation: number;
+  temperature: number;
   onBrightnessChange: (value: number) => void;
   onContrastChange: (value: number) => void;
   onSaturationChange: (value: number) => void;
+  onTemperatureChange: (value: number) => void;
 };
 
 export default function Adjustments({
   brightness,
   contrast,
   saturation,
+  temperature,
   onBrightnessChange,
   onContrastChange,
   onSaturationChange,
+  onTemperatureChange,
 }: AdjustmentsProps) {
   const rows = [
     {
@@ -38,6 +42,13 @@ export default function Adjustments({
       min: 0,
       max: 200,
       onChange: onSaturationChange,
+    },
+    {
+      label: "الحرارة",
+      value: temperature,
+      min: -100,
+      max: 100,
+      onChange: onTemperatureChange,
     },
   ];
 

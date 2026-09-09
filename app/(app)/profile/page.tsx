@@ -191,67 +191,62 @@ const [profileProgress, setProfileProgress] = useState(0);
 const profileUpload = async (
   e: React.ChangeEvent<HTMLInputElement>
 ) => {
-
   const file = e.target.files?.[0];
 
   if (!file) return;
 
+  if (!file.type.startsWith("image/")) {
+    alert("يرجى اختيار صورة فقط");
+    return;
+  }
+
   const reader = new FileReader();
 
   reader.onload = async () => {
-
-    // ✅ بداية التحميل
     setProfileLoading(true);
-
     setProfileDone(false);
-
     setProfileProgress(0);
 
     const fakeLoader = setInterval(() => {
-
       setProfileProgress((prev) => {
-
         if (prev >= 90) return prev;
-
-        const diff = 90 - prev;
-
-        return prev + diff * 0.12;
-
+        return prev + (90 - prev) * 0.12;
       });
-
     }, 120);
 
     try {
+      const source = reader.result as string;
 
-      const image = reader.result as string;
+      const compressedImage = await new Promise<string>((resolve, reject) => {
+        const img = new Image();
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          image,
-        }),
+        img.onload = () => {
+          const maxSize = 600;
+          const scale = Math.min(
+            1,
+            maxSize / Math.max(img.naturalWidth, img.naturalHeight)
+          );
+
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+          canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+
+          const ctx = canvas.getContext("2d");
+
+          if (!ctx) {
+            reject(new Error("تعذر تجهيز الصورة"));
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          resolve(canvas.toDataURL("image/jpeg", 0.72));
+        };
+
+        img.onerror = () => reject(new Error("تعذر قراءة الصورة"));
+        img.src = source;
       });
 
-      const data = await res.json();
-
-      if (!data?.ok || !data?.url) {
-
-        clearInterval(fakeLoader);
-
-        alert("فشل رفع الصورة");
-
-        setProfileLoading(false);
-
-        setProfileProgress(0);
-
-        return;
-
-      }
-
-      // ✅ حفظ الصورة فعلياً في حساب المستخدم
       const saveRes = await fetch("/api/profile/image", {
         method: "POST",
         headers: {
@@ -259,34 +254,27 @@ const profileUpload = async (
         },
         credentials: "include",
         body: JSON.stringify({
-          image: data.url,
+          image: compressedImage,
         }),
       });
 
       const saveData = await saveRes.json();
 
       clearInterval(fakeLoader);
-
       setProfileProgress(100);
 
       if (!saveRes.ok || !saveData?.ok) {
-
         alert(saveData?.message || "فشل حفظ صورة الحساب");
-
         setProfileLoading(false);
-
         setProfileProgress(0);
-
         return;
-
       }
 
-      // ✅ تحديث الصورة مباشرة في الواجهة
-      setProfileImage(data.url);
+      setProfileImage(compressedImage);
 
       localStorage.setItem(
         "profileImage",
-        data.url
+        compressedImage
       );
 
       window.dispatchEvent(
@@ -296,34 +284,25 @@ const profileUpload = async (
       setProfileDone(true);
 
       setTimeout(() => {
-
         setProfileLoading(false);
-
         setProfileDone(false);
-
         setProfileProgress(0);
-
       }, 1200);
-
     } catch (err) {
-
-      console.error(err);
+      console.error("Profile image upload error:", err);
 
       clearInterval(fakeLoader);
 
-      alert("حدث خطأ");
+      alert("حدث خطأ أثناء تجهيز أو حفظ الصورة");
 
       setProfileLoading(false);
-
       setProfileProgress(0);
-
     }
-
   };
 
   reader.readAsDataURL(file);
-
 };
+
 
 
 

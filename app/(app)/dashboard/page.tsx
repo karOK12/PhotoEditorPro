@@ -29,7 +29,6 @@ type User = {
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function checkSession() {
@@ -67,33 +66,12 @@ export default function DashboardPage() {
       } catch {
         router.replace("/");
       } finally {
-        setLoading(false);
+        // لا نعرض شاشة تحميل؛ الواجهة تظهر مباشرة.
       }
     }
 
     checkSession();
   }, [router]);
-
-  if (loading) {
-    return (
-      <main
-        dir="rtl"
-        style={{
-          minHeight: "100dvh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#08090c",
-          color: "#fff",
-          fontFamily: "Arial, Tahoma, sans-serif",
-        }}
-      >
-        جارٍ تحميل التطبيق...
-      </main>
-    );
-  }
-
-  if (!user) return null;
 
   return (
     <main

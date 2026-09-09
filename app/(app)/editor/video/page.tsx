@@ -2,902 +2,921 @@
 
 import { ChangeEvent, PointerEvent, useEffect, useRef, useState } from "react";
 
-type Thumbnail = {
-  time: number;
+type MediaItem = {
+  id: string;
+  name: string;
+  type: "video" | "image";
   url: string;
+  duration: number;
 };
 
+const tools = [
+  ["✂", "تحرير"],
+  ["♫", "صوت"],
+  ["T", "نص"],
+  ["◇", "ملصقات"],
+  ["✦", "تأثيرات"],
+  ["◉", "فلاتر"],
+  ["☼", "ضبط"],
+  ["↔", "سرعة"],
+  ["▣", "انتقال"],
+  ["▥", "طبقة"],
+];
+
 function formatTime(seconds: number) {
-  if (!Number.isFinite(seconds)) return "00:00";
-  const total = Math.max(0, Math.floor(seconds));
-  const minutes = Math.floor(total / 60);
-  const secs = total % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  const value = Math.max(0, Math.floor(seconds || 0));
+  return `${String(Math.floor(value / 60)).padStart(2, "0")}:${String(value % 60).padStart(2, "0")}`;
 }
 
 export default function VideoEditorPage() {
+  const mediaInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [videoUrl, setVideoUrl] = useState("");
-  const [videoName, setVideoName] = useState("");
-  const [duration, setDuration] = useState(0);
+  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [selectedId, setSelectedId] = useState("");
   const [currentTime, setCurrentTime] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
-  const [dragging, setDragging] = useState(false);
-  const [trimStart, setTrimStart] = useState(0);
-  const [trimEnd, setTrimEnd] = useState(0);
-  const [splitPoints, setSplitPoints] = useState<number[]>([]);
-  const [trimDragging, setTrimDragging] = useState<"start" | "end" | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [activeTool, setActiveTool] = useState("تحرير");
+  const [timelineDragging, setTimelineDragging] = useState(false);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+
+  const selected = media.find((item) => item.id === selectedId) || media[0];
+  const totalDuration = media.reduce((sum, item) => sum + item.duration, 0);
+  const selectedIndex = selected ? media.findIndex((item) => item.id === selected.id) : 0;
 
   useEffect(() => {
     return () => {
-      if (videoUrl) URL.revokeObjectURL(videoUrl);
-      thumbnails.forEach((item) => URL.revokeObjectURL(item.url));
+      media.forEach((item) => URL.revokeObjectURL(item.url));
     };
-  }, [videoUrl, thumbnails]);
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const onTimeUpdate = () => setCurrentTime(video.currentTime);
-    const onPlay = () => setPlaying(true);
-    const onPause = () => setPlaying(false);
-    const onEnded = () => {
-      setPlaying(false);
-      setCurrentTime(video.duration || 0);
-    };
+    const update = () => setCurrentTime(video.currentTime);
+    const play = () => setPlaying(true);
+    const pause = () => setPlaying(false);
 
-    video.addEventListener("timeupdate", onTimeUpdate);
-    video.addEventListener("play", onPlay);
-    video.addEventListener("pause", onPause);
-    video.addEventListener("ended", onEnded);
+    video.addEventListener("timeupdate", update);
+    video.addEventListener("play", play);
+    video.addEventListener("pause", pause);
 
     return () => {
-      video.removeEventListener("timeupdate", onTimeUpdate);
-      video.removeEventListener("play", onPlay);
-      video.removeEventListener("pause", onPause);
-      video.removeEventListener("ended", onEnded);
+      video.removeEventListener("timeupdate", update);
+      video.removeEventListener("play", play);
+      video.removeEventListener("pause", pause);
     };
-  }, [videoUrl]);
+  }, [selected?.id]);
 
-  const generateThumbnails = async (video: HTMLVideoElement) => {
-    const length = video.duration;
+  const addMedia = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
 
-    if (!Number.isFinite(length) || length <= 0) return;
+    const items: MediaItem[] = files
+      .filter((file) => file.type.startsWith("video/") || file.type.startsWith("image/"))
+      .map((file) => ({
+        id: `${file.name}-${Date.now()}-${Math.random()}`,
+        name: file.name,
+        type: file.type.startsWith("video/") ? "video" : "image",
+        url: URL.createObjectURL(file),
+        duration: file.type.startsWith("image/") ? 5 : 0,
+      }));
 
-    const count = Math.min(18, Math.max(8, Math.ceil(length / 2)));
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-
-    if (!context) return;
-
-    canvas.width = 180;
-    canvas.height = 102;
-
-    const generated: Thumbnail[] = [];
-
-    for (let index = 0; index < count; index++) {
-      const time = Math.min(
-        length - 0.05,
-        (length * index) / Math.max(1, count - 1)
-      );
-
-      await new Promise<void>((resolve) => {
-        const handleSeeked = () => {
-          video.removeEventListener("seeked", handleSeeked);
-
-          context.drawImage(
-            video,
-            0,
-            0,
-            canvas.width,
-            canvas.height
+    items.forEach((item) => {
+      if (item.type === "video") {
+        const probe = document.createElement("video");
+        probe.preload = "metadata";
+        probe.src = item.url;
+        probe.onloadedmetadata = () => {
+          setMedia((current) =>
+            current.map((entry) =>
+              entry.id === item.id
+                ? { ...entry, duration: Number.isFinite(probe.duration) ? probe.duration : 5 }
+                : entry
+            )
           );
-
-          generated.push({
-            time,
-            url: canvas.toDataURL("image/jpeg", 0.72),
-          });
-
-          resolve();
         };
+      }
+    });
 
-        video.addEventListener("seeked", handleSeeked);
-        video.currentTime = time;
-      });
-    }
-
-    video.currentTime = 0;
-    setThumbnails(generated);
+    setMedia((current) => [...current, ...items]);
+    if (!selectedId && items[0]) setSelectedId(items[0].id);
+    event.target.value = "";
   };
 
-  const handleVideoLoaded = async () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const videoDuration = video.duration || 0;
-    setDuration(videoDuration);
-    setTrimStart(0);
-    setTrimEnd(videoDuration);
-    setSplitPoints([]);
-    await generateThumbnails(video);
-  };
-
-  const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("video/")) return;
-
-    if (videoUrl) URL.revokeObjectURL(videoUrl);
-    thumbnails.forEach((item) => URL.revokeObjectURL(item.url));
-
-    const url = URL.createObjectURL(file);
-
-    setVideoUrl(url);
-    setVideoName(file.name);
-    setDuration(0);
+  const selectMedia = (item: MediaItem) => {
+    setSelectedId(item.id);
     setCurrentTime(0);
     setPlaying(false);
-    setTrimStart(0);
-    setTrimEnd(0);
-    setSplitPoints([]);
-    setThumbnails([]);
   };
 
-  const togglePlayback = async () => {
-    const video = videoRef.current;
-    if (!video || !videoUrl) return;
+  const deleteMedia = (id: string) => {
+    setMedia((items) => {
+      const index = items.findIndex((item) => item.id === id);
+      const next = items.filter((item) => item.id !== id);
 
-    if (video.paused) {
-      await video.play();
+      if (id === selectedId) {
+        const nextSelected = next[Math.max(0, index - 1)] || next[0];
+        setSelectedId(nextSelected?.id || "");
+        setCurrentTime(0);
+        setPlaying(false);
+      }
+
+      return next;
+    });
+  };
+
+  const splitSelectedClip = () => {
+    if (!selected || selected.type !== "video" || selected.duration <= 0) return;
+
+    const point = Math.max(0.1, Math.min(selected.duration - 0.1, currentTime));
+    if (point <= 0.1 || point >= selected.duration - 0.1) return;
+
+    const firstId = `${selected.id}-a-${Date.now()}`;
+    const secondId = `${selected.id}-b-${Date.now()}`;
+
+    const first: MediaItem = {
+      ...selected,
+      id: firstId,
+      name: `${selected.name} — 1`,
+      duration: point,
+    };
+
+    const second: MediaItem = {
+      ...selected,
+      id: secondId,
+      name: `${selected.name} — 2`,
+      duration: selected.duration - point,
+    };
+
+    setMedia((items) => {
+      const index = items.findIndex((item) => item.id === selected.id);
+      if (index < 0) return items;
+
+      const next = [...items];
+      next.splice(index, 1, first, second);
+      return next;
+    });
+
+    setSelectedId(secondId);
+    setCurrentTime(0);
+    setPlaying(false);
+  };
+
+  const moveMedia = (fromId: string, toId: string) => {
+    if (fromId === toId) return;
+
+    setMedia((items) => {
+      const fromIndex = items.findIndex((item) => item.id === fromId);
+      const toIndex = items.findIndex((item) => item.id === toId);
+
+      if (fromIndex < 0 || toIndex < 0) return items;
+
+      const next = [...items];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
+  };
+
+  const togglePlay = async () => {
+    if (!selected) return;
+
+    if (selected.type === "video" && videoRef.current) {
+      if (videoRef.current.paused) await videoRef.current.play();
+      else videoRef.current.pause();
     } else {
-      video.pause();
+      setPlaying((value) => !value);
     }
   };
 
-  const seekToPosition = (clientX: number) => {
-    const timeline = timelineRef.current;
-    const video = videoRef.current;
-
-    if (!timeline || !video || !duration) return;
-
-    const rect = timeline.getBoundingClientRect();
-    const position = Math.min(
-      1,
-      Math.max(0, (clientX - rect.left) / rect.width)
-    );
-
-    const nextTime = position * duration;
-    video.currentTime = Math.min(trimEnd || duration, Math.max(trimStart, nextTime));
-    setCurrentTime(video.currentTime);
-  };
-
-  const handleTimelinePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (!videoUrl) return;
-
-    setDragging(true);
-    event.currentTarget.setPointerCapture(event.pointerId);
-    seekToPosition(event.clientX);
-  };
-
-  const handleTimelinePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!dragging) return;
-    seekToPosition(event.clientX);
-  };
-
-  const handleTimelinePointerUp = () => {
-    setDragging(false);
-    setTrimDragging(null);
-  };
-
-  const handleTrimPointerDown = (
-    event: PointerEvent<HTMLDivElement>,
-    side: "start" | "end"
-  ) => {
-    if (!videoUrl || !duration) return;
-
-    event.stopPropagation();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setTrimDragging(side);
-  };
-
-  const handleTrimPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!trimDragging || !duration || !timelineRef.current) return;
+  const seekTimeline = (clientX: number) => {
+    if (!timelineRef.current || !totalDuration) return;
 
     const rect = timelineRef.current.getBoundingClientRect();
-    const position = Math.min(
-      1,
-      Math.max(0, (event.clientX - rect.left) / rect.width)
-    );
-    const time = position * duration;
+    const position = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    const time = position * totalDuration;
 
-    if (trimDragging === "start") {
-      const nextStart = Math.min(time, trimEnd - 0.05);
-      setTrimStart(Math.max(0, nextStart));
+    let accumulated = 0;
+    let target = media[0];
 
-      if (videoRef.current) {
-        videoRef.current.currentTime = Math.max(
-          0,
-          Math.min(videoRef.current.currentTime, nextStart)
-        );
+    for (const item of media) {
+      if (time <= accumulated + item.duration) {
+        target = item;
+        break;
       }
-    } else {
-      const nextEnd = Math.max(time, trimStart + 0.05);
-      setTrimEnd(Math.min(duration, nextEnd));
+      accumulated += item.duration;
+    }
 
-      if (videoRef.current) {
-        videoRef.current.currentTime = Math.min(
-          videoRef.current.currentTime,
-          nextEnd
-        );
-      }
+    if (!target) return;
+
+    if (target.id !== selectedId) {
+      setSelectedId(target.id);
+      setPlaying(false);
+    }
+
+    const localTime = Math.max(0, time - accumulated);
+    setCurrentTime(localTime);
+
+    if (target.type === "video" && videoRef.current) {
+      videoRef.current.currentTime = localTime;
     }
   };
 
-  const progress = duration ? (currentTime / duration) * 100 : 0;
-  const trimStartPercent = duration ? (trimStart / duration) * 100 : 0;
-  const trimEndPercent = duration ? (trimEnd / duration) * 100 : 100;
-
-  const splitClip = () => {
-    if (!videoUrl || !duration) return;
-
-    const point = Math.min(trimEnd, Math.max(trimStart, currentTime));
-
-    if (
-      point <= trimStart + 0.05 ||
-      point >= trimEnd - 0.05 ||
-      splitPoints.some((item) => Math.abs(item - point) < 0.05)
-    ) {
-      return;
-    }
-
-    setSplitPoints((items) =>
-      [...items, point].sort((a, b) => a - b)
-    );
+  const handleTimelineDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (!media.length) return;
+    setTimelineDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+    seekTimeline(event.clientX);
   };
 
-  const deleteSelectedSection = () => {
-    if (!videoUrl || !duration) return;
-
-    const video = videoRef.current;
-    if (!video) return;
-
-    const point = Math.min(trimEnd, Math.max(trimStart, currentTime));
-
-    if (point <= trimStart + 0.05 || point >= trimEnd - 0.05) {
-      return;
-    }
-
-    const leftDistance = point - trimStart;
-    const rightDistance = trimEnd - point;
-
-    if (leftDistance >= rightDistance) {
-      setTrimEnd(point);
-      video.currentTime = Math.min(video.currentTime, point);
-      setCurrentTime(video.currentTime);
-    } else {
-      setTrimStart(point);
-      video.currentTime = point;
-      setCurrentTime(point);
-    }
+  const handleTimelineMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (timelineDragging) seekTimeline(event.clientX);
   };
 
-  const duplicateClip = () => {
-    if (!videoUrl || !duration) return;
-    alert("تم تجهيز المقطع للتكرار. سيتم ربط التكرار الحقيقي عند إضافة نظام المقاطع المتعددة.");
-  };
+  const handleTimelineUp = () => setTimelineDragging(false);
+
+  const progress = selected?.duration
+    ? Math.min(100, (currentTime / selected.duration) * 100)
+    : 0;
 
   return (
-    <main dir="rtl" className="video-editor">
+    <main dir="rtl" className="editor">
       <style jsx>{`
-        .video-editor {
+        * { box-sizing: border-box; }
+
+        .editor {
           min-height: 100dvh;
-          background:
-            radial-gradient(circle at 50% -20%, #20242d 0%, transparent 45%),
-            #08090c;
+          background: #08090c;
           color: #fff;
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          font-family: Arial, sans-serif;
         }
 
-        .topbar {
-          height: 64px;
+        .top {
+          height: 58px;
           flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0 14px;
-          border-bottom: 1px solid #242730;
-          background: rgba(12, 13, 17, 0.96);
-          backdrop-filter: blur(16px);
+          padding: 0 12px;
+          background: #101116;
+          border-bottom: 1px solid #252730;
         }
 
-        .topbar-right,
-        .topbar-left {
+        .topGroup {
           display: flex;
           align-items: center;
           gap: 9px;
         }
 
-        .back-button,
-        .export-button,
-        .icon-button {
-          border: 0;
-          cursor: pointer;
-          color: #fff;
+        .topButton {
+          width: 38px;
+          height: 38px;
+          border: 1px solid #30333c;
           border-radius: 10px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .back-button,
-        .icon-button {
-          width: 40px;
-          background: #181a20;
-          border: 1px solid #2a2d35;
+          background: #191b21;
+          color: #fff;
           font-size: 19px;
+          cursor: pointer;
         }
 
-        .export-button {
-          padding: 0 17px;
-          background: #fff;
-          color: #08090c;
-          font-weight: 800;
+        .projectTitle strong {
+          display: block;
           font-size: 14px;
         }
 
-        .title {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-          margin-right: 2px;
-        }
-
-        .title strong {
-          font-size: 15px;
-        }
-
-        .title span {
-          color: #8d929e;
-          font-size: 11px;
+        .projectTitle span {
+          display: block;
+          color: #777c88;
+          font-size: 10px;
+          margin-top: 2px;
           max-width: 150px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
         }
 
-        .preview-section {
+        .export {
+          border: 0;
+          border-radius: 9px;
+          height: 38px;
+          padding: 0 16px;
+          background: #fff;
+          color: #090a0d;
+          font-weight: 800;
+          cursor: pointer;
+        }
+
+        .workspace {
           flex: 1;
           min-height: 0;
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          padding: 16px 12px 10px;
+          overflow: hidden;
         }
 
-        .preview {
-          width: min(100%, 900px);
-          margin: 0 auto;
+        .previewArea {
+          flex: 1;
+          min-height: 260px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 14px;
+          background:
+            radial-gradient(circle at center, #1b1d23 0, #0a0b0f 62%);
+        }
+
+        .previewFrame {
+          position: relative;
+          width: min(100%, 780px);
+          height: min(100%, 58vh);
           aspect-ratio: 16 / 9;
           background: #030405;
-          border: 1px solid #252830;
-          border-radius: 14px;
+          border: 1px solid #292c34;
+          border-radius: 12px;
           overflow: hidden;
           display: flex;
           align-items: center;
           justify-content: center;
-          position: relative;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+          box-shadow: 0 24px 80px rgba(0,0,0,.45);
         }
 
-        .preview video {
+        .previewFrame video,
+        .previewFrame img {
           width: 100%;
           height: 100%;
           object-fit: contain;
           display: block;
         }
 
-        .empty-preview {
+        .empty {
           text-align: center;
-          color: #747985;
+          color: #777c88;
         }
 
-        .empty-preview .video-icon {
+        .emptyIcon {
           font-size: 42px;
-          margin-bottom: 8px;
           display: block;
+          margin-bottom: 8px;
         }
 
-        .empty-preview strong {
-          color: #b9bdc7;
+        .empty strong {
+          color: #c7cad2;
           display: block;
           margin-bottom: 5px;
         }
 
-        .empty-preview span {
-          font-size: 12px;
+        .redGuide {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: ${progress}%;
+          height: 2px;
+          background: #ff304f;
+          box-shadow: 0 0 9px rgba(255,48,79,.85);
+          pointer-events: none;
+          z-index: 5;
+          transition: top .04s linear;
         }
 
-        .controls {
-          width: min(100%, 900px);
-          margin: 10px auto 0;
+        .redGuide::after {
+          content: "";
+          position: absolute;
+          right: 0;
+          top: -4px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #ff304f;
+        }
+
+        .playerControls {
+          position: absolute;
+          bottom: 10px;
+          left: 10px;
+          right: 10px;
+          height: 42px;
+          border-radius: 9px;
+          background: rgba(0,0,0,.68);
+          backdrop-filter: blur(10px);
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 14px;
+          z-index: 7;
         }
 
-        .play-button {
-          width: 46px;
-          height: 46px;
+        .play {
+          width: 34px;
+          height: 34px;
           border: 0;
           border-radius: 50%;
           background: #fff;
-          color: #08090c;
-          font-size: 20px;
+          color: #111;
           cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          font-weight: 900;
         }
 
-        .time {
-          color: #b7bbc5;
-          font-variant-numeric: tabular-nums;
-          font-size: 13px;
+        .playerTime {
           direction: ltr;
-          min-width: 105px;
-          text-align: center;
-        }
-
-        .timeline-panel {
-          flex-shrink: 0;
-          background: #0d0f13;
-          border-top: 1px solid #242730;
-          padding: 10px 12px 14px;
-        }
-
-        .timeline-head {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 8px;
-          color: #8e939e;
           font-size: 11px;
+          color: #d0d3da;
+          font-variant-numeric: tabular-nums;
         }
 
-        .timeline-head strong {
-          color: #cdd0d8;
-          font-size: 12px;
-        }
-
-        .timeline {
-          width: 100%;
-          max-width: 1100px;
-          margin: 0 auto;
-          height: 88px;
-          border: 1px solid #2a2d35;
-          border-radius: 9px;
-          background: #07080b;
-          position: relative;
-          overflow: hidden;
-          touch-action: none;
-          user-select: none;
-        }
-
-        .thumbnail-track {
-          height: 100%;
+        .sideTools {
+          flex-shrink: 0;
           display: flex;
-          direction: ltr;
-        }
-
-        .thumbnail {
-          height: 100%;
-          min-width: 0;
-          flex: 1;
-          object-fit: cover;
-          border-right: 1px solid rgba(255, 255, 255, 0.12);
-          pointer-events: none;
-        }
-
-        .empty-timeline {
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #626772;
-          font-size: 12px;
-        }
-
-        .playhead {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          width: 2px;
-          background: #fff;
-          box-shadow: 0 0 8px rgba(255, 255, 255, 0.65);
-          transform: translateX(-1px);
-          pointer-events: none;
-          z-index: 3;
-        }
-
-        .playhead::before {
-          content: "";
-          position: absolute;
-          top: -1px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: #fff;
-        }
-
-        .clip-border {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          border: 2px solid #fff;
-          border-radius: 8px;
-          pointer-events: none;
-          z-index: 2;
-        }
-
-        .trim-mask {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.62);
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        .trim-handle {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          width: 10px;
-          background: #fff;
-          border-radius: 5px;
-          z-index: 4;
-          cursor: ew-resize;
-          box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
-        }
-
-        .trim-handle::after {
-          content: "";
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 3px;
-          height: 28px;
-          border-radius: 3px;
-          background: #111;
-          transform: translate(-50%, -50%);
-        }
-
-        .split-marker {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          width: 2px;
-          background: #ff3b30;
-          z-index: 3;
-          pointer-events: none;
-        }
-
-        .tools {
-          max-width: 1100px;
-          margin: 10px auto 0;
-          display: flex;
-          align-items: center;
-          gap: 8px;
+          align-items: stretch;
+          gap: 3px;
+          padding: 7px 8px;
+          background: #101116;
+          border-top: 1px solid #292c34;
           overflow-x: auto;
           scrollbar-width: none;
         }
 
-        .tools::-webkit-scrollbar {
-          display: none;
-        }
+        .sideTools::-webkit-scrollbar { display: none; }
 
         .tool {
-          flex: 0 0 auto;
-          border: 1px solid #292c34;
-          background: #171920;
-          color: #cdd0d8;
+          min-width: 63px;
+          height: 57px;
+          border: 0;
           border-radius: 9px;
-          padding: 8px 12px;
+          background: transparent;
+          color: #aeb2bc;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          cursor: pointer;
+          flex-shrink: 0;
+        }
+
+        .tool span {
+          font-size: 19px;
+          line-height: 1;
+        }
+
+        .tool small {
+          font-size: 10px;
+        }
+
+        .tool.active {
+          background: #20232a;
+          color: #fff;
+        }
+
+        .timelineSection {
+          flex-shrink: 0;
+          background: #0d0e12;
+          border-top: 1px solid #292c34;
+          padding: 8px 10px 10px;
+        }
+
+        .timelineHeader {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 7px;
+          font-size: 11px;
+          color: #777c87;
+        }
+
+        .timelineHeader strong {
+          color: #d5d8df;
           font-size: 12px;
         }
 
-        .add-video {
-          flex: 0 0 auto;
-          border: 1px dashed #3a3e48;
-          background: transparent;
-          color: #aeb3be;
-          border-radius: 9px;
-          padding: 8px 13px;
-          font-size: 12px;
+        .addMedia {
+          border: 1px dashed #484c57;
+          background: #181a20;
+          color: #d4d7de;
+          border-radius: 8px;
+          padding: 7px 11px;
+          cursor: pointer;
+          font-size: 11px;
+        }
+
+        .timeline {
+          height: 88px;
+          position: relative;
+          display: flex;
+          gap: 3px;
+          padding: 3px;
+          overflow: hidden;
+          background: #07080b;
+          border: 1px solid #30333c;
+          border-radius: 8px;
+          touch-action: none;
+          user-select: none;
+          transform: scaleX(${zoom});
+          transform-origin: center;
+        }
+
+        .clip {
+          position: relative;
+          height: 100%;
+          min-width: 76px;
+          flex: 1 1 0;
+          overflow: hidden;
+          border: 2px solid transparent;
+          border-radius: 6px;
+          background: #17191e;
           cursor: pointer;
         }
 
-        .add-video:hover,
-        .tool:hover,
-        .back-button:hover,
-        .icon-button:hover {
-          background: #20232b;
+        .clip.selected {
+          border-color: #ff304f;
+          box-shadow: 0 0 0 1px rgba(255,48,79,.35);
+        }
+
+        .clip.dragging {
+          opacity: .45;
+          transform: scale(.98);
+        }
+
+        .clipDelete {
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          width: 22px;
+          height: 22px;
+          border: 0;
+          border-radius: 50%;
+          background: rgba(0,0,0,.8);
+          color: #fff;
+          font-size: 16px;
+          line-height: 20px;
+          cursor: pointer;
+          z-index: 4;
+        }
+
+        .timelineActions {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          margin-top: 7px;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .timelineActions::-webkit-scrollbar {
+          display: none;
+        }
+
+        .timelineAction {
+          flex: 0 0 auto;
+          height: 30px;
+          padding: 0 11px;
+          border: 1px solid #30333c;
+          border-radius: 7px;
+          background: #181a20;
+          color: #d5d8df;
+          font-size: 10px;
+          cursor: pointer;
+        }
+
+        .timelineAction:hover:not(:disabled) {
+          background: #242730;
+        }
+
+        .timelineAction.danger {
+          color: #ff8c99;
+        }
+
+        .timelineAction:disabled {
+          opacity: .35;
+          cursor: default;
+        }
+
+        .clip img,
+        .clip video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          pointer-events: none;
+        }
+
+        .clipName {
+          position: absolute;
+          right: 4px;
+          bottom: 3px;
+          left: 4px;
+          padding: 3px 4px;
+          border-radius: 4px;
+          background: rgba(0,0,0,.7);
+          color: #fff;
+          font-size: 8px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .timelineCursor {
+          position: absolute;
+          top: -2px;
+          bottom: -2px;
+          width: 2px;
+          background: #ff304f;
+          z-index: 10;
+          pointer-events: none;
+          box-shadow: 0 0 7px rgba(255,48,79,.9);
+        }
+
+        .timelineCursor::before {
+          content: "";
+          position: absolute;
+          top: -2px;
+          left: -4px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #ff304f;
+        }
+
+        .timelineBottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 7px;
+          color: #777c87;
+          font-size: 10px;
+        }
+
+        .zoomControls {
+          display: flex;
+          gap: 5px;
+          direction: ltr;
+        }
+
+        .zoomControls button {
+          width: 27px;
+          height: 25px;
+          border: 1px solid #30333c;
+          background: #181a20;
+          color: #ddd;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+
+        @media (min-width: 760px) {
+          .workspace {
+            display: grid;
+            grid-template-columns: 1fr;
+          }
+
+          .sideTools {
+            justify-content: center;
+          }
+
+          .tool {
+            min-width: 78px;
+          }
+
+          .timelineSection {
+            padding-left: 18px;
+            padding-right: 18px;
+          }
         }
 
         @media (max-width: 600px) {
-          .topbar {
-            height: 58px;
-            padding: 0 10px;
+          .previewArea {
+            min-height: 245px;
+            padding: 9px;
           }
 
-          .export-button {
-            height: 38px;
-            padding: 0 14px;
-          }
-
-          .title strong {
-            font-size: 14px;
-          }
-
-          .preview-section {
-            padding: 12px 8px 8px;
-          }
-
-          .preview {
-            border-radius: 10px;
-          }
-
-          .timeline-panel {
-            padding: 9px 8px 12px;
+          .previewFrame {
+            width: 100%;
+            border-radius: 9px;
           }
 
           .timeline {
             height: 76px;
           }
 
-          .tools {
-            margin-top: 8px;
+          .sideTools {
+            padding-bottom: 8px;
           }
         }
       `}</style>
 
-      <header className="topbar">
-        <div className="topbar-right">
-          <button
-            className="back-button"
-            type="button"
-            aria-label="رجوع"
-            onClick={() => window.history.back()}
-          >
-            →
+      <header className="top">
+        <div className="topGroup">
+          <button className="topButton" type="button" onClick={() => window.history.back()}>
+            ←
           </button>
 
-          <div className="title">
+          <div className="projectTitle">
             <strong>محرر الفيديو</strong>
-            {videoName && <span>{videoName}</span>}
+            <span>{selected?.name || "مشروع جديد"}</span>
           </div>
         </div>
 
-        <div className="topbar-left">
+        <div className="topGroup">
           <button
-            className="icon-button"
+            className="topButton"
             type="button"
-            aria-label="إضافة فيديو"
-            onClick={() => fileInputRef.current?.click()}
+            aria-label="إضافة وسائط"
+            onClick={() => mediaInputRef.current?.click()}
           >
             +
           </button>
 
-          <button
-            className="export-button"
-            type="button"
-            onClick={() => {
-              if (!videoUrl) return;
-              alert("سيتم ربط التصدير الفعلي بعد اكتمال أدوات المونتاج.");
-            }}
-          >
+          <button className="export" type="button">
             تصدير
           </button>
         </div>
       </header>
 
-      <section className="preview-section">
-        <div className="preview">
-          {videoUrl ? (
-            <video
-              ref={videoRef}
-              src={videoUrl}
-              playsInline
-              preload="metadata"
-              onLoadedMetadata={handleVideoLoaded}
-            />
-          ) : (
-            <div className="empty-preview">
-              <span className="video-icon">▣</span>
-              <strong>أضف فيديو للبدء</strong>
-              <span>سيظهر الفيديو هنا مع شريط المونتاج أسفل الشاشة</span>
-            </div>
-          )}
-        </div>
+      <section className="workspace">
+        <section className="previewArea">
+          <div className="previewFrame">
+            {selected ? (
+              selected.type === "video" ? (
+                <video
+                  ref={videoRef}
+                  src={selected.url}
+                  playsInline
+                  preload="metadata"
+                />
+              ) : (
+                <img src={selected.url} alt={selected.name} />
+              )
+            ) : (
+              <div className="empty">
+                <span className="emptyIcon">＋</span>
+                <strong>أضف صورة أو فيديو</strong>
+                <span>ابدأ مشروعك من هنا</span>
+              </div>
+            )}
 
-        <div className="controls">
-          <button
-            className="play-button"
-            type="button"
-            onClick={togglePlayback}
-            disabled={!videoUrl}
-            aria-label={playing ? "إيقاف" : "تشغيل"}
-          >
-            {playing ? "Ⅱ" : "▶"}
-          </button>
+            {selected && <div className="redGuide" />}
 
-          <div className="time">
-            {formatTime(currentTime)} / {formatTime(duration)}
+            {selected && (
+              <div className="playerControls">
+                <button className="play" type="button" onClick={togglePlay}>
+                  {playing ? "Ⅱ" : "▶"}
+                </button>
+                <span className="playerTime">
+                  {formatTime(currentTime)} / {formatTime(selected.duration)}
+                </span>
+              </div>
+            )}
           </div>
-        </div>
+        </section>
+
+        <nav className="sideTools" aria-label="أدوات المونتاج">
+          {tools.map(([icon, label]) => (
+            <button
+              key={label}
+              type="button"
+              className={`tool ${activeTool === label ? "active" : ""}`}
+              onClick={() => setActiveTool(label)}
+            >
+              <span>{icon}</span>
+              <small>{label}</small>
+            </button>
+          ))}
+        </nav>
       </section>
 
-      <section className="timeline-panel">
-        <div className="timeline-head">
-          <strong>Timeline</strong>
-          <span>{videoUrl ? "اسحب المؤشر لفحص الفيديو" : "أضف فيديو لإنشاء المسار"}</span>
+      <section className="timelineSection">
+        <div className="timelineHeader">
+          <strong>المسار الرئيسي</strong>
+
+          <button
+            className="addMedia"
+            type="button"
+            onClick={() => mediaInputRef.current?.click()}
+          >
+            ＋ صورة / فيديو
+          </button>
         </div>
 
         <div
           ref={timelineRef}
           className="timeline"
-          onPointerDown={handleTimelinePointerDown}
-          onPointerMove={(event) => {
-            handleTimelinePointerMove(event);
-            handleTrimPointerMove(event);
-          }}
-          onPointerUp={handleTimelinePointerUp}
-          onPointerCancel={handleTimelinePointerUp}
+          onPointerDown={handleTimelineDown}
+          onPointerMove={handleTimelineMove}
+          onPointerUp={handleTimelineUp}
+          onPointerCancel={handleTimelineUp}
         >
-          {thumbnails.length > 0 ? (
-            <>
-              <div className="thumbnail-track">
-                {thumbnails.map((thumbnail, index) => (
-                  <img
-                    key={`${thumbnail.time}-${index}`}
-                    className="thumbnail"
-                    src={thumbnail.url}
-                    alt=""
-                    draggable={false}
-                  />
-                ))}
+          {media.length ? (
+            media.map((item, index) => (
+              <div
+                key={item.id}
+                className={`clip ${selected?.id === item.id ? "selected" : ""} ${draggedId === item.id ? "dragging" : ""}`}
+                draggable
+                style={{
+                  flexGrow: Math.max(1, item.duration),
+                  flexBasis: `${Math.max(70, item.duration * 32)}px`,
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  selectMedia(item);
+                }}
+                onDragStart={() => setDraggedId(item.id)}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  if (draggedId) moveMedia(draggedId, item.id);
+                  setDraggedId(null);
+                }}
+                onDragEnd={() => setDraggedId(null)}
+              >
+                {item.type === "video" ? (
+                  <video src={item.url} muted preload="metadata" />
+                ) : (
+                  <img src={item.url} alt="" />
+                )}
+
+                <span className="clipName">
+                  {index + 1}. {item.name}
+                </span>
+
+                {selected?.id === item.id && (
+                  <button
+                    type="button"
+                    className="clipDelete"
+                    aria-label="حذف المقطع"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      deleteMedia(item.id);
+                    }}
+                  >
+                    ×
+                  </button>
+                )}
               </div>
-
-              <div
-                className="trim-mask"
-                style={{
-                  left: 0,
-                  width: `${trimStartPercent}%`,
-                }}
-              />
-
-              <div
-                className="trim-mask"
-                style={{
-                  left: `${trimEndPercent}%`,
-                  right: 0,
-                }}
-              />
-
-              <div
-                className="clip-border"
-                style={{
-                  left: `${trimStartPercent}%`,
-                  right: `${100 - trimEndPercent}%`,
-                }}
-              />
-
-              {splitPoints.map((point) => (
-                <div
-                  key={point}
-                  className="split-marker"
-                  style={{
-                    left: `${(point / duration) * 100}%`,
-                  }}
-                />
-              ))}
-
-              <div
-                className="trim-handle"
-                style={{ left: `calc(${trimStartPercent}% - 5px)` }}
-                onPointerDown={(event) =>
-                  handleTrimPointerDown(event, "start")
-                }
-              />
-
-              <div
-                className="trim-handle"
-                style={{ left: `calc(${trimEndPercent}% - 5px)` }}
-                onPointerDown={(event) =>
-                  handleTrimPointerDown(event, "end")
-                }
-              />
-
-              <div
-                className="playhead"
-                style={{
-                  left: `${progress}%`,
-                }}
-              />
-            </>
+            ))
           ) : (
-            <div className="empty-timeline">
-              {videoUrl ? "جارٍ تجهيز إطارات الفيديو..." : "مسار الفيديو سيظهر هنا"}
+            <div className="empty" style={{ width: "100%", paddingTop: 27 }}>
+              أضف صورة أو فيديو إلى المسار
             </div>
+          )}
+
+          {media.length > 0 && (
+            <div
+              className="timelineCursor"
+              style={{
+                right: `${Math.min(100, Math.max(0, progress))}%`,
+              }}
+            />
           )}
         </div>
 
-        <div className="tools">
+        <div className="timelineActions">
           <button
-            className="add-video"
             type="button"
-            onClick={() => fileInputRef.current?.click()}
+            className="timelineAction"
+            disabled={!selected}
+            onClick={splitSelectedClip}
           >
-            ＋ إضافة فيديو
+            ✂ تقسيم المقطع
           </button>
 
           <button
-            className="tool"
             type="button"
-            onClick={() => {
-              if (!videoUrl || !videoRef.current) return;
-              setTrimStart(currentTime);
-            }}
+            className="timelineAction danger"
+            disabled={!selected}
+            onClick={() => selected && deleteMedia(selected.id)}
           >
-            ✂ قص من هنا
+            × حذف المحدد
           </button>
+        </div>
 
-          <button
-            className="tool"
-            type="button"
-            onClick={splitClip}
-          >
-            ⌁ تقسيم
-          </button>
+        <div className="timelineBottom">
+          <span>
+            {media.length} عنصر • {formatTime(totalDuration)}
+          </span>
 
-          <button
-            className="tool"
-            type="button"
-            onClick={deleteSelectedSection}
-          >
-            ⌫ حذف
-          </button>
-
-          <button
-            className="tool"
-            type="button"
-            onClick={duplicateClip}
-          >
-            ↻ تكرار
-          </button>
-          <button className="tool" type="button">♫ صوت</button>
-          <button className="tool" type="button">T نص</button>
+          <div className="zoomControls">
+            <button type="button" onClick={() => setZoom(Math.max(1, zoom - 0.1))}>
+              −
+            </button>
+            <button type="button" onClick={() => setZoom(Math.min(1.8, zoom + 0.1))}>
+              +
+            </button>
+          </div>
         </div>
       </section>
 
       <input
-        ref={fileInputRef}
+        ref={mediaInputRef}
         type="file"
-        accept="video/*"
+        accept="video/*,image/*"
+        multiple
         hidden
-        onChange={handleFile}
+        onChange={addMedia}
       />
     </main>
   );

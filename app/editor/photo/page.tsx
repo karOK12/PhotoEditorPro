@@ -331,11 +331,8 @@ export default function PhotoEditorPage() {
             </div>
 
             <PhotoToolbar
-              onCrop={() => setCropMode(true)}
-              onRotateLeft={rotateLeft}
-              onRotateRight={rotateRight}
-              onFlipX={flipHorizontal}
-              onFlipY={flipVertical}
+              activeTool={null}
+              onToolChange={() => {}}
               onUndo={() => {}}
               onRedo={() => {}}
               onReset={resetEditor}

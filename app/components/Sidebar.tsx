@@ -12,9 +12,9 @@ function Icon({
   return (
     <span
       style={{
-        width: 30,
-        height: 30,
-        minWidth: 30,
+        width: 38,
+        height: 38,
+        minWidth: 38,
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Icon({
   children,
@@ -86,6 +86,20 @@ export default function Sidebar() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadProfileImage = () => {
+      setProfileImage(localStorage.getItem("profileImage"));
+    };
+
+    loadProfileImage();
+    window.addEventListener("profileUpdated", loadProfileImage);
+
+    return () => {
+      window.removeEventListener("profileUpdated", loadProfileImage);
+    };
+  }, []);
 
   async function logout() {
     if (loggingOut) return;
@@ -173,39 +187,7 @@ export default function Sidebar() {
           overflowY: "auto",
         }}
       >
-        <button
-          type="button"
-          aria-label="إغلاق القائمة"
-          onClick={() => setOpen(false)}
-          style={{
-            position: "absolute",
-            top: 18,
-            right: 14,
-            width: 38,
-            height: 38,
-            display: "none",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "1px solid rgba(255,255,255,.12)",
-            borderRadius: 10,
-            background: "rgba(255,255,255,.06)",
-            color: "#fff",
-            cursor: "pointer",
-          }}
-          className="sidebar-close-button"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-          >
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
+
 
         <div
           style={{
@@ -250,7 +232,28 @@ export default function Sidebar() {
                   transition: "background .18s ease",
                 }}
               >
-                <Icon>{item.icon}</Icon>
+                <Icon>
+                  {item.href === "/profile" && profileImage ? (
+                    <img
+                      src={profileImage}
+                      alt="صورة الحساب"
+                      width={23}
+                      height={23}
+                      style={{
+                        width: 23,
+                        height: 23,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        display: "block",
+                        border: active
+                          ? "2px solid #ffffff"
+                          : "2px solid rgba(255,255,255,.18)",
+                      }}
+                    />
+                  ) : (
+                    item.icon
+                  )}
+                </Icon>
                 <span>{item.label}</span>
               </Link>
             );

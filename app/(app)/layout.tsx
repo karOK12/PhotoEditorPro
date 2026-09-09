@@ -23,14 +23,6 @@ export default function AppLayout({
       >
         {children}
       </main>
-
-      <style jsx global>{`
-        @media (max-width: 800px) {
-          .app-content {
-            padding-left: 0 !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }

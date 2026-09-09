@@ -18,8 +18,6 @@ export default function AppLayout({
           paddingTop: "76px",
           paddingBottom: "24px",
           boxSizing: "border-box",
-          width: "calc(100% - 250px)",
-          marginLeft: "250px",
         }}
       >
         {children}

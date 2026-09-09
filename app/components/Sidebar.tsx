@@ -173,6 +173,40 @@ export default function Sidebar() {
           overflowY: "auto",
         }}
       >
+        <button
+          type="button"
+          aria-label="إغلاق القائمة"
+          onClick={() => setOpen(false)}
+          style={{
+            position: "absolute",
+            top: 18,
+            right: 14,
+            width: 38,
+            height: 38,
+            display: "none",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "1px solid rgba(255,255,255,.12)",
+            borderRadius: 10,
+            background: "rgba(255,255,255,.06)",
+            color: "#fff",
+            cursor: "pointer",
+          }}
+          className="sidebar-close-button"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+
         <div
           style={{
             padding: "0 10px 14px",

@@ -1515,9 +1515,13 @@ button:focus-visible {
   }
 }
 
-\n
+
 
 @media (max-width: 800px) {
+  .app-content {
+    padding-left: 0 !important;
+  }
+
   .app-sidebar {
     transform: translateX(-100%);
     transition: transform .22s ease;
@@ -1530,5 +1534,24 @@ button:focus-visible {
 
   .sidebar-menu-button {
     display: flex !important;
+  }
+}
+
+
+@media (max-width: 800px) {
+  .sidebar-close-button {
+    display: flex !important;
+  }
+}
+
+/* App shell responsive content */
+.app-content {
+  padding-left: 250px;
+}
+
+@media (max-width: 800px) {
+  .app-content {
+    padding-left: 0 !important;
+    width: 100%;
   }
 }

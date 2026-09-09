@@ -6,6 +6,7 @@ import PhotoCanvas from "./components/PhotoCanvas";
 import PhotoToolbar from "./components/PhotoToolbar";
 import Adjustments from "./components/Adjustments";
 import Filters from "./components/Filters";
+import CropTool from "./components/CropTool";
 
 type FilterName =
   | "normal"
@@ -27,6 +28,7 @@ const filterMap: Record<FilterName, string> = {
 export default function PhotoEditorPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [brightness, setBrightness] = useState(100);
@@ -37,6 +39,7 @@ export default function PhotoEditorPage() {
   const [flipY, setFlipY] = useState(false);
   const [activeFilter, setActiveFilter] =
     useState<FilterName>("normal");
+  const [cropMode, setCropMode] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -81,8 +84,75 @@ export default function PhotoEditorPage() {
     setActiveFilter("normal");
   }
 
+  function rotateLeft() {
+    setRotation((value) => (value - 90 + 360) % 360);
+  }
+
+  function rotateRight() {
+    setRotation((value) => (value + 90) % 360);
+  }
+
+  function flipHorizontal() {
+    setFlipX((value) => !value);
+  }
+
+  function flipVertical() {
+    setFlipY((value) => !value);
+  }
+
   function openFilePicker() {
     fileInputRef.current?.click();
+  }
+
+  function applyCrop(
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) {
+    const canvas = canvasRef.current;
+
+    if (!canvas || width <= 0 || height <= 0) return;
+
+    const croppedCanvas = document.createElement("canvas");
+
+    croppedCanvas.width = width;
+    croppedCanvas.height = height;
+
+    const ctx = croppedCanvas.getContext("2d");
+
+    if (!ctx) return;
+
+    ctx.drawImage(
+      canvas,
+      x,
+      y,
+      width,
+      height,
+      0,
+      0,
+      width,
+      height
+    );
+
+    croppedCanvas.toBlob((blob) => {
+      if (!blob) return;
+
+      const newUrl = URL.createObjectURL(blob);
+
+      setImageUrl((oldUrl) => {
+        if (oldUrl) {
+          URL.revokeObjectURL(oldUrl);
+        }
+
+        return newUrl;
+      });
+
+      setRotation(0);
+      setFlipX(false);
+      setFlipY(false);
+      setCropMode(false);
+    }, "image/png");
   }
 
   function exportImage() {
@@ -227,23 +297,50 @@ export default function PhotoEditorPage() {
           </button>
         ) : (
           <>
-            <PhotoCanvas
-              imageUrl={imageUrl}
-              brightness={brightness}
-              contrast={contrast}
-              saturation={saturation}
-              rotation={rotation}
-              flipX={flipX}
-              flipY={flipY}
-            />
+            <div
+              style={{
+                position: "relative",
+              }}
+            >
+              <PhotoCanvas
+                imageUrl={imageUrl}
+                canvasRef={canvasRef}
+                brightness={brightness}
+                contrast={contrast}
+                saturation={saturation}
+                rotation={rotation}
+                flipX={flipX}
+                flipY={flipY}
+              />
+
+              {cropMode && (
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 10,
+                  }}
+                >
+                  <CropTool
+                    canvasRef={canvasRef}
+                    onApply={applyCrop}
+                    onCancel={() => setCropMode(false)}
+                  />
+                </div>
+              )}
+            </div>
 
             <PhotoToolbar
-              onRotate={() =>
-                setRotation((value) => (value + 90) % 360)
-              }
-              onFlipX={() => setFlipX((value) => !value)}
-              onFlipY={() => setFlipY((value) => !value)}
+              onCrop={() => setCropMode(true)}
+              onRotateLeft={rotateLeft}
+              onRotateRight={rotateRight}
+              onFlipX={flipHorizontal}
+              onFlipY={flipVertical}
+              onUndo={() => {}}
+              onRedo={() => {}}
               onReset={resetEditor}
+              canUndo={false}
+              canRedo={false}
             />
 
             <Adjustments

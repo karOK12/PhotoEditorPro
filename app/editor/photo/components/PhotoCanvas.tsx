@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 type PhotoCanvasProps = {
   imageUrl: string | null;
@@ -10,6 +10,7 @@ type PhotoCanvasProps = {
   rotation: number;
   flipX: boolean;
   flipY: boolean;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
 };
 
 export default function PhotoCanvas({
@@ -20,14 +21,15 @@ export default function PhotoCanvas({
   rotation,
   flipX,
   flipY,
+  canvasRef,
 }: PhotoCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
   useEffect(() => {
     const canvas = canvasRef.current;
+
     if (!canvas || !imageUrl) return;
 
     const ctx = canvas.getContext("2d");
+
     if (!ctx) return;
 
     const image = new Image();
@@ -46,7 +48,10 @@ export default function PhotoCanvas({
 
       ctx.rotate((rotation * Math.PI) / 180);
 
-      ctx.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+      ctx.scale(
+        flipX ? -1 : 1,
+        flipY ? -1 : 1
+      );
 
       ctx.filter = `
         brightness(${brightness}%)
@@ -74,6 +79,7 @@ export default function PhotoCanvas({
     rotation,
     flipX,
     flipY,
+    canvasRef,
   ]);
 
   if (!imageUrl) {

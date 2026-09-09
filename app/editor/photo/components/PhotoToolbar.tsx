@@ -1,20 +1,33 @@
 "use client";
 
 type PhotoToolbarProps = {
-  onRotate: () => void;
+  onCrop: () => void;
+  onRotateLeft: () => void;
+  onRotateRight: () => void;
   onFlipX: () => void;
   onFlipY: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
   onReset: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 };
 
 export default function PhotoToolbar({
-  onRotate,
+  onCrop,
+  onRotateLeft,
+  onRotateRight,
   onFlipX,
   onFlipY,
+  onUndo,
+  onRedo,
   onReset,
+  canUndo,
+  canRedo,
 }: PhotoToolbarProps) {
   const buttonStyle = {
-    minWidth: "72px",
+    flex: "0 0 auto",
+    minWidth: "76px",
     height: "46px",
     padding: "0 12px",
     borderRadius: "12px",
@@ -24,7 +37,12 @@ export default function PhotoToolbar({
     cursor: "pointer",
     fontSize: "13px",
     fontWeight: 600,
-  };
+  } as const;
+
+  const disabledStyle = {
+    opacity: 0.35,
+    cursor: "not-allowed",
+  } as const;
 
   return (
     <div
@@ -33,18 +51,51 @@ export default function PhotoToolbar({
         gap: "8px",
         overflowX: "auto",
         padding: "4px 0",
+        scrollbarWidth: "none",
       }}
     >
-      <button type="button" onClick={onRotate} style={buttonStyle}>
-        ↻ تدوير
+      <button
+        type="button"
+        onClick={onUndo}
+        disabled={!canUndo}
+        style={{
+          ...buttonStyle,
+          ...(canUndo ? {} : disabledStyle),
+        }}
+      >
+        ↶ تراجع
+      </button>
+
+      <button
+        type="button"
+        onClick={onRedo}
+        disabled={!canRedo}
+        style={{
+          ...buttonStyle,
+          ...(canRedo ? {} : disabledStyle),
+        }}
+      >
+        ↷ إعادة
+      </button>
+
+      <button type="button" onClick={onCrop} style={buttonStyle}>
+        ✂ قص
+      </button>
+
+      <button type="button" onClick={onRotateLeft} style={buttonStyle}>
+        ↺ يسار
+      </button>
+
+      <button type="button" onClick={onRotateRight} style={buttonStyle}>
+        ↻ يمين
       </button>
 
       <button type="button" onClick={onFlipX} style={buttonStyle}>
-        ↔ قلب أفقي
+        ↔ أفقي
       </button>
 
       <button type="button" onClick={onFlipY} style={buttonStyle}>
-        ↕ قلب عمودي
+        ↕ عمودي
       </button>
 
       <button

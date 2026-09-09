@@ -17,8 +17,9 @@ export default function AppLayout({
           minHeight: "100dvh",
           paddingTop: "76px",
           paddingBottom: "24px",
-          paddingLeft: "250px",
           boxSizing: "border-box",
+          width: "calc(100% - 250px)",
+          marginLeft: "250px",
         }}
       >
         {children}

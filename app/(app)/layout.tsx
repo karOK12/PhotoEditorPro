@@ -1,5 +1,5 @@
 import AppTopNav from "@/app/components/AppTopNav";
-import BottomNav from "@/app/components/BottomNav";
+import Sidebar from "@/app/components/Sidebar";
 
 export default function AppLayout({
   children,
@@ -9,19 +9,28 @@ export default function AppLayout({
   return (
     <div className="app-shell">
       <AppTopNav />
+      <Sidebar />
 
       <main
         className="app-content"
         style={{
           minHeight: "100dvh",
-          paddingTop: "125px",
-          paddingBottom: "calc(82px + env(safe-area-inset-bottom))",
+          paddingTop: "76px",
+          paddingBottom: "24px",
+          paddingLeft: "250px",
+          boxSizing: "border-box",
         }}
       >
         {children}
       </main>
 
-      <BottomNav />
+      <style jsx global>{`
+        @media (max-width: 800px) {
+          .app-content {
+            padding-left: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

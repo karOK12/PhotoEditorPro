@@ -258,24 +258,6 @@ export default function Sidebar() {
           <span>{loggingOut ? "جاري تسجيل الخروج..." : "تسجيل الخروج"}</span>
         </button>
       </aside>
-
-      <style jsx global>{`
-        @media (max-width: 800px) {
-          .app-sidebar {
-            transform: translateX(-100%);
-            transition: transform .22s ease;
-            box-shadow: 18px 0 45px rgba(0,0,0,.35);
-          }
-
-          .app-sidebar.is-open {
-            transform: translateX(0);
-          }
-
-          .sidebar-menu-button {
-            display: flex !important;
-          }
-        }
-      `}</style>
-    </>
+</>
   );
 }

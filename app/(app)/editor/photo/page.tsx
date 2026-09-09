@@ -55,8 +55,12 @@ export default function PhotoEditorPage() {
 
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      alert("يرجى اختيار صورة فقط");
+    if (
+      !file.type.startsWith("image/") &&
+      !file.type.startsWith("video/") &&
+      !file.type.startsWith("audio/")
+    ) {
+      alert("يرجى اختيار صورة أو فيديو أو صوت");
       return;
     }
 
@@ -284,7 +288,7 @@ export default function PhotoEditorPage() {
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,video/*,audio/*"
           onChange={handleFileChange}
           style={{ display: "none" }}
         />
@@ -294,9 +298,10 @@ export default function PhotoEditorPage() {
             type="button"
             onClick={openFilePicker}
             style={{
-              minHeight: "180px",
-              borderRadius: "20px",
-              border: "1px dashed rgba(255,255,255,.2)",
+              width: "100%",
+              height: "220px",
+              borderRadius: "8px",
+              border: "1px dashed rgba(255,255,255,.28)",
               background: "#111318",
               color: "#fff",
               cursor: "pointer",
@@ -304,7 +309,19 @@ export default function PhotoEditorPage() {
               fontWeight: 700,
             }}
           >
-            + اختر صورة من الهاتف
+            <span
+              style={{
+                display: "block",
+                fontSize: "32px",
+                marginBottom: "12px",
+              }}
+            >
+              ＋
+            </span>
+
+            <span style={{ display: "block" }}>
+              إضافة صورة أو فيديو أو صوت
+            </span>
           </button>
         ) : (
           <>
@@ -343,8 +360,12 @@ export default function PhotoEditorPage() {
             </div>
 
             <PhotoToolbar
-              activeTool={null}
-              onToolChange={() => {}}
+              activeTool={cropMode ? "crop" : null}
+              onToolChange={(tool) => {
+                if (tool === "crop") {
+                  setCropMode(true);
+                }
+              }}
               onUndo={() => {}}
               onRedo={() => {}}
               onReset={resetEditor}

@@ -129,34 +129,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <button
-        type="button"
-        aria-label="فتح القائمة"
-        onClick={() => setOpen(true)}
-        style={{
-          position: "fixed",
-          top: 18,
-          left: 14,
-          zIndex: 1300,
-          width: 40,
-          height: 40,
-          border: "1px solid rgba(255,255,255,.12)",
-          borderRadius: 12,
-          background: "rgba(255,255,255,.07)",
-          boxShadow: "0 4px 18px rgba(0,0,0,.18)",
-          backdropFilter: "blur(14px)",
-          WebkitBackdropFilter: "blur(14px)",
-          color: "#fff",
-          display: "none",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        className="sidebar-menu-button"
-      >
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-          <path d="M4 7h16M4 12h16M4 17h16" />
-        </svg>
-      </button>
+
 
       {open && (
         <button

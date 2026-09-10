@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, PointerEvent, useEffect, useRef, useState } from "react";
+import VideoToolPanel from "./components/VideoToolPanel";
 
 type MediaItem = {
   id: string;
@@ -787,6 +788,13 @@ export default function VideoEditorPage() {
             </button>
           ))}
         </nav>
+
+        <VideoToolPanel
+          activeTool={activeTool}
+          hasSelection={Boolean(selected)}
+          onSplit={splitSelectedClip}
+          onDelete={() => selected && deleteMedia(selected.id)}
+        />
       </section>
 
       <section className="timelineSection">

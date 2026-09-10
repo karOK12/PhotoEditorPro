@@ -1128,6 +1128,3 @@ button:focus-visible {
   }
 }
 
-body:has(.app-sidebar.is-open) .top-sidebar-menu-button {
-  visibility: hidden !important;
-}

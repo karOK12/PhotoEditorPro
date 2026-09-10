@@ -171,33 +171,7 @@ export default function Sidebar() {
         }}
       >
 
-        {open && (
-          <button
-            type="button"
-            aria-label="إغلاق القائمة"
-            onClick={() => setOpen(false)}
-            style={{
-              position: "absolute",
-              top: 18,
-              left: 14,
-              width: 40,
-              height: 40,
-              padding: 0,
-              border: "1px solid rgba(255,255,255,.12)",
-              borderRadius: 12,
-              background: "rgba(255,255,255,.07)",
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 24,
-              lineHeight: 1,
-              cursor: "pointer",
-            }}
-          >
-            ☰
-          </button>
-        )}
+
 
         <div
           style={{

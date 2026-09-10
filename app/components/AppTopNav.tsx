@@ -101,7 +101,7 @@ export default function AppTopNav() {
           height: 76,
           display: "flex",
           alignItems: "center",
-          gap: 26,
+          gap: 18,
           maxWidth: 1500,
           margin: "0 auto",
         }}
@@ -148,9 +148,9 @@ export default function AppTopNav() {
 
         <div
           style={{
-            minWidth: 190,
+            minWidth: 170,
             color: "#fff",
-            fontSize: 19,
+            fontSize: 18,
             fontWeight: 900,
             letterSpacing: "-.4px",
           }}
@@ -162,7 +162,7 @@ export default function AppTopNav() {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 7,
+            gap: 6,
             overflowX: "auto",
             scrollbarWidth: "none",
             flex: 1,
@@ -182,18 +182,18 @@ export default function AppTopNav() {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: 8,
-                  height: 42,
-                  padding: "0 13px",
-                  borderRadius: 11,
+                  height: 40,
+                  padding: "0 12px",
+                  borderRadius: 10,
                   border: active
                     ? "1px solid rgba(255,255,255,.18)"
                     : "1px solid transparent",
                   background: active
-                    ? "rgba(255,255,255,.13)"
-                    : "rgba(255,255,255,.045)",
+                    ? "rgba(255,255,255,.12)"
+                    : "rgba(255,255,255,.035)",
                   color: "#fff",
                   textDecoration: "none",
-                  fontSize: 12,
+                  fontSize: 11.5,
                   fontWeight: active ? 800 : 650,
                   whiteSpace: "nowrap",
                 }}

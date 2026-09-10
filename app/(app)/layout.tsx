@@ -17,6 +17,7 @@ export default function AppLayout({
           minHeight: "100dvh",
           paddingTop: "76px",
           paddingBottom: "24px",
+          marginLeft: "250px",
           boxSizing: "border-box",
         }}
       >

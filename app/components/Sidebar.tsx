@@ -96,8 +96,15 @@ export default function Sidebar() {
     loadProfileImage();
     window.addEventListener("profileUpdated", loadProfileImage);
 
+    const openSidebar = () => {
+      setOpen(true);
+    };
+
+    window.addEventListener("photoeditorpro:open-sidebar", openSidebar);
+
     return () => {
       window.removeEventListener("profileUpdated", loadProfileImage);
+      window.removeEventListener("photoeditorpro:open-sidebar", openSidebar);
     };
   }, []);
 

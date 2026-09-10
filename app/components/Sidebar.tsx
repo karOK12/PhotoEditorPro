@@ -195,7 +195,7 @@ export default function Sidebar() {
               cursor: "pointer",
             }}
           >
-            ×
+            ☰
           </button>
         )}
 

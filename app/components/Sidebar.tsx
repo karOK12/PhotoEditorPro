@@ -179,7 +179,7 @@ export default function Sidebar() {
             style={{
               position: "absolute",
               top: 18,
-              right: 14,
+              left: 14,
               width: 40,
               height: 40,
               padding: 0,

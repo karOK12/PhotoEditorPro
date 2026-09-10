@@ -96,15 +96,15 @@ export default function Sidebar() {
     loadProfileImage();
     window.addEventListener("profileUpdated", loadProfileImage);
 
-    const openSidebar = () => {
-      setOpen(true);
+    const toggleSidebar = () => {
+      setOpen((value) => !value);
     };
 
-    window.addEventListener("photoeditorpro:open-sidebar", openSidebar);
+    window.addEventListener("photoeditorpro:toggle-sidebar", toggleSidebar);
 
     return () => {
       window.removeEventListener("profileUpdated", loadProfileImage);
-      window.removeEventListener("photoeditorpro:open-sidebar", openSidebar);
+      window.removeEventListener("photoeditorpro:toggle-sidebar", toggleSidebar);
     };
   }, []);
 

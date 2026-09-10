@@ -45,7 +45,7 @@ export default function AppTopNav() {
           aria-label="فتح القائمة"
           className="top-sidebar-menu-button"
           onClick={() => {
-            window.dispatchEvent(new Event("photoeditorpro:open-sidebar"));
+            window.dispatchEvent(new Event("photoeditorpro:toggle-sidebar"));
           }}
           style={{
             position: "absolute",

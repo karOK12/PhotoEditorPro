@@ -136,6 +136,49 @@ export default function Sidebar() {
 
   return (
     <>
+      {!open && (
+        <button
+          type="button"
+          aria-label="فتح القائمة"
+          onClick={() =>
+            window.dispatchEvent(new Event("photoeditorpro:toggle-sidebar"))
+          }
+          style={{
+            position: "fixed",
+            left: 14,
+            top: 18,
+            width: 40,
+            height: 40,
+            padding: 0,
+            border: "1px solid rgba(255,255,255,.12)",
+            borderRadius: 12,
+            background: "rgba(255,255,255,.07)",
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1300,
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+            boxShadow: "0 4px 18px rgba(0,0,0,.18)",
+            cursor: "pointer",
+          }}
+        >
+          <svg
+            width="21"
+            height="21"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <path d="M4 7h16" />
+            <path d="M4 12h16" />
+            <path d="M4 17h16" />
+          </svg>
+        </button>
+      )}
 
 
       {open && (
@@ -177,7 +220,9 @@ export default function Sidebar() {
           <button
             type="button"
             aria-label="إغلاق القائمة"
-            onClick={() => setOpen(false)}
+            onClick={() =>
+              window.dispatchEvent(new Event("photoeditorpro:toggle-sidebar"))
+            }
             style={{
               position: "absolute",
               left: 14,

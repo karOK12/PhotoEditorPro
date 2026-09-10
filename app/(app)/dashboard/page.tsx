@@ -121,76 +121,62 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* أدوات المونتاج */}
-        <div
+        {/* أدوات التحرير */}
+        <section
           style={{
+            marginTop: 24,
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: "16px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: 14,
           }}
         >
-          <button
-            type="button"
+          <a
+            href="/editor/photo"
             style={{
-              minHeight: "190px",
-              border: "1px solid rgba(59,130,246,.25)",
-              borderRadius: "24px",
-              background:
-                "linear-gradient(145deg, rgba(37,99,235,.22), rgba(15,23,42,.82))",
+              minHeight: 150,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 12,
+              padding: 20,
+              borderRadius: 18,
+              border: "1px solid rgba(255,255,255,.10)",
+              background: "linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.035))",
               color: "#fff",
-              padding: "24px",
-              textAlign: "right",
-              cursor: "pointer",
+              textDecoration: "none",
+              boxSizing: "border-box",
             }}
           >
-            <div style={{ fontSize: "42px", marginBottom: "20px" }}>🖼️</div>
+            <svg
+              width="34"
+              height="34"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="3" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="m21 15-5-5L5 21" />
+            </svg>
 
-            <div style={{ fontSize: "22px", fontWeight: 800 }}>
-              محرر الصور
-            </div>
+            <span style={{ fontSize: 16, fontWeight: 850 }}>
+              تحرير الصور
+            </span>
 
-            <div
+            <span
               style={{
-                color: "#94a3b8",
-                marginTop: "8px",
-                fontSize: "14px",
+                fontSize: 12,
+                color: "rgba(255,255,255,.58)",
               }}
             >
-              تعديل الصور وإضافة التأثيرات والفلاتر
-            </div>
-          </button>
-
-          <button
-            type="button"
-            style={{
-              minHeight: "190px",
-              border: "1px solid rgba(124,58,237,.25)",
-              borderRadius: "24px",
-              background:
-                "linear-gradient(145deg, rgba(124,58,237,.22), rgba(15,23,42,.82))",
-              color: "#fff",
-              padding: "24px",
-              textAlign: "right",
-              cursor: "pointer",
-            }}
-          >
-            <div style={{ fontSize: "42px", marginBottom: "20px" }}>🎬</div>
-
-            <div style={{ fontSize: "22px", fontWeight: 800 }}>
-              محرر الفيديو
-            </div>
-
-            <div
-              style={{
-                color: "#94a3b8",
-                marginTop: "8px",
-                fontSize: "14px",
-              }}
-            >
-              قص ودمج الفيديو وإضافة النصوص والمؤثرات
-            </div>
-          </button>
-        </div>
+              تعديل وتحسين الصور
+            </span>
+          </a>
+        </section>
 
         {/* المشاريع */}
         <section style={{ marginTop: "30px" }}>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+
 
 function HomeIcon({ active }: { active: boolean }) {
   return (
@@ -60,80 +60,63 @@ function ProjectsIcon({ active }: { active: boolean }) {
   );
 }
 
-function ProfileIcon({
-  active,
-  profileImage,
-}: {
-  active: boolean;
-  profileImage?: string | null;
-}) {
-  if (profileImage) {
-    return (
-      <img
-        src={profileImage}
-        alt="صورة الحساب"
-        width={23}
-        height={23}
-        style={{
-          width: "23px",
-          height: "23px",
-          borderRadius: "50%",
-          objectFit: "cover",
-          display: "block",
-          border: active
-            ? "2px solid #ffffff"
-            : "2px solid rgba(255,255,255,0.18)",
-        }}
-      />
-    );
-  }
-
+function VideoIcon({ active }: { active: boolean }) {
   return (
     <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle
-        cx="12"
-        cy="8"
-        r="3.2"
+      <rect x="3" y="5" width="13" height="14" rx="2.5"
         fill={active ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path
-        d="M5 21c.7-4 3.1-6 7-6s6.3 2 7 6"
+        fillOpacity={active ? 0.14 : 0}
+        stroke="currentColor" strokeWidth="1.8" />
+      <path d="m16 10 4-2.5v9L16 14"
+        stroke="currentColor" strokeWidth="1.8"
+        strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 9v6l4-3-4-3Z"
+        fill="currentColor" />
+    </svg>
+  );
+}
+
+function PhotoIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="16" rx="2.5"
         fill={active ? "currentColor" : "none"}
-        fillOpacity={active ? 0.16 : 0}
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+        fillOpacity={active ? 0.14 : 0}
+        stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="8.5" cy="9" r="1.5" fill="currentColor" />
+      <path d="m4.8 17 4.6-4.6 3.1 3.1 2.1-2.1 4.6 4.6"
+        stroke="currentColor" strokeWidth="1.8"
+        strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function DesignIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="m14.8 4.2 5 5"
+        stroke="currentColor" strokeWidth="1.8"
+        strokeLinecap="round" />
+      <path d="m13.5 5.5-9 9a2.5 2.5 0 0 0-.7 1.4L3.2 20.8l4.9-.6a2.5 2.5 0 0 0 1.4-.7l9-9-5-5Z"
+        fill={active ? "currentColor" : "none"}
+        fillOpacity={active ? 0.14 : 0}
+        stroke="currentColor" strokeWidth="1.8"
+        strokeLinejoin="round" />
+      <path d="m11.2 7.8 5 5"
+        stroke="currentColor" strokeWidth="1.4" />
     </svg>
   );
 }
 
 const items = [
   { href: "/dashboard", label: "الرئيسية", Icon: HomeIcon },
-  { href: "/tools", label: "الأدوات", Icon: ToolsIcon },
-  { href: "/projects", label: "مشاريعي", Icon: ProjectsIcon },
-  { href: "/profile", label: "حسابي", Icon: ProfileIcon },
+  { href: "/editor/video", label: "فيديو", Icon: VideoIcon },
+  { href: "/editor/photo", label: "صور", Icon: PhotoIcon },
+  { href: "/editor/design", label: "تصميم", Icon: DesignIcon },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadProfileImage = () => {
-      setProfileImage(localStorage.getItem("profileImage"));
-    };
-
-    loadProfileImage();
-
-    window.addEventListener("profileUpdated", loadProfileImage);
-
-    return () => {
-      window.removeEventListener("profileUpdated", loadProfileImage);
-    };
-  }, []);
 
   return (
     <nav
@@ -189,14 +172,8 @@ export default function BottomNav() {
                 WebkitTapHighlightColor: "transparent",
               }}
             >
-              {href === "/profile" ? (
-                <ProfileIcon
-                  active={active}
-                  profileImage={profileImage}
-                />
-              ) : (
-                <Icon active={active} />
-              )}
+              <Icon active={active} />
+
               <span
                 style={{
                   fontSize: "11px",

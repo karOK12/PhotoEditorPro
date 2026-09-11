@@ -165,7 +165,7 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
             }}
           >
             <img
-              src="/assets/images/logo.png"
+              src="https://a.top4top.io/p_3906kh6m51.jpg"
               alt="Photo Editor Pro"
               style={{
                 width: "100%",

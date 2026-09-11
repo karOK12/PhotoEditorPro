@@ -2,6 +2,8 @@
 
 import { ChangeEvent, PointerEvent, useEffect, useRef, useState } from "react";
 import VideoToolPanel from "./components/VideoToolPanel";
+import VideoEditorTopBar from "./components/VideoEditorTopBar";
+import VideoEditorBottomBar from "./components/VideoEditorBottomBar";
 
 type MediaItem = {
   id: string;
@@ -257,6 +259,123 @@ export default function VideoEditorPage() {
           flex-direction: column;
           overflow: hidden;
           font-family: Arial, sans-serif;
+        }
+
+        .videoEditorTopBar {
+          height: 58px;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 0 12px;
+          background: #101116;
+          border-bottom: 1px solid #252730;
+          z-index: 20;
+        }
+
+        .videoEditorTopButton {
+          width: 38px;
+          height: 38px;
+          flex: 0 0 38px;
+          border: 1px solid #30333c;
+          border-radius: 10px;
+          background: #191b21;
+          color: #fff;
+          font-size: 22px;
+          cursor: pointer;
+        }
+
+        .videoEditorTopTitle {
+          min-width: 0;
+          flex: 1;
+          text-align: right;
+        }
+
+        .videoEditorTopTitle strong {
+          display: block;
+          color: #fff;
+          font-size: 14px;
+        }
+
+        .videoEditorTopTitle span {
+          display: block;
+          margin-top: 2px;
+          max-width: 180px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          color: #777c88;
+          font-size: 10px;
+        }
+
+        .videoEditorTopActions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+        }
+
+        .videoEditorExportButton {
+          height: 38px;
+          padding: 0 15px;
+          border: 0;
+          border-radius: 9px;
+          background: #fff;
+          color: #090a0d;
+          font-size: 12px;
+          font-weight: 800;
+          cursor: pointer;
+        }
+
+        .videoEditorBottomBar {
+          flex-shrink: 0;
+          width: 100%;
+          padding: 7px 8px;
+          background: #101116;
+          border-top: 1px solid #292c34;
+          overflow: hidden;
+          z-index: 15;
+        }
+
+        .videoEditorBottomScroller {
+          display: flex;
+          align-items: stretch;
+          gap: 3px;
+          width: max-content;
+          min-width: 100%;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .videoEditorBottomScroller::-webkit-scrollbar {
+          display: none;
+        }
+
+        .videoEditorBottomItem {
+          min-width: 63px;
+          height: 57px;
+          padding: 0 8px;
+          border: 0;
+          border-radius: 9px;
+          background: transparent;
+          color: #aeb2bc;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          flex-shrink: 0;
+          cursor: pointer;
+        }
+
+        .videoEditorBottomItem.active {
+          background: #20232a;
+          color: #fff;
+        }
+
+        .videoEditorBottomIcon {
+          font-size: 19px;
+          line-height: 1;
         }
 
         .top {
@@ -710,33 +829,12 @@ export default function VideoEditorPage() {
         }
       `}</style>
 
-      <header className="top">
-        <div className="topGroup">
-          <button className="topButton" type="button" onClick={() => window.history.back()}>
-            ←
-          </button>
-
-          <div className="projectTitle">
-            <strong>محرر الفيديو</strong>
-            <span>{selected?.name || "مشروع جديد"}</span>
-          </div>
-        </div>
-
-        <div className="topGroup">
-          <button
-            className="topButton"
-            type="button"
-            aria-label="إضافة وسائط"
-            onClick={() => mediaInputRef.current?.click()}
-          >
-            +
-          </button>
-
-          <button className="export" type="button">
-            تصدير
-          </button>
-        </div>
-      </header>
+      <VideoEditorTopBar
+        selectedName={selected?.name || ""}
+        onBack={() => window.history.back()}
+        onAddMedia={() => mediaInputRef.current?.click()}
+        onExport={() => {}}
+      />
 
       <section className="workspace">
         <section className="previewArea">
@@ -774,20 +872,6 @@ export default function VideoEditorPage() {
             )}
           </div>
         </section>
-
-        <nav className="sideTools" aria-label="أدوات المونتاج">
-          {tools.map(([icon, label]) => (
-            <button
-              key={label}
-              type="button"
-              className={`tool ${activeTool === label ? "active" : ""}`}
-              onClick={() => setActiveTool(label)}
-            >
-              <span>{icon}</span>
-              <small>{label}</small>
-            </button>
-          ))}
-        </nav>
 
         <VideoToolPanel
           activeTool={activeTool}
@@ -917,6 +1001,12 @@ export default function VideoEditorPage() {
           </div>
         </div>
       </section>
+
+      <VideoEditorBottomBar
+        tools={tools}
+        activeTool={activeTool}
+        onSelect={setActiveTool}
+      />
 
       <input
         ref={mediaInputRef}

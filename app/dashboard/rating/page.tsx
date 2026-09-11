@@ -2,47 +2,141 @@
 
 import { useEffect, useState } from "react";
 
-type RatingData = {
+type RatingItem = {
+  id: string;
   rating: number;
   comment: string | null;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
+  full_name: string;
+  is_owner: boolean;
 };
+
+type Stats = {
+  total: number;
+  average: number;
+  five: number;
+  four: number;
+  three: number;
+  two: number;
+  one: number;
+};
+
+const emptyStats: Stats = {
+  total: 0,
+  average: 0,
+  five: 0,
+  four: 0,
+  three: 0,
+  two: 0,
+  one: 0,
+};
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("ar-IQ", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function Stars({
+  value,
+  interactive = false,
+  selected,
+  onSelect,
+}: {
+  value: number;
+  interactive?: boolean;
+  selected?: number;
+  onSelect?: (value: number) => void;
+}) {
+  return (
+    <div className="stars" dir="ltr">
+      {[1, 2, 3, 4, 5].map((star) => {
+        const active = interactive
+          ? star <= (selected ?? 0)
+          : star <= value;
+
+        if (interactive) {
+          return (
+            <button
+              key={star}
+              type="button"
+              className={`star-button ${active ? "active" : ""}`}
+              onClick={() => onSelect?.(star)}
+              aria-label={`${star} نجوم`}
+            >
+              ★
+            </button>
+          );
+        }
+
+        return (
+          <span
+            key={star}
+            className={`display-star ${active ? "active" : ""}`}
+          >
+            ★
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function Page() {
   const [selected, setSelected] = useState(0);
   const [comment, setComment] = useState("");
+  const [ratings, setRatings] = useState<RatingItem[]>([]);
+  const [stats, setStats] = useState<Stats>(emptyStats);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function loadRating() {
-      try {
-        const response = await fetch("/api/ratings", {
-          method: "GET",
-          credentials: "include",
-        });
+  async function loadRatings() {
+    try {
+      setLoading(true);
 
-        const data = await response.json();
+      const response = await fetch("/api/ratings", {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      });
 
-        if (!response.ok) {
-          throw new Error(data?.error || "تعذر جلب التقييم");
-        }
+      const data = await response.json();
 
-        if (data?.rating) {
-          setSelected(Number(data.rating.rating) || 0);
-          setComment(data.rating.comment || "");
-        }
-      } catch (err) {
-        console.error("Load rating error:", err);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(data?.error || "تعذر جلب التقييمات");
       }
-    }
 
-    loadRating();
+      if (data.rating) {
+        setSelected(Number(data.rating.rating) || 0);
+        setComment(data.rating.comment || "");
+      } else {
+        setSelected(0);
+        setComment("");
+      }
+
+      setRatings(Array.isArray(data.ratings) ? data.ratings : []);
+      setStats(data.stats || emptyStats);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "حدث خطأ أثناء جلب التقييمات"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadRatings();
   }, []);
 
   async function saveRating() {
@@ -76,6 +170,7 @@ export default function Page() {
       }
 
       setMessage("تم حفظ تقييمك بنجاح.");
+      await loadRatings();
     } catch (err) {
       setError(
         err instanceof Error
@@ -87,281 +182,659 @@ export default function Page() {
     }
   }
 
+  async function deleteRating() {
+    if (!window.confirm("هل تريد حذف تقييمك نهائيًا؟")) {
+      return;
+    }
+
+    setDeleting(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/ratings", {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || "حدث خطأ أثناء حذف التقييم");
+      }
+
+      setSelected(0);
+      setComment("");
+      setMessage("تم حذف تقييمك.");
+      await loadRatings();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "حدث خطأ أثناء حذف التقييم"
+      );
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  const distribution = [
+    { label: 5, count: stats.five },
+    { label: 4, count: stats.four },
+    { label: 3, count: stats.three },
+    { label: 2, count: stats.two },
+    { label: 1, count: stats.one },
+  ];
+
   return (
-    <main dir="rtl" className="settings-page">
-      <div className="settings-card">
-        <div className="settings-icon">★</div>
+    <main dir="rtl" className="rating-page">
+      <section className="hero-card">
+        <div className="title-row">
+          <div className="title-icon">★</div>
+          <div>
+            <h1>تقييم التطبيق</h1>
+            <p>شاركنا تجربتك مع Photo Editor Pro</p>
+          </div>
+        </div>
 
-        <h1>تقييم التطبيق</h1>
-
-        <div className="settings-content">
-          <p>
-            رأيك يساعدنا على تحسين Photo Editor Pro وتطوير أدوات
-            التحرير.
-          </p>
-
-          <div className="rating-section">
-            <div className="stars" aria-label="اختيار التقييم">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  className={star <= selected ? "star active" : "star"}
-                  onClick={() => {
-                    setSelected(star);
-                    setMessage("");
-                    setError("");
-                  }}
-                  aria-label={`${star} نجوم`}
-                >
-                  ★
-                </button>
-              ))}
-            </div>
-
-            <div className="rating-label">
-              {loading
-                ? "جاري تحميل تقييمك..."
-                : selected > 0
-                  ? `${selected} من 5 نجوم`
-                  : "اختر التقييم الذي يعبر عن تجربتك"}
-            </div>
+        <div className="overview">
+          <div className="average-box">
+            <strong>{Number(stats.average).toFixed(1)}</strong>
+            <Stars value={Math.round(Number(stats.average))} />
+            <span>{stats.total} تقييم</span>
           </div>
 
-          <div className="comment-section">
-            <label htmlFor="rating-comment">
-              تعليقك <span>(اختياري)</span>
-            </label>
+          <div className="distribution">
+            {distribution.map((item) => {
+              const percentage =
+                stats.total > 0
+                  ? (item.count / stats.total) * 100
+                  : 0;
 
-            <textarea
-              id="rating-comment"
-              value={comment}
-              onChange={(event) => {
-                setComment(event.target.value);
-                setMessage("");
-                setError("");
-              }}
-              maxLength={2000}
-              placeholder="اكتب رأيك أو اقتراحك..."
-              rows={5}
-            />
-
-            <div className="counter">
-              {comment.length} / 2000
-            </div>
+              return (
+                <div className="distribution-row" key={item.label}>
+                  <span>{item.label}</span>
+                  <span className="mini-star">★</span>
+                  <div className="bar">
+                    <div
+                      className="bar-fill"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <span className="count">{item.count}</span>
+                </div>
+              );
+            })}
           </div>
+        </div>
+      </section>
 
-          {error && <div className="status error">{error}</div>}
-          {message && <div className="status success">{message}</div>}
+      <section className="write-card">
+        <h2>{selected ? "تعديل تقييمك" : "قيّم التطبيق"}</h2>
+        <p className="section-description">
+          اختر عدد النجوم وأخبرنا عن تجربتك.
+        </p>
 
+        <Stars
+          value={selected}
+          selected={selected}
+          interactive
+          onSelect={(value) => {
+            setSelected(value);
+            setMessage("");
+            setError("");
+          }}
+        />
+
+        <div className="selected-label">
+          {selected
+            ? `${selected} من 5 نجوم`
+            : "اضغط على النجوم لاختيار تقييمك"}
+        </div>
+
+        <textarea
+          value={comment}
+          onChange={(event) => {
+            setComment(event.target.value);
+            setMessage("");
+            setError("");
+          }}
+          maxLength={2000}
+          placeholder="اكتب رأيك أو اقتراحك..."
+          rows={5}
+        />
+
+        <div className="textarea-footer">
+          <span>{comment.length} / 2000</span>
+        </div>
+
+        {error && <div className="status error">{error}</div>}
+        {message && <div className="status success">{message}</div>}
+
+        <div className="actions">
           <button
             type="button"
             className="save-button"
             onClick={saveRating}
-            disabled={saving || loading}
+            disabled={saving || deleting || loading}
           >
-            {saving ? "جاري الحفظ..." : "حفظ التقييم"}
+            {saving
+              ? "جاري الحفظ..."
+              : selected
+                ? "تحديث التقييم"
+                : "نشر التقييم"}
           </button>
+
+          {selected > 0 && (
+            <button
+              type="button"
+              className="delete-button"
+              onClick={deleteRating}
+              disabled={saving || deleting || loading}
+            >
+              {deleting ? "جاري الحذف..." : "حذف تقييمي"}
+            </button>
+          )}
         </div>
-      </div>
+      </section>
+
+      <section className="reviews-section">
+        <div className="reviews-header">
+          <div>
+            <h2>تقييمات المستخدمين</h2>
+            <p>آراء حقيقية من مستخدمي Photo Editor Pro</p>
+          </div>
+          <span className="reviews-count">{stats.total}</span>
+        </div>
+
+        {loading ? (
+          <div className="empty-card">جاري تحميل التقييمات...</div>
+        ) : ratings.length === 0 ? (
+          <div className="empty-card">
+            <div className="empty-icon">★</div>
+            <strong>لا توجد تقييمات بعد</strong>
+            <span>كن أول من يشارك تجربته مع التطبيق.</span>
+          </div>
+        ) : (
+          <div className="reviews-list">
+            {ratings.map((item) => (
+              <article className="review-card" key={item.id}>
+                <div className="review-top">
+                  <div className="user-info">
+                    <div className="avatar">
+                      {(item.full_name || "م").trim().charAt(0)}
+                    </div>
+
+                    <div>
+                      <div className="user-name">
+                        {item.full_name || "مستخدم"}
+                        {item.is_owner && (
+                          <span className="owner-badge">تقييمي</span>
+                        )}
+                      </div>
+
+                      <div className="review-date">
+                        {formatDate(item.created_at)}
+                        {item.updated_at !== item.created_at && (
+                          <span> · تم التعديل</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Stars value={item.rating} />
+                </div>
+
+                {item.comment && (
+                  <p className="review-comment">{item.comment}</p>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
 
       <style jsx>{`
-        .settings-page {
+        .rating-page {
           min-height: calc(100dvh - 100px);
-          padding: 40px 24px;
-          background: #ffffff;
-          color: #111111;
-          box-sizing: border-box;
+          padding: 32px 20px 60px;
+          background:
+            radial-gradient(circle at 85% 0%, rgba(139, 92, 246, 0.13), transparent 30%),
+            radial-gradient(circle at 10% 30%, rgba(59, 130, 246, 0.08), transparent 25%),
+            #08090d;
+          color: #f7f7f8;
         }
 
-        .settings-card {
-          width: min(900px, 100%);
-          margin: 0 auto;
-          padding: 32px;
-          border-radius: 22px;
-          background: #ffffff;
-          box-sizing: border-box;
+        .hero-card,
+        .write-card,
+        .review-card,
+        .empty-card {
+          width: min(920px, 100%);
+          margin-inline: auto;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: linear-gradient(145deg, rgba(25,27,36,0.96), rgba(14,15,21,0.96));
+          box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+          border-radius: 24px;
         }
 
-        .settings-icon {
-          width: 48px;
-          height: 48px;
+        .hero-card {
+          padding: 28px;
+        }
+
+        .title-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .title-icon {
+          width: 58px;
+          height: 58px;
           display: grid;
           place-items: center;
-          border-radius: 14px;
-          background: #f1f1f1;
-          color: #111111;
-          font-size: 22px;
-          font-weight: 800;
-          margin-bottom: 18px;
+          border-radius: 18px;
+          background: linear-gradient(135deg, #f6c453, #a66b05);
+          color: #17120a;
+          font-size: 29px;
+          box-shadow: 0 10px 30px rgba(214,158,46,0.2);
+        }
+
+        h1,
+        h2,
+        p {
+          margin: 0;
         }
 
         h1 {
-          margin: 0 0 24px;
           font-size: 30px;
-          font-weight: 800;
-          color: #111111;
+          font-weight: 850;
         }
 
-        .settings-content {
-          color: #333333;
-          line-height: 1.9;
-          font-size: 16px;
+        .title-row p,
+        .section-description,
+        .reviews-header p {
+          margin-top: 5px;
+          color: #9b9daa;
+          font-size: 14px;
         }
 
-        .settings-content > p {
-          margin: 0 0 26px;
+        .overview {
+          display: grid;
+          grid-template-columns: 220px 1fr;
+          gap: 34px;
+          margin-top: 30px;
+          padding-top: 28px;
+          border-top: 1px solid rgba(255,255,255,0.08);
         }
 
-        .rating-section {
-          padding: 24px 0;
-          border-top: 1px solid #eeeeee;
-          border-bottom: 1px solid #eeeeee;
+        .average-box {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          padding: 10px;
+        }
+
+        .average-box strong {
+          font-size: 58px;
+          line-height: 1;
+          font-weight: 850;
+          background: linear-gradient(135deg, #fff, #d7d9e1);
+          -webkit-background-clip: text;
+          color: transparent;
+        }
+
+        .average-box span {
+          color: #858794;
+          font-size: 13px;
         }
 
         .stars {
           display: flex;
+          gap: 3px;
+          align-items: center;
           direction: ltr;
+        }
+
+        .display-star {
+          font-size: 22px;
+          color: #454752;
+        }
+
+        .display-star.active {
+          color: #f4b83f;
+        }
+
+        .star-button {
+          width: 48px;
+          height: 48px;
+          padding: 0;
+          border: 1px solid rgba(255,255,255,0.09);
+          border-radius: 14px;
+          background: rgba(255,255,255,0.035);
+          color: #555865;
+          font-size: 29px;
+          cursor: pointer;
+          transition: .18s ease;
+        }
+
+        .star-button:hover,
+        .star-button.active {
+          color: #f4b83f;
+          border-color: rgba(244,184,63,0.45);
+          background: rgba(244,184,63,0.08);
+          transform: translateY(-2px);
+        }
+
+        .distribution {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           gap: 8px;
         }
 
-        .star {
-          width: 52px;
-          height: 52px;
-          padding: 0;
-          border: 1px solid #dddddd;
-          border-radius: 14px;
-          background: #ffffff;
-          color: #c7c7c7;
-          font-size: 30px;
-          line-height: 1;
-          cursor: pointer;
-          transition: 0.18s ease;
+        .distribution-row {
+          display: grid;
+          grid-template-columns: 16px 20px 1fr 30px;
+          align-items: center;
+          gap: 6px;
+          color: #9a9ca7;
+          font-size: 13px;
         }
 
-        .star:hover {
-          transform: translateY(-2px);
-          border-color: #bbbbbb;
-          color: #f2b01e;
-          background: #fffaf0;
+        .mini-star {
+          color: #f4b83f;
         }
 
-        .star.active {
-          color: #f2b01e;
-          background: #fff8e6;
-          border-color: #f2d58b;
+        .bar {
+          height: 8px;
+          overflow: hidden;
+          border-radius: 99px;
+          background: rgba(255,255,255,0.08);
         }
 
-        .rating-label {
-          margin-top: 12px;
-          color: #666666;
-          font-size: 14px;
+        .bar-fill {
+          height: 100%;
+          border-radius: inherit;
+          background: linear-gradient(90deg, #f4b83f, #d98b18);
+          transition: width .35s ease;
         }
 
-        .comment-section {
-          margin-top: 26px;
+        .count {
+          text-align: left;
         }
 
-        .comment-section label {
-          display: block;
-          margin-bottom: 10px;
-          color: #111111;
-          font-weight: 700;
+        .write-card {
+          margin-top: 18px;
+          padding: 28px;
         }
 
-        .comment-section label span {
-          color: #888888;
-          font-weight: 400;
+        .write-card h2,
+        .reviews-header h2 {
+          font-size: 21px;
+          font-weight: 800;
+        }
+
+        .write-card > .stars {
+          margin-top: 22px;
+        }
+
+        .selected-label {
+          margin-top: 9px;
+          color: #9b9daa;
+          font-size: 13px;
         }
 
         textarea {
           width: 100%;
           min-height: 130px;
-          resize: vertical;
+          margin-top: 20px;
+          padding: 15px;
           box-sizing: border-box;
-          padding: 14px 16px;
-          border: 1px solid #dddddd;
-          border-radius: 14px;
-          background: #ffffff;
-          color: #111111;
-          font: inherit;
+          resize: vertical;
+          border: 1px solid rgba(255,255,255,0.09);
+          border-radius: 16px;
           outline: none;
+          background: rgba(0,0,0,0.2);
+          color: #f5f5f6;
+          font: inherit;
         }
 
         textarea:focus {
-          border-color: #999999;
+          border-color: rgba(244,184,63,0.5);
         }
 
         textarea::placeholder {
-          color: #999999;
+          color: #666875;
         }
 
-        .counter {
-          margin-top: 6px;
+        .textarea-footer {
           text-align: left;
           direction: ltr;
-          color: #999999;
-          font-size: 12px;
+          margin-top: 6px;
+          color: #666875;
+          font-size: 11px;
         }
 
         .status {
-          margin-top: 16px;
+          margin-top: 14px;
           padding: 11px 14px;
           border-radius: 12px;
-          font-size: 14px;
+          font-size: 13px;
         }
 
         .status.error {
-          background: #fff1f1;
-          color: #b42318;
+          background: rgba(220,38,38,0.1);
+          color: #ff8e8e;
         }
 
         .status.success {
-          background: #f0faf3;
-          color: #18794e;
+          background: rgba(34,197,94,0.1);
+          color: #7ee2a0;
+        }
+
+        .actions {
+          display: flex;
+          gap: 10px;
+          margin-top: 18px;
+        }
+
+        .save-button,
+        .delete-button {
+          flex: 1;
+          min-height: 50px;
+          border: 0;
+          border-radius: 14px;
+          font: inherit;
+          font-weight: 750;
+          cursor: pointer;
+          transition: .18s ease;
         }
 
         .save-button {
-          width: 100%;
-          margin-top: 20px;
-          padding: 14px 18px;
-          border: 0;
-          border-radius: 14px;
-          background: #111111;
-          color: #ffffff;
-          font: inherit;
-          font-weight: 700;
-          cursor: pointer;
-          transition: 0.18s ease;
+          background: linear-gradient(135deg, #f4c75e, #b77b12);
+          color: #17120a;
         }
 
-        .save-button:hover:not(:disabled) {
-          opacity: 0.88;
+        .delete-button {
+          background: rgba(220,38,38,0.1);
+          border: 1px solid rgba(248,113,113,0.18);
+          color: #ff8f8f;
         }
 
-        .save-button:disabled {
-          opacity: 0.5;
+        .save-button:hover:not(:disabled),
+        .delete-button:hover:not(:disabled) {
+          transform: translateY(-1px);
+        }
+
+        button:disabled {
+          opacity: .5;
           cursor: not-allowed;
         }
 
-        @media (max-width: 600px) {
-          .settings-page {
-            padding: 24px 16px;
+        .reviews-section {
+          width: min(920px, 100%);
+          margin: 34px auto 0;
+        }
+
+        .reviews-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 14px;
+          padding: 0 4px;
+        }
+
+        .reviews-count {
+          min-width: 38px;
+          height: 38px;
+          display: grid;
+          place-items: center;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.06);
+          color: #c9cad0;
+          font-size: 13px;
+        }
+
+        .reviews-list {
+          display: grid;
+          gap: 12px;
+        }
+
+        .review-card {
+          padding: 20px;
+        }
+
+        .review-top {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 15px;
+        }
+
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+        }
+
+        .avatar {
+          width: 43px;
+          height: 43px;
+          display: grid;
+          place-items: center;
+          flex: 0 0 43px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #353849, #1e2029);
+          color: #f2c75b;
+          font-weight: 800;
+        }
+
+        .user-name {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 7px;
+          font-weight: 750;
+        }
+
+        .owner-badge {
+          padding: 3px 7px;
+          border-radius: 7px;
+          background: rgba(244,184,63,0.1);
+          color: #e9b949;
+          font-size: 10px;
+          font-weight: 700;
+        }
+
+        .review-date {
+          margin-top: 4px;
+          color: #71737e;
+          font-size: 11px;
+        }
+
+        .review-comment {
+          margin-top: 16px;
+          color: #c4c5cb;
+          line-height: 1.9;
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+        }
+
+        .empty-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 180px;
+          padding: 30px;
+          box-sizing: border-box;
+          text-align: center;
+          color: #8b8d98;
+        }
+
+        .empty-icon {
+          margin-bottom: 12px;
+          font-size: 34px;
+          color: #454752;
+        }
+
+        .empty-card strong {
+          color: #d9dae0;
+        }
+
+        .empty-card span {
+          margin-top: 5px;
+          font-size: 13px;
+        }
+
+        @media (max-width: 650px) {
+          .rating-page {
+            padding: 20px 13px 45px;
           }
 
-          .settings-card {
+          .hero-card,
+          .write-card {
             padding: 20px;
-            border-radius: 18px;
+            border-radius: 20px;
           }
 
           h1 {
+            font-size: 24px;
+          }
+
+          .title-icon {
+            width: 50px;
+            height: 50px;
             font-size: 25px;
           }
 
-          .star {
-            width: 48px;
-            height: 48px;
+          .overview {
+            grid-template-columns: 1fr;
+            gap: 18px;
+          }
+
+          .average-box {
+            padding-bottom: 0;
+          }
+
+          .average-box strong {
+            font-size: 50px;
+          }
+
+          .star-button {
+            width: 45px;
+            height: 45px;
             font-size: 27px;
+          }
+
+          .review-top {
+            flex-direction: column;
+          }
+
+          .actions {
+            flex-direction: column;
           }
         }
       `}</style>

@@ -127,7 +127,7 @@ export default function Sidebar() {
       localStorage.removeItem("auth_token");
       localStorage.removeItem("profileImage");
 
-      router.replace("/login");
+      router.replace("/");
       router.refresh();
     } catch {
       setLoggingOut(false);
@@ -262,7 +262,7 @@ export default function Sidebar() {
                 }}
               >
                 <Icon>
-                  {item.href === "/profile" && profileImage ? (
+                  {item.href === "/dashboard/profile" && profileImage ? (
                     <img
                       src={profileImage}
                       alt="صورة الحساب"

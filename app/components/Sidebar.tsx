@@ -73,12 +73,12 @@ const icons = {
 };
 
 const items = [
-  { label: "إعدادات الحساب", href: "/profile", icon: icons.account },
-  { label: "سياسات الخصوصية", href: "/privacy", icon: icons.privacy },
-  { label: "الشروط والأحكام", href: "/terms", icon: icons.terms },
-  { label: "اتفاقية ترخيص", href: "/license", icon: icons.license },
-  { label: "تقييم التطبيق", href: "/rating", icon: icons.rating },
-  { label: "مركز المساعدة", href: "/help", icon: icons.help },
+  { label: "إعدادات الحساب", href: "/dashboard/profile", icon: icons.account },
+  { label: "سياسات الخصوصية", href: "/dashboard/privacy", icon: icons.privacy },
+  { label: "الشروط والأحكام", href: "/dashboard/terms", icon: icons.terms },
+  { label: "اتفاقية ترخيص", href: "/dashboard/license", icon: icons.license },
+  { label: "تقييم التطبيق", href: "/dashboard/rating", icon: icons.rating },
+  { label: "مركز المساعدة", href: "/dashboard/help", icon: icons.help },
 ];
 
 export default function Sidebar() {

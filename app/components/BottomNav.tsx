@@ -110,9 +110,9 @@ function DesignIcon({ active }: { active: boolean }) {
 
 const items = [
   { href: "/dashboard", label: "الرئيسية", Icon: HomeIcon },
-  { href: "/editor/video", label: "فيديو", Icon: VideoIcon },
-  { href: "/editor/photo", label: "صور", Icon: PhotoIcon },
-  { href: "/editor/design", label: "تصميم", Icon: DesignIcon },
+  { href: "/dashboard/editor/video", label: "فيديو", Icon: VideoIcon },
+  { href: "/dashboard/editor/photo", label: "صور", Icon: PhotoIcon },
+  { href: "/dashboard/editor/design", label: "تصميم", Icon: DesignIcon },
 ];
 
 export default function BottomNav() {

@@ -12,9 +12,9 @@ function Icon({
   return (
     <span
       style={{
-        width: 78,
-        height: 78,
-        minWidth: 78,
+        width: 46,
+        height: 46,
+        minWidth: 46,
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
@@ -89,8 +89,28 @@ export default function Sidebar() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadProfileImage = () => {
-      setProfileImage(localStorage.getItem("profileImage"));
+    const loadProfileImage = async () => {
+      const savedImage = localStorage.getItem("profileImage");
+
+      try {
+        const response = await fetch("/api/dashboard-data", {
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+        const dbImage = data?.user?.profile?.profileImage;
+
+        if (dbImage) {
+          setProfileImage(dbImage);
+          localStorage.setItem("profileImage", dbImage);
+          return;
+        }
+      } catch {
+        // استخدام الصورة المحلية عند تعذر جلب بيانات الحساب
+      }
+
+      setProfileImage(savedImage);
     };
 
     loadProfileImage();
@@ -266,11 +286,11 @@ export default function Sidebar() {
                     <img
                       src={profileImage}
                       alt="صورة الحساب"
-                      width={78}
-                      height={78}
+                      width={46}
+                      height={46}
                       style={{
-                        width: 78,
-                        height: 78,
+                        width: 46,
+                        height: 46,
                         borderRadius: "50%",
                         objectFit: "cover",
                         display: "block",

@@ -167,8 +167,7 @@ export default function BottomNav() {
                   ? "rgba(255,255,255,0.08)"
                   : "transparent",
                 textDecoration: "none",
-                transition:
-                  "color .2s ease, background .2s ease, transform .2s ease",
+                transition: "none",
                 WebkitTapHighlightColor: "transparent",
               }}
             >

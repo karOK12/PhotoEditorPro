@@ -165,13 +165,13 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
             }}
           >
             <img
-              src="https://a.top4top.io/p_3906kh6m51.jpg"
+              src="/assets/images/logo.jpg"
               alt="Photo Editor Pro"
               style={{
                 width: "100%",
-                minHeight: "100dvh",
+                height: "100%",
                 objectFit: "contain",
-                padding: "8px",
+                padding: "4px",
                 boxSizing: "border-box",
               }}
               onError={(event) => {
@@ -179,17 +179,7 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
               }}
             />
 
-            <span
-              style={{
-                position: "absolute",
-                fontSize: "27px",
-                fontWeight: "900",
-                color: "#fff",
-                pointerEvents: "none",
-              }}
-            >
-              P
-            </span>
+
           </div>
 
           <h1

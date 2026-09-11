@@ -163,9 +163,7 @@ export default function BottomNav() {
                 gap: "5px",
                 borderRadius: "14px",
                 color: active ? "#ffffff" : "#94a3b8",
-                background: active
-                  ? "rgba(255,255,255,0.08)"
-                  : "transparent",
+                background: "transparent",
                 textDecoration: "none",
                 transition: "none",
                 WebkitTapHighlightColor: "transparent",

@@ -154,24 +154,20 @@ export default function Home({ initialRegistrationCompleted }: { initialRegistra
               width: "58px",
               height: "58px",
               margin: "0 auto 9px",
-              borderRadius: "16px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background:
-                "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
-              boxShadow: "0 8px 24px rgba(37,99,235,.25)",
               overflow: "hidden",
             }}
           >
             <img
-              src="/assets/images/logo.jpg"
+              src="/assets/images/logo.png"
               alt="Photo Editor Pro"
               style={{
                 width: "100%",
                 height: "100%",
                 objectFit: "contain",
-                padding: "4px",
+                padding: "0",
                 boxSizing: "border-box",
               }}
               onError={(event) => {

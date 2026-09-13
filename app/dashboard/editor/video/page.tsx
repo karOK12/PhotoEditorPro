@@ -196,6 +196,25 @@ export default function VideoEditorPage() {
     }
   };
 
+  useEffect(() => {
+    if (!selected || !playing || selected.type !== "image") return;
+
+    const startedAt = performance.now() - currentTime * 1000;
+    const timer = window.setInterval(() => {
+      const elapsed = (performance.now() - startedAt) / 1000;
+
+      if (elapsed >= selected.duration) {
+        setCurrentTime(selected.duration);
+        setPlaying(false);
+        window.clearInterval(timer);
+      } else {
+        setCurrentTime(elapsed);
+      }
+    }, 50);
+
+    return () => window.clearInterval(timer);
+  }, [playing, selected?.id, selected?.type, selected?.duration]);
+
   const seekTimeline = (clientX: number) => {
     if (!timelineRef.current || !totalDuration) return;
 

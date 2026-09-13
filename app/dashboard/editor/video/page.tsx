@@ -492,30 +492,6 @@ export default function VideoEditorPage() {
           margin-bottom: 5px;
         }
 
-        .redGuide {
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: ${progress}%;
-          height: 2px;
-          background: #ff304f;
-          box-shadow: 0 0 9px rgba(255,48,79,.85);
-          pointer-events: none;
-          z-index: 5;
-          transition: top .04s linear;
-        }
-
-        .redGuide::after {
-          content: "";
-          position: absolute;
-          right: 0;
-          top: -4px;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: #ff304f;
-        }
-
         .playerControls {
           position: absolute;
           bottom: 10px;
@@ -857,8 +833,6 @@ export default function VideoEditorPage() {
                 <span>ابدأ مشروعك من هنا</span>
               </div>
             )}
-
-            {selected && <div className="redGuide" />}
 
             {selected && (
               <div className="playerControls">

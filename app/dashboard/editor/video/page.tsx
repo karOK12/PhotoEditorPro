@@ -189,10 +189,24 @@ export default function VideoEditorPage() {
     if (!selected) return;
 
     if (selected.type === "video" && videoRef.current) {
-      if (videoRef.current.paused) await videoRef.current.play();
-      else videoRef.current.pause();
+      const video = videoRef.current;
+
+      if (video.paused) {
+        if (video.ended || video.currentTime >= Math.max(0, selected.duration - 0.05)) {
+          video.currentTime = 0;
+          setCurrentTime(0);
+        }
+        await video.play();
+      } else {
+        video.pause();
+      }
     } else {
-      setPlaying((value) => !value);
+      if (currentTime >= Math.max(0, selected.duration - 0.05)) {
+        setCurrentTime(0);
+        setPlaying(true);
+      } else {
+        setPlaying((value) => !value);
+      }
     }
   };
 

@@ -100,10 +100,10 @@ export default function RatingPage() {
       setRatings(data.ratings || []);
       setStats(data.stats || emptyStats);
 
-      if (data.currentRating) {
+      if (data.rating) {
         setHasOwnRating(true);
-        setSelectedRating(data.currentRating.rating);
-        setComment(data.currentRating.comment || "");
+        setSelectedRating(data.rating.rating);
+        setComment(data.rating.comment || "");
       } else {
         setHasOwnRating(false);
         setSelectedRating(0);

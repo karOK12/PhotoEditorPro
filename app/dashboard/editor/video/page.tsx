@@ -867,17 +867,18 @@ export default function VideoEditorPage() {
               </div>
             )}
 
-            {selected && (
-              <div className="playerControls">
-                <button className="play" type="button" onClick={togglePlay}>
-                  {playing ? "Ⅱ" : "▶"}
-                </button>
-                <span className="playerTime">
-                  {formatTime(currentTime)} / {formatTime(selected.duration)}
-                </span>
-              </div>
-            )}
           </div>
+
+          {selected && (
+            <div className="playerControls">
+              <button className="play" type="button" onClick={togglePlay}>
+                {playing ? "Ⅱ" : "▶"}
+              </button>
+              <span className="playerTime">
+                {formatTime(currentTime)} / {formatTime(selected.duration)}
+              </span>
+            </div>
+          )}
         </section>
 
         <VideoToolPanel

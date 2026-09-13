@@ -532,8 +532,8 @@ export default function VideoEditorPage() {
           right: 10px;
           height: 42px;
           border-radius: 9px;
-          background: rgba(0,0,0,.68);
-          backdrop-filter: blur(10px);
+          background: transparent;
+          backdrop-filter: none;
           display: flex;
           align-items: center;
           justify-content: center;

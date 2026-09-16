@@ -43,19 +43,39 @@ function Stars({
   onChange?: (value: number) => void;
 }) {
   return (
-    <div className={interactive ? "rating-stars rating-stars-input interactive-stars" : "rating-stars"}>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          disabled={!interactive}
-          onClick={() => onChange?.(star)}
-          aria-label={`${star} نجوم`}
-          className={star <= value ? "star active" : "star"}
-        >
-          ★
-        </button>
-      ))}
+    <div
+      className={
+        interactive
+          ? "rating-stars rating-stars-input interactive-stars"
+          : "rating-stars"
+      }
+      role={interactive ? "radiogroup" : undefined}
+      aria-label={interactive ? "اختر تقييمك من نجمة إلى خمس نجوم" : undefined}
+    >
+      {[1, 2, 3, 4, 5].map((star) => {
+        const active = star <= value;
+
+        return interactive ? (
+          <button
+            key={star}
+            type="button"
+            className={`star ${active ? "active" : ""}`}
+            onClick={() => onChange?.(star)}
+            aria-label={`${star} نجوم`}
+            aria-pressed={active}
+          >
+            ★
+          </button>
+        ) : (
+          <span
+            key={star}
+            className={`star ${active ? "active" : ""}`}
+            aria-hidden="true"
+          >
+            ★
+          </span>
+        );
+      })}
     </div>
   );
 }

@@ -98,7 +98,17 @@ export default function RatingPage() {
       }
 
       setRatings(data.ratings || []);
-      setStats(data.stats || emptyStats);
+      setStats({
+        ...emptyStats,
+        ...(data.stats || {}),
+        total: Number(data.stats?.total || 0),
+        average: Number(data.stats?.average || 0),
+        five: Number(data.stats?.five || 0),
+        four: Number(data.stats?.four || 0),
+        three: Number(data.stats?.three || 0),
+        two: Number(data.stats?.two || 0),
+        one: Number(data.stats?.one || 0),
+      });
 
       if (data.rating) {
         setHasOwnRating(true);

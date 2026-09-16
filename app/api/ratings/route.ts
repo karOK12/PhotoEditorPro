@@ -20,10 +20,6 @@ export async function GET() {
   try {
     const userId = await getAuthenticatedUserId();
 
-    if (!userId) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
-    }
-
     const [userRatingResult, ratingsResult, statsResult] = await Promise.all([
       db.query(
         `
@@ -46,6 +42,7 @@ export async function GET() {
         `
         SELECT
           r.id,
+          r.user_id,
           r.rating,
           r.comment,
           r.created_at,

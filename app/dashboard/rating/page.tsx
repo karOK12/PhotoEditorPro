@@ -556,8 +556,10 @@ export default function RatingPage() {
 
         .choose-rating {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 12px;
+          justify-content: center;
+          gap: 6px;
           margin: 22px 0 18px;
         }
 
@@ -843,7 +845,10 @@ export default function RatingPage() {
           }
 
           .rating-stars-input .star {
-            font-size: 36px;
+            width: 48px;
+            height: 48px;
+            font-size: 42px;
+            line-height: 48px;
           }
 
           .form-footer {

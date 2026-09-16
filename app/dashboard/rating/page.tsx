@@ -281,17 +281,20 @@ export default function RatingPage() {
             )}
           </div>
 
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            maxLength={2000}
-            placeholder="اكتب مراجعتك هنا..."
-          />
+          {selectedRating > 0 && (
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              maxLength={2000}
+              placeholder="اكتب مراجعتك عن تجربتك مع التطبيق..."
+            />
+          )}
 
-          <div className="form-footer">
-            <span>{comment.length}/2000</span>
+          {selectedRating > 0 && (
+            <div className="form-footer">
+              <span>{comment.length}/2000</span>
 
-            <div className="actions">
+              <div className="actions">
               {hasOwnRating && (
                 <button
                   type="button"
@@ -315,8 +318,9 @@ export default function RatingPage() {
                     ? "حفظ التعديل"
                     : "نشر التقييم"}
               </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {error && <div className="error-box">{error}</div>}
         </section>
@@ -558,39 +562,40 @@ export default function RatingPage() {
         }
 
         .rating-stars-input {
-          gap: 8px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          direction: ltr;
+          margin: 8px 0;
         }
 
         .rating-stars-input .star {
+          width: 54px;
+          height: 54px;
+          padding: 0;
+          margin: 0;
+          border: 0;
+          background: transparent;
+          color: #777a82;
+          font-size: 48px;
+          line-height: 54px;
           cursor: pointer;
           pointer-events: auto;
           position: relative;
-          z-index: 10;
-          width: 52px;
-          height: 52px;
-          padding: 0;
-          border: 0;
-          background: transparent;
-          font-size: 48px;
-          line-height: 52px;
-          color: #3b3d44;
-          transition: transform .15s ease, color .15s ease;
+          z-index: 20;
+          transition: color .15s ease, transform .15s ease;
         }
 
         .rating-stars-input .star.active {
-          color: #f2b83f;
+          color: #fbbc04;
         }
 
         .rating-stars-input .star:hover,
         .rating-stars-input .star:focus-visible {
-          color: #f2b83f;
-          transform: scale(1.12);
+          color: #fbbc04;
+          transform: scale(1.08);
           outline: none;
-        }
-
-        .rating-stars-input .star:hover {
-          transform: scale(1.1);
-          color: #f2b83f;
         }
 
         .selected-text {

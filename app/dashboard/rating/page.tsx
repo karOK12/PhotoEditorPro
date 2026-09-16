@@ -400,27 +400,25 @@ export default function RatingPage() {
       <style jsx>{`
         .rating-page {
           min-height: 100vh;
-          background:
-            radial-gradient(circle at 50% -10%, rgba(245, 191, 66, .09), transparent 34%),
-            #090a0d;
+          background: #090a0c;
           color: #f5f5f5;
-          padding: 28px 16px 70px;
+          padding: 24px 16px 70px;
         }
 
         .rating-container {
-          width: min(900px, 100%);
+          width: min(760px, 100%);
           margin: auto;
         }
 
         .rating-header {
-          padding: 12px 4px 28px;
+          padding: 8px 4px 24px;
         }
 
         .eyebrow {
-          color: #e8b94f;
+          color: #fbbc04;
           font-size: 13px;
           font-weight: 700;
-          margin-bottom: 8px;
+          margin-bottom: 7px;
         }
 
         h1, h2, h3, p {
@@ -428,15 +426,14 @@ export default function RatingPage() {
         }
 
         .rating-header h1 {
-          font-size: clamp(25px, 5vw, 36px);
-          letter-spacing: -.6px;
-          margin-bottom: 8px;
+          font-size: clamp(24px, 5vw, 32px);
+          margin-bottom: 7px;
         }
 
         .rating-header p,
         .section-title p,
         .reviews-title p {
-          color: #92959d;
+          color: #9aa0a6;
           font-size: 14px;
           line-height: 1.7;
         }
@@ -445,18 +442,18 @@ export default function RatingPage() {
         .write-card,
         .review-card,
         .empty-card {
-          background: linear-gradient(145deg, #15171c, #101115);
-          border: 1px solid #24262d;
-          border-radius: 20px;
-          box-shadow: 0 18px 45px rgba(0,0,0,.18);
+          background: #111315;
+          border: 1px solid #292c30;
+          border-radius: 16px;
+          box-shadow: none;
         }
 
         .summary-card {
           display: grid;
-          grid-template-columns: 220px 1fr;
-          gap: 34px;
-          padding: 28px;
-          margin-bottom: 18px;
+          grid-template-columns: 190px 1fr;
+          gap: 30px;
+          padding: 26px;
+          margin-bottom: 16px;
         }
 
         .summary-score {
@@ -465,20 +462,21 @@ export default function RatingPage() {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          border-left: 1px solid #292b31;
-          padding-left: 28px;
+          border-left: 1px solid #292c30;
+          padding-left: 26px;
         }
 
         .summary-score strong {
-          font-size: 56px;
+          font-size: 58px;
           line-height: 1;
+          font-weight: 400;
           letter-spacing: -2px;
         }
 
         .summary-score > span {
-          color: #8e9199;
-          font-size: 13px;
-          margin-top: 6px;
+          color: #9aa0a6;
+          font-size: 12px;
+          margin-top: 7px;
         }
 
         .rating-stars {
@@ -492,29 +490,29 @@ export default function RatingPage() {
           background: transparent;
           padding: 0;
           margin: 0;
-          color: #3b3d44;
+          color: #5f6368;
           font-size: 20px;
           line-height: 1;
         }
 
         .star.active {
-          color: #f2b83f;
+          color: #fbbc04;
         }
 
         .distribution {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          gap: 9px;
+          gap: 10px;
         }
 
         .distribution-row {
           display: grid;
           grid-template-columns: 15px 18px 1fr 38px;
           align-items: center;
-          gap: 6px;
+          gap: 7px;
           font-size: 12px;
-          color: #9699a1;
+          color: #9aa0a6;
         }
 
         .distribution-label {
@@ -522,20 +520,20 @@ export default function RatingPage() {
         }
 
         .mini-star {
-          color: #f2b83f;
+          color: #fbbc04;
           font-size: 13px;
         }
 
         .bar {
           height: 8px;
-          background: #292b31;
+          background: #303236;
           border-radius: 20px;
           overflow: hidden;
         }
 
         .bar-fill {
           height: 100%;
-          background: #eab33e;
+          background: #fbbc04;
           border-radius: inherit;
           transition: width .3s ease;
         }
@@ -545,13 +543,17 @@ export default function RatingPage() {
         }
 
         .write-card {
-          padding: 24px;
-          margin-bottom: 34px;
+          padding: 26px;
+          margin-bottom: 32px;
+        }
+
+        .section-title {
+          text-align: center;
         }
 
         .section-title h2,
         .reviews-title h2 {
-          font-size: 19px;
+          font-size: 20px;
           margin-bottom: 5px;
         }
 
@@ -560,15 +562,15 @@ export default function RatingPage() {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 6px;
-          margin: 22px 0 18px;
+          gap: 7px;
+          margin: 24px 0 18px;
         }
 
         .rating-stars-input {
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 10px;
+          gap: 8px;
           direction: ltr;
           margin: 8px 0;
         }
@@ -579,17 +581,17 @@ export default function RatingPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 58px !important;
-          height: 58px !important;
+          width: 56px !important;
+          height: 56px !important;
           padding: 0 !important;
           margin: 0 !important;
           border: 0 !important;
           outline: none;
           background: transparent !important;
           box-shadow: none !important;
-          color: #777a82 !important;
-          font-size: 50px !important;
-          line-height: 58px !important;
+          color: #5f6368 !important;
+          font-size: 48px !important;
+          line-height: 56px !important;
           font-family: Arial, sans-serif;
           cursor: pointer;
           pointer-events: auto;
@@ -599,18 +601,18 @@ export default function RatingPage() {
         }
 
         .rating-stars-input .star.active {
-          color: #fbbc04;
+          color: #fbbc04 !important;
         }
 
         .rating-stars-input .star:hover,
         .rating-stars-input .star:focus-visible {
-          color: #fbbc04;
+          color: #fbbc04 !important;
           transform: scale(1.08);
           outline: none;
         }
 
         .selected-text {
-          color: #e9b843;
+          color: #fbbc04;
           font-size: 13px;
           font-weight: 700;
         }
@@ -619,24 +621,24 @@ export default function RatingPage() {
           width: 100%;
           min-height: 120px;
           resize: vertical;
-          background: #0c0d10;
+          background: #0b0d0f;
           color: #f5f5f5;
-          border: 1px solid #292b32;
-          border-radius: 14px;
+          border: 1px solid #3c4043;
+          border-radius: 12px;
           padding: 14px;
           outline: none;
           font: inherit;
           font-size: 14px;
           line-height: 1.8;
-          transition: border-color .2s ease;
+          box-sizing: border-box;
         }
 
         textarea:focus {
-          border-color: #b88a2e;
+          border-color: #fbbc04;
         }
 
         textarea::placeholder {
-          color: #686b73;
+          color: #777b80;
         }
 
         .form-footer {
@@ -645,7 +647,7 @@ export default function RatingPage() {
           justify-content: space-between;
           gap: 12px;
           margin-top: 10px;
-          color: #666971;
+          color: #777b80;
           font-size: 11px;
         }
 
@@ -658,8 +660,8 @@ export default function RatingPage() {
         .save-button,
         .delete-button {
           border: 0;
-          border-radius: 11px;
-          padding: 10px 17px;
+          border-radius: 20px;
+          padding: 10px 18px;
           font: inherit;
           font-size: 13px;
           font-weight: 700;
@@ -667,12 +669,12 @@ export default function RatingPage() {
         }
 
         .save-button {
-          background: #eab33e;
-          color: #17130a;
+          background: #fbbc04;
+          color: #202124;
         }
 
         .save-button:hover {
-          background: #f4c653;
+          background: #ffd15c;
         }
 
         .save-button:disabled,
@@ -682,17 +684,17 @@ export default function RatingPage() {
         }
 
         .delete-button {
-          background: #21171a;
-          color: #e1848d;
-          border: 1px solid #48262b;
+          background: #21191a;
+          color: #ea868e;
+          border: 1px solid #4b292d;
         }
 
         .error-box {
           margin-top: 14px;
           padding: 11px 13px;
           border-radius: 10px;
-          background: #27171a;
-          border: 1px solid #4b282d;
+          background: #28191b;
+          border: 1px solid #4d292e;
           color: #ee929a;
           font-size: 13px;
         }
@@ -734,8 +736,8 @@ export default function RatingPage() {
           display: grid;
           place-items: center;
           border-radius: 50%;
-          background: #24262c;
-          color: #eab33e;
+          background: #292b2e;
+          color: #fbbc04;
           font-weight: 800;
           font-size: 17px;
         }
@@ -749,16 +751,16 @@ export default function RatingPage() {
         }
 
         .owner-badge {
-          color: #eab33e;
-          background: rgba(234,179,62,.1);
-          border: 1px solid rgba(234,179,62,.2);
+          color: #fbbc04;
+          background: rgba(251,188,4,.1);
+          border: 1px solid rgba(251,188,4,.2);
           border-radius: 20px;
           padding: 2px 7px;
           font-size: 10px;
         }
 
         .review-date {
-          color: #70737b;
+          color: #777b80;
           font-size: 11px;
           margin-top: 3px;
         }
@@ -772,7 +774,7 @@ export default function RatingPage() {
         }
 
         .review-comment {
-          color: #c5c7cc;
+          color: #d2d5d8;
           font-size: 14px;
           line-height: 1.9;
           margin: 15px 0 0;
@@ -783,13 +785,13 @@ export default function RatingPage() {
         .owner-actions {
           margin-top: 12px;
           padding-top: 10px;
-          border-top: 1px solid #24262c;
+          border-top: 1px solid #292c30;
         }
 
         .owner-actions button {
           border: 0;
           background: transparent;
-          color: #eab33e;
+          color: #fbbc04;
           font: inherit;
           font-size: 12px;
           cursor: pointer;
@@ -808,8 +810,8 @@ export default function RatingPage() {
           place-items: center;
           margin: 0 auto 14px;
           border-radius: 50%;
-          background: #1e1f24;
-          color: #eab33e;
+          background: #292b2e;
+          color: #fbbc04;
           font-size: 24px;
         }
 
@@ -819,7 +821,7 @@ export default function RatingPage() {
         }
 
         .empty-card p {
-          color: #777a82;
+          color: #777b80;
           font-size: 13px;
         }
 
@@ -836,21 +838,20 @@ export default function RatingPage() {
 
           .summary-score {
             border-left: 0;
-            border-bottom: 1px solid #292b31;
+            border-bottom: 1px solid #292c30;
             padding: 0 0 22px;
           }
 
           .summary-score strong {
-            font-size: 50px;
+            font-size: 52px;
           }
 
           .write-card {
-            padding: 20px 16px;
+            padding: 22px 16px;
           }
 
-          .choose-rating {
-            justify-content: center;
-            flex-direction: column;
+          .rating-stars-input {
+            gap: 4px;
           }
 
           .rating-stars-input .star {
@@ -872,14 +873,6 @@ export default function RatingPage() {
           .save-button,
           .delete-button {
             flex: 1;
-          }
-
-          .review-top {
-            flex-direction: column;
-          }
-
-          .review-card .rating-stars {
-            margin-right: 53px;
           }
         }
       `}</style>

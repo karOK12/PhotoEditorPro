@@ -573,15 +573,23 @@ export default function RatingPage() {
         }
 
         .rating-stars-input .star {
-          width: 54px;
-          height: 54px;
-          padding: 0;
-          margin: 0;
-          border: 0;
-          background: transparent;
-          color: #777a82;
-          font-size: 48px;
-          line-height: 54px;
+          appearance: none;
+          -webkit-appearance: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 58px !important;
+          height: 58px !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          border: 0 !important;
+          outline: none;
+          background: transparent !important;
+          box-shadow: none !important;
+          color: #777a82 !important;
+          font-size: 50px !important;
+          line-height: 58px !important;
+          font-family: Arial, sans-serif;
           cursor: pointer;
           pointer-events: auto;
           position: relative;
@@ -845,10 +853,10 @@ export default function RatingPage() {
           }
 
           .rating-stars-input .star {
-            width: 48px;
-            height: 48px;
-            font-size: 42px;
-            line-height: 48px;
+            width: 52px !important;
+            height: 52px !important;
+            font-size: 44px !important;
+            line-height: 52px !important;
           }
 
           .form-footer {

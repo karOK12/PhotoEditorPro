@@ -546,8 +546,26 @@ export default function RatingPage() {
           pointer-events: auto;
           position: relative;
           z-index: 10;
-          font-size: 34px;
+          width: 52px;
+          height: 52px;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          font-size: 48px;
+          line-height: 52px;
+          color: #3b3d44;
           transition: transform .15s ease, color .15s ease;
+        }
+
+        .rating-stars-input .star.active {
+          color: #f2b83f;
+        }
+
+        .rating-stars-input .star:hover,
+        .rating-stars-input .star:focus-visible {
+          color: #f2b83f;
+          transform: scale(1.12);
+          outline: none;
         }
 
         .rating-stars-input .star:hover {

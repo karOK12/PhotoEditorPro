@@ -478,6 +478,7 @@ export default function VideoEditorPage() {
           flex: 1;
           min-height: 260px;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           padding: 14px;
@@ -526,19 +527,16 @@ export default function VideoEditorPage() {
         }
 
         .playerControls {
-          position: absolute;
-          bottom: 10px;
-          left: 10px;
-          right: 10px;
+          position: static;
+          width: min(100%, 780px);
           height: 42px;
-          border-radius: 9px;
-          background: transparent;
-          backdrop-filter: none;
+          flex-shrink: 0;
+          margin-top: 6px;
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: flex-start;
           gap: 14px;
-          z-index: 7;
+          background: transparent;
         }
 
         .play {

@@ -43,7 +43,7 @@ function Stars({
   onChange?: (value: number) => void;
 }) {
   return (
-    <div className={interactive ? "rating-stars rating-stars-input" : "rating-stars"}>
+    <div className={interactive ? "rating-stars rating-stars-input interactive-stars" : "rating-stars"}>
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
@@ -543,6 +543,9 @@ export default function RatingPage() {
 
         .rating-stars-input .star {
           cursor: pointer;
+          pointer-events: auto;
+          position: relative;
+          z-index: 10;
           font-size: 34px;
           transition: transform .15s ease, color .15s ease;
         }

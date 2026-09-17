@@ -834,6 +834,9 @@ export default function ReviewsPage() {
 
         .review-user-content {
           min-width: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
         }
 
         .user-name {
@@ -853,7 +856,6 @@ export default function ReviewsPage() {
         }
 
         .review-date {
-          margin-top: 3px;
           color: #80868b;
           font-size: 11px;
         }
@@ -922,7 +924,7 @@ export default function ReviewsPage() {
           }
 
           .review-top {
-            flex-direction: column;
+            flex-direction: row;
           }
         }
       `}</style>

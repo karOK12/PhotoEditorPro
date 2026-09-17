@@ -753,49 +753,55 @@ export default function RatingPage() {
         }
 
         .rating-stars {
-          display: flex;
-          flex-direction: row;
-          flex-wrap: nowrap;
-          align-items: center;
-          justify-content: flex-start;
-          gap: 2px;
-          direction: ltr;
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          align-items: center !important;
+          justify-content: flex-start !important;
+          gap: 2px !important;
+          direction: ltr !important;
+          width: max-content !important;
         }
 
-        .star {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 20px;
-          height: 20px;
-          padding: 0;
-          margin: 0;
-          border: 0;
-          background: transparent;
-          flex: 0 0 20px;
-          line-height: 0;
+        .rating-stars > .star {
+          display: inline-flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 20px !important;
+          height: 20px !important;
+          min-width: 20px !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          border: 0 !important;
+          background: transparent !important;
+          flex: 0 0 20px !important;
+          line-height: 0 !important;
         }
 
-        .star-icon {
-          display: block;
-          width: 18px;
-          height: 18px;
+        .rating-stars > .star > .star-icon {
+          display: block !important;
+          width: 18px !important;
+          height: 18px !important;
+          flex: 0 0 18px !important;
         }
 
         .rating-stars-input {
           gap: 2px;
         }
 
-        .rating-stars-input .star {
-          width: 24px;
-          height: 24px;
-          flex: 0 0 24px;
+        .rating-stars-input > .star {
+          width: 24px !important;
+          height: 24px !important;
+          min-width: 24px !important;
+          flex: 0 0 24px !important;
           cursor: pointer;
         }
 
-        .rating-stars-input .star-icon {
-          width: 20px;
-          height: 20px;
+        .rating-stars-input > .star > .star-icon {
+          width: 20px !important;
+          height: 20px !important;
+          flex: 0 0 20px !important;
         }
 
         .rating-stars-input .star:hover {

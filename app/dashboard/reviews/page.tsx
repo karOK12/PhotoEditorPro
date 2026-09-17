@@ -750,14 +750,20 @@ export default function ReviewsPage() {
         .review-meta {
           display: flex;
           align-items: center;
+          flex-direction: row;
           gap: 8px;
           margin-top: 4px;
+          direction: ltr;
+          width: max-content;
         }
 
         .review-meta .rating-stars {
           width: max-content;
           height: 16px;
           gap: 0;
+          flex-direction: row;
+          direction: ltr;
+          flex: 0 0 auto;
         }
 
         .review-meta .rating-stars > .star {

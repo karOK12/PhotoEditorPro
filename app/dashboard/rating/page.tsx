@@ -56,8 +56,8 @@ function Stars({
             viewBox="0 0 24 24"
             aria-hidden="true"
             className="star-icon"
-            fill={active ? "currentColor" : "none"}
-            stroke={active ? "#fbbc04" : "#d1d5db"}
+            fill={active ? "#fbbc04" : "#e8eaed"}
+            stroke={active ? "#fbbc04" : "#e8eaed"}
             strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -551,7 +551,7 @@ export default function RatingPage() {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          gap: 4px;
+          gap: 3px;
         }
 
         .distribution-row {
@@ -678,7 +678,7 @@ export default function RatingPage() {
           flex-wrap: nowrap;
           justify-content: center;
           align-items: center;
-          gap: 4px;
+          gap: 3px;
           direction: ltr;
           margin: 8px 0;
         }
@@ -689,15 +689,15 @@ export default function RatingPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 38px !important;
-          height: 38px !important;
+          width: 36px !important;
+          height: 36px !important;
           padding: 0 !important;
           margin: 0 !important;
           border: 0 !important;
           outline: none;
           background: transparent !important;
           box-shadow: none !important;
-          color: #d1d5db !important;
+          color: #e8eaed !important;
           cursor: pointer;
           pointer-events: auto;
           position: relative;
@@ -707,8 +707,8 @@ export default function RatingPage() {
 
         .rating-stars-input .star-icon {
           display: block;
-          width: 30px;
-          height: 30px;
+          width: 28px;
+          height: 28px;
           fill: none;
           stroke: currentColor;
         }
@@ -828,7 +828,7 @@ export default function RatingPage() {
         .reviews-list {
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 3px;
         }
 
         .review-card {
@@ -970,7 +970,7 @@ export default function RatingPage() {
           }
 
           .rating-stars-input {
-            gap: 4px;
+            gap: 3px;
           }
 
           .rating-stars-input .star {

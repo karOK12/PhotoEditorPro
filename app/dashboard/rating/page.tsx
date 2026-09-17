@@ -72,9 +72,9 @@ function Stars({
             className={`star ${active ? "active" : ""}`}
             onPointerDown={(e) => {
               e.preventDefault();
-              onChange?.(star);
+              onChange?.(star === value ? star - 1 : star);
             }}
-            onClick={() => onChange?.(star)}
+            onClick={() => onChange?.(star === value ? star - 1 : star)}
             aria-label={`${star} نجوم`}
             aria-pressed={active}
           >

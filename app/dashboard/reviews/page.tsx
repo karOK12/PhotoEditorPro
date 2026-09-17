@@ -396,7 +396,9 @@ export default function ReviewsPage() {
                         </div>
 
                         <div className="review-meta">
-                          <Stars value={item.rating} />
+                          <div className="review-stars-small">
+                            <Stars value={item.rating} />
+                          </div>
 
                           <span className="review-date">
                             {formatDate(
@@ -750,40 +752,48 @@ export default function ReviewsPage() {
         .review-meta {
           display: flex;
           align-items: center;
-          justify-content: flex-start;
-          flex-direction: row !important;
-          direction: ltr;
+          flex-direction: row;
           gap: 8px;
           margin-top: 4px;
           width: max-content;
         }
 
-        .review-meta .rating-stars {
+        .review-stars-small {
+          display: flex;
+          align-items: center;
+          direction: ltr;
+        }
+
+        .review-stars-small .rating-stars {
           display: flex !important;
           flex-direction: row !important;
+          flex-wrap: nowrap !important;
           align-items: center;
-          justify-content: flex-start;
           direction: ltr;
-          width: auto !important;
-          height: 16px;
           gap: 0 !important;
+          width: max-content !important;
+          height: 14px;
           margin: 0;
           transform: none !important;
-          flex: 0 0 auto;
         }
 
-        .review-meta .rating-stars .star {
+        .review-stars-small .rating-stars .star {
           display: flex;
-          width: 14px;
-          min-width: 14px;
-          height: 14px;
-          flex: 0 0 14px;
+          align-items: center;
+          justify-content: center;
+          width: 14px !important;
+          min-width: 14px !important;
+          height: 14px !important;
+          padding: 0;
+          margin: 0;
+          flex: 0 0 14px !important;
         }
 
-        .review-meta .rating-stars .star .star-icon {
-          width: 12px;
-          height: 12px;
-          flex: 0 0 12px;
+        .review-stars-small .rating-stars .star .star-icon {
+          display: block;
+          width: 12px !important;
+          height: 12px !important;
+          flex: 0 0 12px !important;
         }
 
         .user-info {

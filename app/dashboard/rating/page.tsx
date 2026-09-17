@@ -757,8 +757,8 @@ export default function RatingPage() {
           flex-direction: row;
           flex-wrap: nowrap;
           align-items: center;
-          justify-content: center;
-          gap: 3px;
+          justify-content: flex-start;
+          gap: 2px;
           direction: ltr;
         }
 
@@ -766,33 +766,41 @@ export default function RatingPage() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          flex: 0 0 auto;
+          width: 20px;
+          height: 20px;
           padding: 0;
           margin: 0;
           border: 0;
           background: transparent;
+          flex: 0 0 20px;
           line-height: 0;
         }
 
         .star-icon {
           display: block;
-          width: 25px;
-          height: 25px;
+          width: 18px;
+          height: 18px;
         }
 
         .rating-stars-input {
-          gap: 5px;
+          gap: 2px;
         }
 
         .rating-stars-input .star {
-          width: 38px;
-          height: 38px;
+          width: 24px;
+          height: 24px;
+          flex: 0 0 24px;
           cursor: pointer;
-          border-radius: 50%;
+        }
+
+        .rating-stars-input .star-icon {
+          width: 20px;
+          height: 20px;
         }
 
         .rating-stars-input .star:hover {
           background: #f8f9fa;
+          border-radius: 50%;
         }
 
         @media (max-width: 640px) {

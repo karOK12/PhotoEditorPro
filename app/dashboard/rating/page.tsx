@@ -668,6 +668,16 @@ export default function RatingPage() {
           margin: 24px 0 18px;
         }
 
+        .rating-stars {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          align-items: center !important;
+          justify-content: center !important;
+          direction: ltr !important;
+          width: 100%;
+        }
+
         .rating-stars-input {
           display: flex;
           flex-direction: row;
@@ -952,7 +962,17 @@ export default function RatingPage() {
             padding: 22px 16px;
           }
 
-          .rating-stars-input {
+          .rating-stars {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          align-items: center !important;
+          justify-content: center !important;
+          direction: ltr !important;
+          width: 100%;
+        }
+
+        .rating-stars-input {
             gap: 3px;
           }
 

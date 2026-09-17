@@ -55,17 +55,30 @@ function Stars({
       {[1, 2, 3, 4, 5].map((star) => {
         const active = star <= value;
 
+        const icon = (
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="star-icon"
+          >
+            <path d="M12 2.6l2.91 5.9 6.51.95-4.71 4.59 1.11 6.48L12 17.46l-5.82 3.06 1.11-6.48-4.71-4.59 6.51-.95L12 2.6z" />
+          </svg>
+        );
+
         return interactive ? (
           <button
             key={star}
             type="button"
             className={`star ${active ? "active" : ""}`}
-            onPointerDown={(e) => { e.preventDefault(); onChange?.(star); }}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              onChange?.(star);
+            }}
             onClick={() => onChange?.(star)}
             aria-label={`${star} نجوم`}
             aria-pressed={active}
           >
-            ★
+            {icon}
           </button>
         ) : (
           <span
@@ -73,7 +86,7 @@ function Stars({
             className={`star ${active ? "active" : ""}`}
             aria-hidden="true"
           >
-            ★
+            {icon}
           </span>
         );
       })}
@@ -522,6 +535,13 @@ export default function RatingPage() {
           line-height: 1;
         }
 
+        .star-icon {
+          display: block;
+          width: 1em;
+          height: 1em;
+          fill: currentColor;
+        }
+
         .star.active {
           color: #fbbc04;
         }
@@ -676,7 +696,7 @@ export default function RatingPage() {
           box-shadow: none !important;
           color: #5f6368 !important;
           font-size: 48px !important;
-          line-height: 56px !important;
+          line-height: 1 !important;
           font-family: Arial, sans-serif;
           cursor: pointer;
           pointer-events: auto;
@@ -943,7 +963,7 @@ export default function RatingPage() {
             width: 52px !important;
             height: 52px !important;
             font-size: 44px !important;
-            line-height: 52px !important;
+            line-height: 1 !important;
           }
 
           .form-footer {

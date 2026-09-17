@@ -435,7 +435,7 @@ export default function ReviewsPage() {
                           )}
                         </div>
 
-                        <div className="review-meta">
+                        <div className="saved-review-rating">
                           <SavedReviewStars value={item.rating} />
 
                           <span className="review-date">
@@ -809,7 +809,7 @@ export default function ReviewsPage() {
           gap: 12px;
         }
 
-        .review-meta {
+        .saved-review-rating {
           display: flex;
           align-items: center;
           flex-direction: row;

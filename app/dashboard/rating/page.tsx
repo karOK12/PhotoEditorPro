@@ -102,6 +102,7 @@ export default function RatingPage() {
   const [stats, setStats] = useState<Stats>(emptyStats);
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [showReviewForm, setShowReviewForm] = useState(false);
   const [hasOwnRating, setHasOwnRating] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -176,6 +177,7 @@ export default function RatingPage() {
         throw new Error(data.error || "تعذر حفظ التقييم");
       }
 
+      setShowReviewForm(false);
       await loadRatings();
     } catch (err) {
       setError(err instanceof Error ? err.message : "تعذر حفظ التقييم");
@@ -260,70 +262,95 @@ export default function RatingPage() {
         </section>
 
         <section className="write-card">
-          <div className="section-title">
-            <h2>{hasOwnRating ? "تعديل تقييمك" : "قيّم التطبيق"}</h2>
-            <p>
-              {hasOwnRating
-                ? "يمكنك تحديث تقييمك أو حذفه في أي وقت."
-                : "اختر عدد النجوم ثم اكتب رأيك بالتطبيق."}
-            </p>
-          </div>
+          {!showReviewForm ? (
+            <div className="review-entry">
+              <h2>قيّم هذا التطبيق</h2>
+              <p>أخبر الآخرين برأيك</p>
 
-          <div className="choose-rating">
-            <Stars
-              value={selectedRating}
-              interactive
-              onChange={setSelectedRating}
-            />
-            {selectedRating > 0 && (
-              <span className="selected-text">
-                {selectedRating} من 5
-              </span>
-            )}
-          </div>
-
-          {selectedRating > 0 && (
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              maxLength={2000}
-              placeholder="اكتب مراجعتك عن تجربتك مع التطبيق..."
-            />
-          )}
-
-          {selectedRating > 0 && (
-            <div className="form-footer">
-              <span>{comment.length}/2000</span>
-
-              <div className="actions">
-              {hasOwnRating && (
-                <button
-                  type="button"
-                  className="delete-button"
-                  disabled={deleting}
-                  onClick={deleteRating}
-                >
-                  {deleting ? "جاري الحذف..." : "حذف التقييم"}
-                </button>
-              )}
+              <Stars
+                value={hasOwnRating ? selectedRating : 0}
+                interactive={false}
+              />
 
               <button
                 type="button"
-                className="save-button"
-                disabled={saving || !selectedRating}
-                onClick={saveRating}
+                className="write-review-button"
+                onClick={() => setShowReviewForm(true)}
               >
-                {saving
-                  ? "جاري الحفظ..."
-                  : hasOwnRating
-                    ? "حفظ التعديل"
-                    : "نشر التقييم"}
+                {hasOwnRating ? "تعديل مراجعتك" : "كتابة مراجعة"}
               </button>
-              </div>
             </div>
-          )}
+          ) : (
+            <>
+              <div className="section-title">
+                <h2>{hasOwnRating ? "تعديل مراجعتك" : "كتابة مراجعة"}</h2>
+                <p>اختر تقييمك واكتب رأيك بالتطبيق.</p>
+              </div>
 
-          {error && <div className="error-box">{error}</div>}
+              <div className="choose-rating">
+                <Stars
+                  value={selectedRating}
+                  interactive
+                  onChange={setSelectedRating}
+                />
+
+                {selectedRating > 0 && (
+                  <span className="selected-text">
+                    {selectedRating} من 5
+                  </span>
+                )}
+              </div>
+
+              {selectedRating > 0 && (
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  maxLength={2000}
+                  placeholder="اكتب مراجعتك عن تجربتك مع التطبيق..."
+                />
+              )}
+
+              <div className="form-footer">
+                <span>{comment.length}/2000</span>
+
+                <div className="actions">
+                  {hasOwnRating && (
+                    <button
+                      type="button"
+                      className="delete-button"
+                      disabled={deleting}
+                      onClick={deleteRating}
+                    >
+                      {deleting ? "جاري الحذف..." : "حذف التقييم"}
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    className="save-button"
+                    disabled={saving || !selectedRating}
+                    onClick={saveRating}
+                  >
+                    {saving
+                      ? "جاري النشر..."
+                      : hasOwnRating
+                        ? "حفظ التعديل"
+                        : "نشر التقييم"}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="cancel-button"
+                    onClick={() => setShowReviewForm(false)}
+                  >
+                    إلغاء
+                  </button>
+                </div>
+              </div>
+
+              {error && <div className="error-box">{error}</div>}
+            </>
+          )}
         </section>
 
         <section className="reviews-section">
@@ -545,6 +572,64 @@ export default function RatingPage() {
         .write-card {
           padding: 26px;
           margin-bottom: 32px;
+        }
+
+        .review-entry {
+          text-align: center;
+          padding: 8px 0 2px;
+        }
+
+        .review-entry h2 {
+          font-size: 20px;
+          margin-bottom: 5px;
+        }
+
+        .review-entry p {
+          color: #9aa0a6;
+          font-size: 14px;
+          margin-bottom: 18px;
+        }
+
+        .review-entry .rating-stars {
+          justify-content: center;
+          margin-bottom: 20px;
+        }
+
+        .review-entry .star {
+          font-size: 30px;
+        }
+
+        .write-review-button {
+          border: 1px solid #5f6368;
+          background: transparent;
+          color: #f5f5f5;
+          border-radius: 20px;
+          padding: 10px 22px;
+          font: inherit;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        .write-review-button:hover {
+          background: #202124;
+          border-color: #9aa0a6;
+        }
+
+        .cancel-button {
+          border: 0;
+          background: transparent;
+          color: #9aa0a6;
+          border-radius: 20px;
+          padding: 10px 14px;
+          font: inherit;
+          font-size: 13px;
+          cursor: pointer;
+        }
+
+        .cancel-button:hover {
+          color: #f5f5f5;
+          background: #202124;
         }
 
         .section-title {

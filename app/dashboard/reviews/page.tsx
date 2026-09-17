@@ -750,30 +750,37 @@ export default function ReviewsPage() {
         .review-meta {
           display: flex;
           align-items: center;
-          flex-direction: row;
+          justify-content: flex-start;
+          flex-direction: row !important;
+          direction: ltr;
           gap: 8px;
           margin-top: 4px;
-          direction: ltr;
           width: max-content;
         }
 
         .review-meta .rating-stars {
-          width: max-content;
-          height: 16px;
-          gap: 0;
-          flex-direction: row;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center;
+          justify-content: flex-start;
           direction: ltr;
+          width: auto !important;
+          height: 16px;
+          gap: 0 !important;
+          margin: 0;
+          transform: none !important;
           flex: 0 0 auto;
         }
 
-        .review-meta .rating-stars > .star {
+        .review-meta .rating-stars .star {
+          display: flex;
           width: 16px;
           min-width: 16px;
           height: 16px;
           flex: 0 0 16px;
         }
 
-        .review-meta .rating-stars > .star > .star-icon {
+        .review-meta .rating-stars .star .star-icon {
           width: 14px;
           height: 14px;
           flex: 0 0 14px;

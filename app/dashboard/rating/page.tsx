@@ -140,8 +140,7 @@ export default function RatingPage() {
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState("");
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [showAllReviews, setShowAllReviews] = useState(false);
-  const [hasOwnRating, setHasOwnRating] = useState(false);
+    const [hasOwnRating, setHasOwnRating] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -271,7 +270,7 @@ export default function RatingPage() {
             <button
               type="button"
               className="rating-reviews-link"
-              onClick={() => setShowAllReviews(true)}
+              onClick={() => { window.location.href = "/dashboard/reviews"; }}
               aria-label="فتح التقييمات والمراجعات"
             >
               <span className="rating-reviews-score">
@@ -404,73 +403,6 @@ export default function RatingPage() {
             </>
           )}
         </section>
-
-        {showAllReviews && (
-          <section className="all-reviews-section">
-            <div className="all-reviews-header">
-              <button
-                type="button"
-                className="back-reviews-button"
-                onClick={() => setShowAllReviews(false)}
-              >
-                ← العودة
-              </button>
-
-              <div>
-                <h2>مراجعة التقييمات</h2>
-                <p>{stats.total} مراجعة حقيقية من مستخدمي التطبيق</p>
-              </div>
-            </div>
-
-            {loading ? (
-              <div className="state-card">جاري تحميل التقييمات...</div>
-            ) : ratings.length === 0 ? (
-              <div className="state-card">
-                <svg className="empty-star" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
-                </svg>
-                <h3>لا توجد مراجعات بعد</h3>
-                <p>ستظهر هنا التقييمات والتعليقات الحقيقية للمستخدمين.</p>
-              </div>
-            ) : (
-              <div className="reviews-list">
-                {ratings.map((item) => (
-                  <article className="review-card" key={item.id}>
-                    <div className="review-top">
-                      <div className="user-info">
-                        <div className="avatar">
-                          {(item.full_name || "م").trim().charAt(0)}
-                        </div>
-
-                        <div>
-                          <div className="user-name">
-                            {item.full_name || "مستخدم"}
-                            {item.is_owner && (
-                              <span className="owner-badge">أنت</span>
-                            )}
-                          </div>
-
-                          <div className="review-date">
-                            {formatDate(item.updated_at || item.created_at)}
-                            {item.updated_at !== item.created_at && (
-                              <span> · تم التعديل</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <Stars value={item.rating} />
-                    </div>
-
-                    {item.comment && (
-                      <p className="review-comment">{item.comment}</p>
-                    )}
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
 
         <section className="reviews-section">
           <div className="reviews-heading">

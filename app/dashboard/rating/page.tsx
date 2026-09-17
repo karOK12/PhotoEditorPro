@@ -56,39 +56,35 @@ function Stars({
             viewBox="0 0 24 24"
             aria-hidden="true"
             className="star-icon"
-            fill={active ? "#fbbc04" : "#e8eaed"}
-            stroke={active ? "#fbbc04" : "#e8eaed"}
-            strokeWidth="1.8"
+            fill={active ? "#fbbc04" : "none"}
+            stroke={active ? "#fbbc04" : "#8a8a8a"}
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M12 2.6l2.91 5.9 6.51.95-4.71 4.59 1.11 6.48L12 17.46l-5.82 3.06 1.11-6.48-4.71-4.59 6.51-.95L12 2.6z" />
+            <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24z" />
           </svg>
         );
 
-        if (!interactive) {
-          return (
-            <span
-              key={star}
-              className={`star ${active ? "active" : ""}`}
-              aria-hidden="true"
-            >
-              {icon}
-            </span>
-          );
-        }
-
-        return (
+        return interactive ? (
           <button
             key={star}
             type="button"
-            className={`star ${active ? "active" : ""}`}
+            className="star"
             onClick={() => onChange?.(star === value ? star - 1 : star)}
             aria-label={`${star} نجوم`}
             aria-pressed={active}
           >
             {icon}
           </button>
+        ) : (
+          <span
+            key={star}
+            className="star"
+            aria-hidden="true"
+          >
+            {icon}
+          </span>
         );
       })}
     </div>
@@ -676,10 +672,10 @@ export default function RatingPage() {
           display: flex;
           flex-direction: row;
           flex-wrap: nowrap;
-          justify-content: center;
           align-items: center;
-          gap: 3px;
+          justify-content: center;
           direction: ltr;
+          gap: 9px;
           margin: 8px 0;
         }
 
@@ -689,44 +685,31 @@ export default function RatingPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 36px !important;
-          height: 36px !important;
+          width: 38px !important;
+          height: 38px !important;
           padding: 0 !important;
           margin: 0 !important;
           border: 0 !important;
-          outline: none;
+          outline: none !important;
           background: transparent !important;
           box-shadow: none !important;
-          color: #e8eaed !important;
           cursor: pointer;
-          pointer-events: auto;
           position: relative;
-          z-index: 20;
-          transition: color .15s ease, transform .15s ease;
         }
 
         .rating-stars-input .star-icon {
           display: block;
           width: 28px;
           height: 28px;
-          fill: none;
-          stroke: currentColor;
         }
 
-        .rating-stars-input .star.active {
-          color: #fbbc04 !important;
+        .rating-stars-input .star:hover .star-icon {
+          stroke: #fbbc04;
+          transform: scale(1.04);
         }
 
-        .rating-stars-input .star.active .star-icon {
-          fill: currentColor;
-          stroke: currentColor;
-        }
-
-        .rating-stars-input .star:hover,
         .rating-stars-input .star:focus-visible {
-          color: #fbbc04 !important;
-          transform: scale(1.08);
-          outline: none;
+          outline: none !important;
         }
 
 

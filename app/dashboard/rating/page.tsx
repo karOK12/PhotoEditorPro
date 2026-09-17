@@ -44,11 +44,7 @@ function Stars({
 }) {
   return (
     <div
-      className={
-        interactive
-          ? "rating-stars rating-stars-input interactive-stars"
-          : "rating-stars"
-      }
+      className={interactive ? "rating-stars rating-stars-input" : "rating-stars"}
       role={interactive ? "radiogroup" : undefined}
       aria-label={interactive ? "اختر تقييمك من نجمة إلى خمس نجوم" : undefined}
     >
@@ -60,34 +56,39 @@ function Stars({
             viewBox="0 0 24 24"
             aria-hidden="true"
             className="star-icon"
+            fill={active ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
             <path d="M12 2.6l2.91 5.9 6.51.95-4.71 4.59 1.11 6.48L12 17.46l-5.82 3.06 1.11-6.48-4.71-4.59 6.51-.95L12 2.6z" />
           </svg>
         );
 
-        return interactive ? (
+        if (!interactive) {
+          return (
+            <span
+              key={star}
+              className={`star ${active ? "active" : ""}`}
+              aria-hidden="true"
+            >
+              {icon}
+            </span>
+          );
+        }
+
+        return (
           <button
             key={star}
             type="button"
             className={`star ${active ? "active" : ""}`}
-            onPointerDown={(e) => {
-              e.preventDefault();
-              onChange?.(star === value ? star - 1 : star);
-            }}
             onClick={() => onChange?.(star === value ? star - 1 : star)}
             aria-label={`${star} نجوم`}
             aria-pressed={active}
           >
             {icon}
           </button>
-        ) : (
-          <span
-            key={star}
-            className={`star ${active ? "active" : ""}`}
-            aria-hidden="true"
-          >
-            {icon}
-          </span>
         );
       })}
     </div>
@@ -673,9 +674,11 @@ export default function RatingPage() {
 
         .rating-stars-input {
           display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
           justify-content: center;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
           direction: ltr;
           margin: 8px 0;
         }
@@ -686,18 +689,15 @@ export default function RatingPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 56px !important;
-          height: 56px !important;
+          width: 52px !important;
+          height: 52px !important;
           padding: 0 !important;
           margin: 0 !important;
           border: 0 !important;
           outline: none;
           background: transparent !important;
           box-shadow: none !important;
-          color: #5f6368 !important;
-          font-size: 48px !important;
-          line-height: 1 !important;
-          font-family: Arial, sans-serif;
+          color: #9aa0a6 !important;
           cursor: pointer;
           pointer-events: auto;
           position: relative;
@@ -705,8 +705,21 @@ export default function RatingPage() {
           transition: color .15s ease, transform .15s ease;
         }
 
+        .rating-stars-input .star-icon {
+          display: block;
+          width: 44px;
+          height: 44px;
+          fill: none;
+          stroke: currentColor;
+        }
+
         .rating-stars-input .star.active {
           color: #fbbc04 !important;
+        }
+
+        .rating-stars-input .star.active .star-icon {
+          fill: currentColor;
+          stroke: currentColor;
         }
 
         .rating-stars-input .star:hover,
@@ -715,6 +728,7 @@ export default function RatingPage() {
           transform: scale(1.08);
           outline: none;
         }
+
 
         .selected-text {
           color: #fbbc04;

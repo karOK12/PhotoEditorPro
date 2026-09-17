@@ -275,10 +275,13 @@ export default function RatingPage() {
               aria-label="فتح التقييمات والمراجعات"
             >
               <span className="rating-reviews-score">
-                <svg className="rating-reviews-star" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-4.58 6.49-.94L12 2.5z" />
-                </svg>
-                <strong>{stats.average ? stats.average.toFixed(1) : "0.0"}</strong>
+                <span className="rating-reviews-main">
+                  <svg className="rating-reviews-star" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47 6.49-.94L12 2.5z" />
+                  </svg>
+                  <strong>{stats.average ? stats.average.toFixed(1) : "0.0"}</strong>
+                </span>
+                <span className="rating-reviews-count">{stats.total} مراجعة</span>
               </span>
             </button>
           </div>
@@ -583,10 +586,25 @@ export default function RatingPage() {
 
         .rating-reviews-score {
           display: inline-flex;
+          flex-direction: column;
+          align-items: center;
+          direction: rtl;
+          gap: 2px;
+          color: #202124;
+        }
+
+        .rating-reviews-main {
+          display: inline-flex;
           align-items: center;
           direction: ltr;
           gap: 5px;
-          color: #202124;
+        }
+
+        .rating-reviews-count {
+          font-size: 12px;
+          font-weight: 500;
+          color: #5f6368;
+          direction: rtl;
         }
 
         .rating-reviews-score strong {

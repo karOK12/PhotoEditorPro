@@ -47,6 +47,15 @@ function Stars({
       className={interactive ? "rating-stars rating-stars-input" : "rating-stars"}
       role={interactive ? "radiogroup" : undefined}
       aria-label={interactive ? "اختر تقييمك من نجمة إلى خمس نجوم" : undefined}
+      style={{
+        display: "inline-flex",
+        flexDirection: "row",
+        flexWrap: "nowrap",
+        alignItems: "center",
+        gap: "2px",
+        direction: "ltr",
+        width: "max-content",
+      }}
     >
       {[1, 2, 3, 4, 5].map((star) => {
         const active = star <= value;
@@ -71,6 +80,16 @@ function Stars({
             key={star}
             type="button"
             className="star"
+            style={{
+              display: "inline-flex",
+              flex: "0 0 20px",
+              width: "20px",
+              height: "20px",
+              padding: 0,
+              margin: 0,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
             onClick={() => onChange?.(star === value ? star - 1 : star)}
             aria-label={`${star} نجوم`}
             aria-pressed={active}
@@ -82,6 +101,14 @@ function Stars({
             key={star}
             className="star"
             aria-hidden="true"
+            style={{
+              display: "inline-flex",
+              flex: "0 0 20px",
+              width: "20px",
+              height: "20px",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
             {icon}
           </span>

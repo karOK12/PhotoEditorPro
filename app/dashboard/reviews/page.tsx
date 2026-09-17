@@ -92,6 +92,35 @@ function Stars({
   );
 }
 
+function ReviewStars({ value }: { value: number }) {
+  return (
+    <div
+      className="review-stars"
+      aria-label={`${value} من 5 نجوم`}
+    >
+      {[1, 2, 3, 4, 5].map((star) => {
+        const active = star <= value;
+
+        return (
+          <svg
+            key={star}
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="review-star-icon"
+            fill={active ? "#fbbc04" : "none"}
+            stroke={active ? "#fbbc04" : "#8a8a8a"}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L5.82 14.13l-5-4.87 6.91-1L12 2z" />
+          </svg>
+        );
+      })}
+    </div>
+  );
+}
+
 function formatDate(value: string) {
   try {
     return new Intl.DateTimeFormat("ar-IQ", {
@@ -405,9 +434,7 @@ export default function ReviewsPage() {
                         </div>
 
                         <div className="review-meta">
-                          <div className="review-stars-small">
-                            <Stars value={item.rating} />
-                          </div>
+                          <ReviewStars value={item.rating} />
 
                           <span className="review-date">
                             {formatDate(
@@ -732,6 +759,24 @@ export default function ReviewsPage() {
           background: #fce8e6;
           color: #c5221f;
           font-size: 13px;
+        }
+
+        .review-stars {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          direction: ltr;
+          gap: 2px;
+          width: max-content;
+          height: 16px;
+          margin-top: 4px;
+        }
+
+        .review-star-icon {
+          display: block;
+          width: 14px;
+          height: 14px;
+          flex: 0 0 14px;
         }
 
         .reviews-section {

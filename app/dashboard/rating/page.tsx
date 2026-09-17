@@ -551,7 +551,7 @@ export default function RatingPage() {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          gap: 10px;
+          gap: 4px;
         }
 
         .distribution-row {
@@ -678,7 +678,7 @@ export default function RatingPage() {
           flex-wrap: nowrap;
           justify-content: center;
           align-items: center;
-          gap: 10px;
+          gap: 4px;
           direction: ltr;
           margin: 8px 0;
         }
@@ -689,8 +689,8 @@ export default function RatingPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 52px !important;
-          height: 52px !important;
+          width: 38px !important;
+          height: 38px !important;
           padding: 0 !important;
           margin: 0 !important;
           border: 0 !important;
@@ -707,8 +707,8 @@ export default function RatingPage() {
 
         .rating-stars-input .star-icon {
           display: block;
-          width: 44px;
-          height: 44px;
+          width: 30px;
+          height: 30px;
           fill: none;
           stroke: currentColor;
         }
@@ -828,7 +828,7 @@ export default function RatingPage() {
         .reviews-list {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 4px;
         }
 
         .review-card {
@@ -974,8 +974,8 @@ export default function RatingPage() {
           }
 
           .rating-stars-input .star {
-            width: 52px !important;
-            height: 52px !important;
+            width: 38px !important;
+            height: 38px !important;
             font-size: 44px !important;
             line-height: 1 !important;
           }

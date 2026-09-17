@@ -71,7 +71,7 @@ function Stars({
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24z" />
+            <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
           </svg>
         );
 
@@ -304,7 +304,7 @@ export default function RatingPage() {
                 <div className="distribution-row" key={item.stars}>
                   <span>{item.stars}</span>
                   <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-.94 6.49-.94L12 2.5z" />
+                    <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
                   </svg>
                   <div className="distribution-bar">
                     <div style={{ width: `${percent}%` }} />
@@ -427,7 +427,7 @@ export default function RatingPage() {
             ) : ratings.length === 0 ? (
               <div className="state-card">
                 <svg className="empty-star" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-.94 4.58-4.58 6.49-.94L12 2.5z" />
+                  <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
                 </svg>
                 <h3>لا توجد مراجعات بعد</h3>
                 <p>ستظهر هنا التقييمات والتعليقات الحقيقية للمستخدمين.</p>

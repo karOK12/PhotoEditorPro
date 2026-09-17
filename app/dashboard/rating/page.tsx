@@ -761,29 +761,40 @@ export default function RatingPage() {
           gap: 2px !important;
           direction: ltr !important;
           width: max-content !important;
+          height: 20px !important;
         }
 
         .rating-stars > .star {
           display: inline-flex !important;
           flex-direction: row !important;
+          flex-wrap: nowrap !important;
           align-items: center !important;
           justify-content: center !important;
           width: 20px !important;
-          height: 20px !important;
           min-width: 20px !important;
+          max-width: 20px !important;
+          height: 20px !important;
+          min-height: 20px !important;
+          max-height: 20px !important;
           padding: 0 !important;
           margin: 0 !important;
           border: 0 !important;
           background: transparent !important;
           flex: 0 0 20px !important;
           line-height: 0 !important;
+          box-sizing: border-box !important;
         }
 
         .rating-stars > .star > .star-icon {
           display: block !important;
           width: 18px !important;
+          min-width: 18px !important;
+          max-width: 18px !important;
           height: 18px !important;
+          min-height: 18px !important;
+          max-height: 18px !important;
           flex: 0 0 18px !important;
+          margin: 0 !important;
         }
 
         .rating-stars-input {

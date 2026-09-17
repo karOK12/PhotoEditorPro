@@ -92,10 +92,10 @@ function Stars({
   );
 }
 
-function ReviewStars({ value }: { value: number }) {
+function SavedReviewStars({ value }: { value: number }) {
   return (
     <div
-      className="review-stars"
+      className="saved-review-stars"
       aria-label={`${value} من 5 نجوم`}
     >
       {[1, 2, 3, 4, 5].map((star) => {
@@ -106,7 +106,7 @@ function ReviewStars({ value }: { value: number }) {
             key={star}
             viewBox="0 0 24 24"
             aria-hidden="true"
-            className="review-star-icon"
+            className="saved-review-star-icon"
             width="14"
             height="14"
             fill={active ? "#fbbc04" : "none"}
@@ -436,7 +436,7 @@ export default function ReviewsPage() {
                         </div>
 
                         <div className="review-meta">
-                          <ReviewStars value={item.rating} />
+                          <SavedReviewStars value={item.rating} />
 
                           <span className="review-date">
                             {formatDate(
@@ -763,7 +763,7 @@ export default function ReviewsPage() {
           font-size: 13px;
         }
 
-        .review-stars {
+        .saved-review-stars {
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -774,7 +774,7 @@ export default function ReviewsPage() {
           margin-top: 4px;
         }
 
-        .review-star-icon {
+        .saved-review-star-icon {
           display: block;
           width: 14px !important;
           height: 14px !important;

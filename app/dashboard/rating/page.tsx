@@ -57,7 +57,7 @@ function Stars({
             aria-hidden="true"
             className="star-icon"
             fill={active ? "currentColor" : "none"}
-            stroke="currentColor"
+            stroke={active ? "#fbbc04" : "#d1d5db"}
             strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -697,7 +697,7 @@ export default function RatingPage() {
           outline: none;
           background: transparent !important;
           box-shadow: none !important;
-          color: #9aa0a6 !important;
+          color: #d1d5db !important;
           cursor: pointer;
           pointer-events: auto;
           position: relative;

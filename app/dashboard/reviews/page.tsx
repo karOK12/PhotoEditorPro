@@ -107,6 +107,8 @@ function ReviewStars({ value }: { value: number }) {
             viewBox="0 0 24 24"
             aria-hidden="true"
             className="review-star-icon"
+            width="14"
+            height="14"
             fill={active ? "#fbbc04" : "none"}
             stroke={active ? "#fbbc04" : "#8a8a8a"}
             strokeWidth="2"
@@ -774,9 +776,13 @@ export default function ReviewsPage() {
 
         .review-star-icon {
           display: block;
-          width: 14px;
-          height: 14px;
-          flex: 0 0 14px;
+          width: 14px !important;
+          height: 14px !important;
+          min-width: 14px !important;
+          max-width: 14px !important;
+          min-height: 14px !important;
+          max-height: 14px !important;
+          flex: 0 0 14px !important;
         }
 
         .reviews-section {

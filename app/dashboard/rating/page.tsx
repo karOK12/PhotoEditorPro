@@ -140,6 +140,7 @@ export default function RatingPage() {
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState("");
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
   const [hasOwnRating, setHasOwnRating] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -261,8 +262,22 @@ export default function RatingPage() {
       <div className="rating-shell">
 
         <header className="rating-header">
-          <span className="rating-eyebrow">تقييم التطبيق</span>
-          <h1>Photo Editor Pro</h1>
+          <div className="rating-header-top">
+            <div>
+              <span className="rating-eyebrow">تقييم التطبيق</span>
+              <h1>Photo Editor Pro</h1>
+            </div>
+
+            <button
+              type="button"
+              className="rating-reviews-link"
+              onClick={() => setShowAllReviews(true)}
+            >
+              <strong>مراجعة التقييمات</strong>
+              <span>{stats.total} مراجعة</span>
+            </button>
+          </div>
+
           <p>شارك تجربتك مع التطبيق من خلال تقييمك ومراجعتك.</p>
         </header>
 
@@ -382,6 +397,73 @@ export default function RatingPage() {
           )}
         </section>
 
+        {showAllReviews && (
+          <section className="all-reviews-section">
+            <div className="all-reviews-header">
+              <button
+                type="button"
+                className="back-reviews-button"
+                onClick={() => setShowAllReviews(false)}
+              >
+                ← العودة
+              </button>
+
+              <div>
+                <h2>مراجعة التقييمات</h2>
+                <p>{stats.total} مراجعة حقيقية من مستخدمي التطبيق</p>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="state-card">جاري تحميل التقييمات...</div>
+            ) : ratings.length === 0 ? (
+              <div className="state-card">
+                <svg className="empty-star" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-.94 4.58-4.58 6.49-.94L12 2.5z" />
+                </svg>
+                <h3>لا توجد مراجعات بعد</h3>
+                <p>ستظهر هنا التقييمات والتعليقات الحقيقية للمستخدمين.</p>
+              </div>
+            ) : (
+              <div className="reviews-list">
+                {ratings.map((item) => (
+                  <article className="review-card" key={item.id}>
+                    <div className="review-top">
+                      <div className="user-info">
+                        <div className="avatar">
+                          {(item.full_name || "م").trim().charAt(0)}
+                        </div>
+
+                        <div>
+                          <div className="user-name">
+                            {item.full_name || "مستخدم"}
+                            {item.is_owner && (
+                              <span className="owner-badge">أنت</span>
+                            )}
+                          </div>
+
+                          <div className="review-date">
+                            {formatDate(item.updated_at || item.created_at)}
+                            {item.updated_at !== item.created_at && (
+                              <span> · تم التعديل</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <Stars value={item.rating} />
+                    </div>
+
+                    {item.comment && (
+                      <p className="review-comment">{item.comment}</p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
         <section className="reviews-section">
           <div className="reviews-heading">
             <h2>مراجعات المستخدمين</h2>
@@ -469,6 +551,90 @@ export default function RatingPage() {
 
         .rating-header {
           padding: 8px 0 28px;
+        }
+
+        .rating-header-top {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 20px;
+        }
+
+        .rating-reviews-link {
+          appearance: none;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 4px;
+          padding: 10px 14px;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          background: #ffffff;
+          white-space: nowrap;
+          cursor: pointer;
+          font: inherit;
+          text-align: right;
+          transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .rating-reviews-link strong {
+          color: #202124;
+          font-size: 14px;
+          font-weight: 700;
+        }
+
+        .rating-reviews-link span {
+          color: #5f6368;
+          font-size: 12px;
+        }
+
+        .rating-reviews-link:hover {
+          background: #f8fafc;
+          border-color: #cbd5e1;
+        }
+
+        .all-reviews-section {
+          margin: 8px 0 30px;
+          padding: 22px;
+          border: 1px solid #e5e7eb;
+          border-radius: 16px;
+          background: #fff;
+        }
+
+        .all-reviews-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 20px;
+          margin-bottom: 22px;
+        }
+
+        .all-reviews-header h2 {
+          margin: 0;
+          font-size: 22px;
+          font-weight: 700;
+          color: #202124;
+        }
+
+        .all-reviews-header p {
+          margin: 6px 0 0;
+          color: #5f6368;
+          font-size: 13px;
+        }
+
+        .back-reviews-button {
+          border: 0;
+          background: transparent;
+          color: #1a73e8;
+          font: inherit;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .back-reviews-button:hover {
+          text-decoration: underline;
         }
 
         .rating-eyebrow {

@@ -30,9 +30,10 @@ export async function GET() {
           r.created_at,
           r.updated_at,
           u.full_name,
-          u.profile_image
+          p.profile_image
         FROM app_ratings r
         INNER JOIN users u ON u.id = r.user_id
+        LEFT JOIN user_profiles p ON p.user_id = r.user_id
         WHERE r.user_id = $1
         LIMIT 1
         `,
@@ -49,10 +50,11 @@ export async function GET() {
           r.created_at,
           r.updated_at,
           u.full_name,
-          u.profile_image,
+          p.profile_image,
           CASE WHEN r.user_id = $1 THEN true ELSE false END AS is_owner
         FROM app_ratings r
         INNER JOIN users u ON u.id = r.user_id
+        LEFT JOIN user_profiles p ON p.user_id = r.user_id
         ORDER BY r.created_at DESC
         `,
         [userId]

@@ -518,7 +518,11 @@ export default function RatingPage() {
 
         .rating-stars {
           display: flex;
-          gap: 2px;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
           direction: ltr;
         }
 
@@ -527,21 +531,20 @@ export default function RatingPage() {
           background: transparent;
           padding: 0;
           margin: 0;
-          color: #5f6368;
-          font-size: 20px;
+          color: #9aa0a6;
           line-height: 1;
         }
 
         .star-icon {
           display: block;
-          width: 1em;
-          height: 1em;
-          fill: currentColor;
+          width: 28px;
+          height: 28px;
         }
 
         .star.active {
           color: #fbbc04;
         }
+
 
         .distribution {
           display: flex;
@@ -684,9 +687,10 @@ export default function RatingPage() {
           flex-wrap: nowrap;
           align-items: center;
           justify-content: center;
+          gap: 4px;
           direction: ltr;
-          gap: 9px;
           margin: 8px 0;
+          width: auto;
         }
 
         .rating-stars-input .star {
@@ -695,31 +699,31 @@ export default function RatingPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 38px !important;
-          height: 38px !important;
+          width: 36px !important;
+          height: 36px !important;
           padding: 0 !important;
           margin: 0 !important;
           border: 0 !important;
           outline: none !important;
           background: transparent !important;
           box-shadow: none !important;
+          color: #9aa0a6 !important;
           cursor: pointer;
-          position: relative;
+          flex: 0 0 36px;
         }
 
         .rating-stars-input .star-icon {
-          display: block;
           width: 28px;
           height: 28px;
+          display: block;
         }
 
-        .rating-stars-input .star:hover .star-icon {
-          stroke: #fbbc04;
-          transform: scale(1.04);
+        .rating-stars-input .star.active {
+          color: #fbbc04 !important;
         }
 
-        .rating-stars-input .star:focus-visible {
-          outline: none !important;
+        .rating-stars-input .star:hover {
+          color: #fbbc04 !important;
         }
 
 
@@ -962,25 +966,19 @@ export default function RatingPage() {
             padding: 22px 16px;
           }
 
-          .rating-stars {
-          display: flex !important;
-          flex-direction: row !important;
-          flex-wrap: nowrap !important;
-          align-items: center !important;
-          justify-content: center !important;
-          direction: ltr !important;
-          width: 100%;
-        }
-
-        .rating-stars-input {
+          .rating-stars-input {
             gap: 3px;
           }
 
           .rating-stars-input .star {
-            width: 38px !important;
-            height: 38px !important;
-            font-size: 44px !important;
-            line-height: 1 !important;
+            width: 36px !important;
+            height: 36px !important;
+            flex-basis: 36px;
+          }
+
+          .rating-stars-input .star-icon {
+            width: 28px;
+            height: 28px;
           }
 
           .form-footer {

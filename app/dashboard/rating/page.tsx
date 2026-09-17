@@ -277,7 +277,7 @@ export default function RatingPage() {
               <span className="rating-reviews-score">
                 <span className="rating-reviews-main">
                   <svg className="rating-reviews-star" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47 6.49-.94L12 2.5z" />
+                    <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
                   </svg>
                   <strong>{stats.average ? stats.average.toFixed(1) : "0.0"}</strong>
                 </span>

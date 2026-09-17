@@ -395,19 +395,21 @@ export default function ReviewsPage() {
                           )}
                         </div>
 
-                        <div className="review-date">
-                          {formatDate(
-                            item.updated_at || item.created_at
-                          )}
+                        <div className="review-meta">
+                          <Stars value={item.rating} />
 
-                          {item.updated_at !== item.created_at && (
-                            <span> · تم التعديل</span>
-                          )}
+                          <span className="review-date">
+                            {formatDate(
+                              item.updated_at || item.created_at
+                            )}
+
+                            {item.updated_at !== item.created_at && (
+                              <span> · تم التعديل</span>
+                            )}
+                          </span>
                         </div>
                       </div>
                     </div>
-
-                    <Stars value={item.rating} />
                   </div>
 
                   {item.comment && (
@@ -741,13 +743,34 @@ export default function ReviewsPage() {
         .review-top {
           display: flex;
           justify-content: flex-start;
-          align-items: center;
+          align-items: flex-start;
           gap: 12px;
         }
 
-        .review-top > .rating-stars {
-          transform: scale(.72);
-          transform-origin: right center;
+        .review-meta {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 4px;
+        }
+
+        .review-meta .rating-stars {
+          width: max-content;
+          height: 16px;
+          gap: 0;
+        }
+
+        .review-meta .rating-stars > .star {
+          width: 16px;
+          min-width: 16px;
+          height: 16px;
+          flex: 0 0 16px;
+        }
+
+        .review-meta .rating-stars > .star > .star-icon {
+          width: 14px;
+          height: 14px;
+          flex: 0 0 14px;
         }
 
         .user-info {

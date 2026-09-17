@@ -272,9 +272,14 @@ export default function RatingPage() {
               type="button"
               className="rating-reviews-link"
               onClick={() => setShowAllReviews(true)}
+              aria-label="فتح التقييمات والمراجعات"
             >
-              <strong>مراجعة التقييمات</strong>
-              <span>{stats.total} مراجعة</span>
+              <span className="rating-reviews-score">
+                <svg className="rating-reviews-star" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-4.58 6.49-.94L12 2.5z" />
+                </svg>
+                <strong>{stats.average ? stats.average.toFixed(1) : "0.0"}</strong>
+              </span>
             </button>
           </div>
 
@@ -563,9 +568,8 @@ export default function RatingPage() {
         .rating-reviews-link {
           appearance: none;
           display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 4px;
+          align-items: center;
+          justify-content: center;
           padding: 10px 14px;
           border: 1px solid #e2e8f0;
           border-radius: 12px;
@@ -573,19 +577,27 @@ export default function RatingPage() {
           white-space: nowrap;
           cursor: pointer;
           font: inherit;
-          text-align: right;
+          text-align: center;
           transition: border-color 0.2s ease, background 0.2s ease;
         }
 
-        .rating-reviews-link strong {
+        .rating-reviews-score {
+          display: inline-flex;
+          align-items: center;
+          direction: ltr;
+          gap: 5px;
           color: #202124;
-          font-size: 14px;
+        }
+
+        .rating-reviews-score strong {
+          font-size: 15px;
           font-weight: 700;
         }
 
-        .rating-reviews-link span {
-          color: #5f6368;
-          font-size: 12px;
+        .rating-reviews-star {
+          width: 18px;
+          height: 18px;
+          fill: currentColor;
         }
 
         .rating-reviews-link:hover {

@@ -6,6 +6,7 @@ type RatingItem = {
   id: string;
   user_id: string;
   full_name: string | null;
+  profile_image: string | null;
   rating: number;
   comment: string | null;
   created_at: string;
@@ -381,10 +382,18 @@ export default function ReviewsPage() {
                   <div className="review-top">
                     <div className="user-info">
                       <div className="avatar">
-                        {(item.full_name || "م").trim().charAt(0)}
+                        {item.profile_image ? (
+                          <img
+                            src={item.profile_image}
+                            alt=""
+                            className="avatar-image"
+                          />
+                        ) : (
+                          (item.full_name || "م").trim().charAt(0)
+                        )}
                       </div>
 
-                      <div>
+                      <div className="review-user-content">
                         <div className="user-name">
                           {item.full_name || "مستخدم"}
 
@@ -410,15 +419,15 @@ export default function ReviewsPage() {
                             )}
                           </span>
                         </div>
+
+                        {item.comment && (
+                          <p className="review-comment">
+                            {item.comment}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
-
-                  {item.comment && (
-                    <p className="review-comment">
-                      {item.comment}
-                    </p>
-                  )}
 
                   {item.is_owner && (
                     <div className="owner-actions">
@@ -803,16 +812,28 @@ export default function ReviewsPage() {
         }
 
         .avatar {
-          width: 38px;
-          height: 38px;
-          flex: 0 0 38px;
+          width: 40px;
+          height: 40px;
+          flex: 0 0 40px;
           display: grid;
           place-items: center;
+          overflow: hidden;
           border-radius: 50%;
           background: #f1f3f4;
           color: #5f6368;
           font-size: 15px;
           font-weight: 600;
+        }
+
+        .avatar-image {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .review-user-content {
+          min-width: 0;
         }
 
         .user-name {
@@ -838,10 +859,10 @@ export default function ReviewsPage() {
         }
 
         .review-comment {
-          margin: 15px 0 0;
+          margin: 7px 0 0;
           color: #3c4043;
           font-size: 14px;
-          line-height: 1.8;
+          line-height: 1.7;
           white-space: pre-wrap;
         }
 

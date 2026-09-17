@@ -29,7 +29,8 @@ export async function GET() {
           r.comment,
           r.created_at,
           r.updated_at,
-          u.full_name
+          u.full_name,
+          u.profile_image
         FROM app_ratings r
         INNER JOIN users u ON u.id = r.user_id
         WHERE r.user_id = $1
@@ -48,6 +49,7 @@ export async function GET() {
           r.created_at,
           r.updated_at,
           u.full_name,
+          u.profile_image,
           CASE WHEN r.user_id = $1 THEN true ELSE false END AS is_owner
         FROM app_ratings r
         INNER JOIN users u ON u.id = r.user_id

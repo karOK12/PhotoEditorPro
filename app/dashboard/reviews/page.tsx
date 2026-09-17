@@ -774,16 +774,16 @@ export default function ReviewsPage() {
 
         .review-meta .rating-stars .star {
           display: flex;
-          width: 16px;
-          min-width: 16px;
-          height: 16px;
-          flex: 0 0 16px;
+          width: 14px;
+          min-width: 14px;
+          height: 14px;
+          flex: 0 0 14px;
         }
 
         .review-meta .rating-stars .star .star-icon {
-          width: 14px;
-          height: 14px;
-          flex: 0 0 14px;
+          width: 12px;
+          height: 12px;
+          flex: 0 0 12px;
         }
 
         .user-info {

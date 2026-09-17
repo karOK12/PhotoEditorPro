@@ -740,9 +740,14 @@ export default function ReviewsPage() {
 
         .review-top {
           display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 18px;
+          justify-content: flex-start;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .review-top > .rating-stars {
+          transform: scale(.72);
+          transform-origin: right center;
         }
 
         .user-info {

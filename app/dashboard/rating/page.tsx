@@ -231,83 +231,75 @@ export default function RatingPage() {
 
   return (
     <main dir="rtl" className="rating-page">
-      <div className="rating-container">
+      <div className="rating-shell">
 
         <header className="rating-header">
-          <div>
-            <div className="eyebrow">رأيك يهمنا</div>
-            <h1>تقييم Photo Editor Pro</h1>
-            <p>شاركنا تجربتك وساعد المستخدمين الآخرين على معرفة رأيك.</p>
-          </div>
+          <span className="rating-eyebrow">تقييم التطبيق</span>
+          <h1>Photo Editor Pro</h1>
+          <p>شارك تجربتك مع التطبيق من خلال تقييمك ومراجعتك.</p>
         </header>
 
-        <section className="summary-card">
-          <div className="summary-score">
+        <section className="rating-overview">
+          <div className="rating-score">
             <strong>{stats.average ? stats.average.toFixed(1) : "0.0"}</strong>
             <Stars value={Math.round(stats.average)} />
             <span>{stats.total} تقييم</span>
           </div>
 
-          <div className="distribution">
+          <div className="rating-distribution">
             {distributions.map((item) => {
               const percent = percentage(item.count, stats.total);
 
               return (
                 <div className="distribution-row" key={item.stars}>
-                  <span className="distribution-label">{item.stars}</span>
-                  <span className="mini-star">★</span>
-
-                  <div className="bar">
-                    <div
-                      className="bar-fill"
-                      style={{ width: `${percent}%` }}
-                    />
+                  <span>{item.stars}</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-.94 6.49-.94L12 2.5z" />
+                  </svg>
+                  <div className="distribution-bar">
+                    <div style={{ width: `${percent}%` }} />
                   </div>
-
-                  <span className="distribution-percent">{percent}%</span>
+                  <small>{percent}%</small>
                 </div>
               );
             })}
           </div>
         </section>
 
-        <section className="write-card">
+        <section className="rating-write">
           {!showReviewForm ? (
-            <div className="review-entry">
+            <>
               <h2>قيّم هذا التطبيق</h2>
-              <p>أخبر الآخرين برأيك</p>
+              <p>ما رأيك بتجربتك مع Photo Editor Pro؟</p>
 
-              <Stars
-                value={hasOwnRating ? selectedRating : 0}
-                interactive={false}
-              />
+              <div className="write-stars">
+                <Stars
+                  value={hasOwnRating ? selectedRating : 0}
+                  interactive={false}
+                />
+              </div>
 
               <button
                 type="button"
-                className="write-review-button"
+                className="primary-button"
                 onClick={() => setShowReviewForm(true)}
               >
-                {hasOwnRating ? "تعديل مراجعتك" : "كتابة مراجعة"}
+                {hasOwnRating ? "تعديل تقييمك" : "قيّم التطبيق"}
               </button>
-            </div>
+            </>
           ) : (
             <>
-              <div className="section-title">
-                <h2>{hasOwnRating ? "تعديل مراجعتك" : "كتابة مراجعة"}</h2>
-                <p>اختر تقييمك واكتب رأيك بالتطبيق.</p>
-              </div>
+              <h2>{hasOwnRating ? "تعديل تقييمك" : "تقييم التطبيق"}</h2>
+              <p>اختر عدد النجوم واكتب مراجعتك.</p>
 
-              <div className="choose-rating">
+              <div className="interactive-rating">
                 <Stars
                   value={selectedRating}
                   interactive
                   onChange={setSelectedRating}
                 />
-
                 {selectedRating > 0 && (
-                  <span className="selected-text">
-                    {selectedRating} من 5
-                  </span>
+                  <span>{selectedRating} من 5</span>
                 )}
               </div>
 
@@ -316,7 +308,7 @@ export default function RatingPage() {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   maxLength={2000}
-                  placeholder="اكتب مراجعتك عن تجربتك مع التطبيق..."
+                  placeholder="اكتب مراجعتك..."
                 />
               )}
 
@@ -337,6 +329,14 @@ export default function RatingPage() {
 
                   <button
                     type="button"
+                    className="cancel-button"
+                    onClick={() => setShowReviewForm(false)}
+                  >
+                    إلغاء
+                  </button>
+
+                  <button
+                    type="button"
                     className="save-button"
                     disabled={saving || !selectedRating}
                     onClick={saveRating}
@@ -347,14 +347,6 @@ export default function RatingPage() {
                         ? "حفظ التعديل"
                         : "نشر التقييم"}
                   </button>
-
-                  <button
-                    type="button"
-                    className="cancel-button"
-                    onClick={() => setShowReviewForm(false)}
-                  >
-                    إلغاء
-                  </button>
                 </div>
               </div>
 
@@ -364,20 +356,20 @@ export default function RatingPage() {
         </section>
 
         <section className="reviews-section">
-          <div className="reviews-title">
-            <div>
-              <h2>تقييمات المستخدمين</h2>
-              <p>{stats.total} تقييم حقيقي من مستخدمي التطبيق</p>
-            </div>
+          <div className="reviews-heading">
+            <h2>مراجعات المستخدمين</h2>
+            <p>{stats.total} تقييم حقيقي من مستخدمي التطبيق</p>
           </div>
 
           {loading ? (
-            <div className="empty-card">جاري تحميل التقييمات...</div>
+            <div className="state-card">جاري تحميل التقييمات...</div>
           ) : ratings.length === 0 ? (
-            <div className="empty-card">
-              <div className="empty-icon">★</div>
+            <div className="state-card">
+              <svg className="empty-star" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-4.58-6.49-.94 4.7 4.58L12 2.5z" />
+              </svg>
               <h3>لا توجد تقييمات بعد</h3>
-              <p>كن أول من يشارك تجربته مع Photo Editor Pro.</p>
+              <p>كن أول من يشارك تجربته مع التطبيق.</p>
             </div>
           ) : (
             <div className="reviews-list">
@@ -420,6 +412,7 @@ export default function RatingPage() {
                         onClick={() => {
                           setSelectedRating(item.rating);
                           setComment(item.comment || "");
+                          setShowReviewForm(true);
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }}
                       >
@@ -437,334 +430,182 @@ export default function RatingPage() {
       <style jsx>{`
         .rating-page {
           min-height: 100vh;
-          background: #090a0c;
-          color: #f5f5f5;
-          padding: 24px 16px 70px;
+          background: #fff;
+          color: #202124;
+          padding: 32px 18px 70px;
         }
 
-        .rating-container {
-          width: min(760px, 100%);
+        .rating-shell {
+          width: min(900px, 100%);
           margin: auto;
         }
 
         .rating-header {
-          padding: 8px 4px 24px;
+          padding: 8px 0 28px;
         }
 
-        .eyebrow {
-          color: #fbbc04;
-          font-size: 13px;
-          font-weight: 700;
-          margin-bottom: 7px;
-        }
-
-        h1, h2, h3, p {
-          margin: 0;
+        .rating-eyebrow {
+          color: #5f6368;
+          font-size: 14px;
+          font-weight: 600;
         }
 
         .rating-header h1 {
-          font-size: clamp(24px, 5vw, 32px);
-          margin-bottom: 7px;
+          margin: 7px 0 0;
+          font-size: 34px;
+          font-weight: 700;
         }
 
         .rating-header p,
-        .section-title p,
-        .reviews-title p {
-          color: #9aa0a6;
+        .rating-write > p,
+        .reviews-heading p {
+          color: #5f6368;
           font-size: 14px;
           line-height: 1.7;
+          margin: 8px 0 0;
         }
 
-        .summary-card,
-        .write-card,
-        .review-card,
-        .empty-card {
-          background: #111315;
-          border: 1px solid #292c30;
-          border-radius: 16px;
-          box-shadow: none;
-        }
-
-        .summary-card {
+        .rating-overview {
           display: grid;
           grid-template-columns: 190px 1fr;
-          gap: 30px;
-          padding: 26px;
-          margin-bottom: 16px;
+          gap: 38px;
+          align-items: center;
+          padding: 28px 0;
+          border-top: 1px solid #e8eaed;
+          border-bottom: 1px solid #e8eaed;
         }
 
-        .summary-score {
+        .rating-score {
           text-align: center;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          border-left: 1px solid #292c30;
-          padding-left: 26px;
         }
 
-        .summary-score strong {
-          font-size: 58px;
-          line-height: 1;
-          font-weight: 400;
-          letter-spacing: -2px;
-        }
-
-        .summary-score > span {
-          color: #9aa0a6;
-          font-size: 12px;
-          margin-top: 7px;
-        }
-
-        .rating-stars {
-          display: flex;
-          flex-direction: row;
-          flex-wrap: nowrap;
-          align-items: center;
-          justify-content: center;
-          gap: 4px;
-          direction: ltr;
-        }
-
-        .star {
-          border: 0;
-          background: transparent;
-          padding: 0;
-          margin: 0;
-          color: #9aa0a6;
-          line-height: 1;
-        }
-
-        .star-icon {
+        .rating-score strong {
           display: block;
-          width: 28px;
-          height: 28px;
+          font-size: 56px;
+          line-height: 1;
+          font-weight: 500;
         }
 
-        .star.active {
-          color: #fbbc04;
+        .rating-score > span {
+          display: block;
+          margin-top: 7px;
+          color: #5f6368;
+          font-size: 13px;
         }
 
-
-        .distribution {
+        .rating-distribution {
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          gap: 3px;
+          gap: 7px;
         }
 
         .distribution-row {
           display: grid;
-          grid-template-columns: 15px 18px 1fr 38px;
-          align-items: center;
+          grid-template-columns: 15px 17px minmax(80px, 1fr) 40px;
           gap: 7px;
-          font-size: 12px;
-          color: #9aa0a6;
-        }
-
-        .distribution-label {
-          text-align: center;
-        }
-
-        .mini-star {
-          color: #fbbc04;
-          font-size: 13px;
-        }
-
-        .bar {
-          height: 8px;
-          background: #303236;
-          border-radius: 20px;
-          overflow: hidden;
-        }
-
-        .bar-fill {
-          height: 100%;
-          background: #fbbc04;
-          border-radius: inherit;
-          transition: width .3s ease;
-        }
-
-        .distribution-percent {
-          text-align: left;
-        }
-
-        .write-card {
-          padding: 26px;
-          margin-bottom: 32px;
-        }
-
-        .review-entry {
-          text-align: center;
-          padding: 8px 0 2px;
-        }
-
-        .review-entry h2 {
-          font-size: 20px;
-          margin-bottom: 5px;
-        }
-
-        .review-entry p {
-          color: #9aa0a6;
-          font-size: 14px;
-          margin-bottom: 18px;
-        }
-
-        .review-entry .rating-stars {
-          justify-content: center;
-          margin-bottom: 20px;
-        }
-
-        .review-entry .star {
-          font-size: 30px;
-        }
-
-        .write-review-button {
-          border: 1px solid #5f6368;
-          background: transparent;
-          color: #f5f5f5;
-          border-radius: 20px;
-          padding: 10px 22px;
-          font: inherit;
-          font-size: 13px;
-          font-weight: 700;
-          cursor: pointer;
-        }
-
-        .write-review-button:hover {
-          background: #202124;
-          border-color: #9aa0a6;
-        }
-
-        .cancel-button {
-          border: 0;
-          background: transparent;
-          color: #9aa0a6;
-          border-radius: 20px;
-          padding: 10px 14px;
-          font: inherit;
-          font-size: 13px;
-          cursor: pointer;
-        }
-
-        .cancel-button:hover {
-          color: #f5f5f5;
-          background: #202124;
-        }
-
-        .section-title {
-          text-align: center;
-        }
-
-        .section-title h2,
-        .reviews-title h2 {
-          font-size: 20px;
-          margin-bottom: 5px;
-        }
-
-        .choose-rating {
-          display: flex;
-          flex-direction: column;
           align-items: center;
-          justify-content: center;
-          gap: 7px;
-          margin: 24px 0 18px;
-        }
-
-        .rating-stars {
-          display: flex !important;
-          flex-direction: row !important;
-          flex-wrap: nowrap !important;
-          align-items: center !important;
-          justify-content: center !important;
-          direction: ltr !important;
-          width: 100%;
-        }
-
-        .rating-stars-input {
-          display: flex;
-          flex-direction: row;
-          flex-wrap: nowrap;
-          align-items: center;
-          justify-content: center;
-          gap: 4px;
           direction: ltr;
-          margin: 8px 0;
-          width: auto;
         }
 
-        .rating-stars-input .star {
-          appearance: none;
-          -webkit-appearance: none;
+        .distribution-row span,
+        .distribution-row small {
+          color: #5f6368;
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .distribution-row svg {
+          width: 15px;
+          height: 15px;
+          fill: #fbbc04;
+          stroke: #fbbc04;
+        }
+
+        .distribution-bar {
+          height: 8px;
+          overflow: hidden;
+          border-radius: 999px;
+          background: #e8eaed;
+        }
+
+        .distribution-bar div {
+          height: 100%;
+          border-radius: inherit;
+          background: #fbbc04;
+        }
+
+        .rating-write {
+          margin-top: 26px;
+          padding: 24px;
+          border: 1px solid #dadce0;
+          border-radius: 14px;
+        }
+
+        .rating-write h2,
+        .reviews-heading h2 {
+          margin: 0;
+          font-size: 19px;
+          font-weight: 600;
+        }
+
+        .write-stars {
+          margin: 20px 0;
+        }
+
+        .primary-button,
+        .save-button {
+          border: 0;
+          border-radius: 22px;
+          padding: 11px 20px;
+          background: #1a73e8;
+          color: #fff;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .interactive-rating {
           display: flex;
           align-items: center;
-          justify-content: center;
-          width: 36px !important;
-          height: 36px !important;
-          padding: 0 !important;
-          margin: 0 !important;
-          border: 0 !important;
-          outline: none !important;
-          background: transparent !important;
-          box-shadow: none !important;
-          color: #9aa0a6 !important;
-          cursor: pointer;
-          flex: 0 0 36px;
+          gap: 12px;
+          margin: 20px 0;
         }
 
-        .rating-stars-input .star-icon {
-          width: 28px;
-          height: 28px;
-          display: block;
-        }
-
-        .rating-stars-input .star.active {
-          color: #fbbc04 !important;
-        }
-
-        .rating-stars-input .star:hover {
-          color: #fbbc04 !important;
-        }
-
-
-        .selected-text {
-          color: #fbbc04;
-          font-size: 13px;
-          font-weight: 700;
+        .interactive-rating > span {
+          color: #5f6368;
+          font-size: 14px;
+          font-weight: 600;
         }
 
         textarea {
           width: 100%;
           min-height: 120px;
-          resize: vertical;
-          background: #0b0d0f;
-          color: #f5f5f5;
-          border: 1px solid #3c4043;
-          border-radius: 12px;
-          padding: 14px;
-          outline: none;
-          font: inherit;
-          font-size: 14px;
-          line-height: 1.8;
           box-sizing: border-box;
+          resize: vertical;
+          padding: 13px;
+          border: 1px solid #dadce0;
+          border-radius: 10px;
+          outline: none;
+          background: #fff;
+          color: #202124;
+          font: inherit;
         }
 
         textarea:focus {
-          border-color: #fbbc04;
-        }
-
-        textarea::placeholder {
-          color: #777b80;
+          border-color: #1a73e8;
         }
 
         .form-footer {
           display: flex;
-          align-items: center;
           justify-content: space-between;
-          gap: 12px;
-          margin-top: 10px;
-          color: #777b80;
-          font-size: 11px;
+          align-items: center;
+          gap: 16px;
+          margin-top: 12px;
+        }
+
+        .form-footer > span {
+          color: #80868b;
+          font-size: 12px;
         }
 
         .actions {
@@ -773,70 +614,62 @@ export default function RatingPage() {
           gap: 9px;
         }
 
-        .save-button,
-        .delete-button {
+        .cancel-button,
+        .delete-button,
+        .owner-actions button {
           border: 0;
-          border-radius: 20px;
-          padding: 10px 18px;
+          background: transparent;
           font: inherit;
           font-size: 13px;
-          font-weight: 700;
+          font-weight: 600;
           cursor: pointer;
         }
 
-        .save-button {
-          background: #fbbc04;
-          color: #202124;
-        }
-
-        .save-button:hover {
-          background: #ffd15c;
-        }
-
-        .save-button:disabled,
-        .delete-button:disabled {
-          opacity: .45;
-          cursor: not-allowed;
+        .cancel-button,
+        .owner-actions button {
+          color: #1a73e8;
         }
 
         .delete-button {
-          background: #21191a;
-          color: #ea868e;
-          border: 1px solid #4b292d;
+          color: #d93025;
+        }
+
+        .save-button:disabled {
+          opacity: .45;
+          cursor: default;
         }
 
         .error-box {
           margin-top: 14px;
           padding: 11px 13px;
-          border-radius: 10px;
-          background: #28191b;
-          border: 1px solid #4d292e;
-          color: #ee929a;
+          border-radius: 8px;
+          background: #fce8e6;
+          color: #c5221f;
           font-size: 13px;
         }
 
-        .reviews-title {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 14px;
-          padding: 0 3px;
+        .reviews-section {
+          margin-top: 38px;
+        }
+
+        .reviews-heading {
+          padding-bottom: 15px;
         }
 
         .reviews-list {
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
+          border-top: 1px solid #e8eaed;
         }
 
         .review-card {
-          padding: 18px;
+          padding: 22px 0;
+          border-bottom: 1px solid #e8eaed;
         }
 
         .review-top {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          gap: 12px;
+          gap: 18px;
         }
 
         .user-info {
@@ -846,16 +679,16 @@ export default function RatingPage() {
         }
 
         .avatar {
-          width: 42px;
-          height: 42px;
-          flex: 0 0 42px;
+          width: 38px;
+          height: 38px;
+          flex: 0 0 38px;
           display: grid;
           place-items: center;
           border-radius: 50%;
-          background: #292b2e;
-          color: #fbbc04;
-          font-weight: 800;
-          font-size: 17px;
+          background: #f1f3f4;
+          color: #5f6368;
+          font-size: 15px;
+          font-weight: 600;
         }
 
         .user-name {
@@ -863,136 +696,131 @@ export default function RatingPage() {
           align-items: center;
           gap: 7px;
           font-size: 14px;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .owner-badge {
-          color: #fbbc04;
-          background: rgba(251,188,4,.1);
-          border: 1px solid rgba(251,188,4,.2);
-          border-radius: 20px;
           padding: 2px 7px;
+          border-radius: 10px;
+          background: #e8f0fe;
+          color: #1967d2;
           font-size: 10px;
         }
 
         .review-date {
-          color: #777b80;
-          font-size: 11px;
           margin-top: 3px;
-        }
-
-        .review-card .rating-stars {
-          flex-shrink: 0;
-        }
-
-        .review-card .star {
-          font-size: 17px;
+          color: #80868b;
+          font-size: 11px;
         }
 
         .review-comment {
-          color: #d2d5d8;
-          font-size: 14px;
-          line-height: 1.9;
           margin: 15px 0 0;
+          color: #3c4043;
+          font-size: 14px;
+          line-height: 1.8;
           white-space: pre-wrap;
-          overflow-wrap: anywhere;
         }
 
         .owner-actions {
           margin-top: 12px;
-          padding-top: 10px;
-          border-top: 1px solid #292c30;
         }
 
-        .owner-actions button {
-          border: 0;
-          background: transparent;
-          color: #fbbc04;
-          font: inherit;
-          font-size: 12px;
-          cursor: pointer;
-          padding: 0;
-        }
-
-        .empty-card {
+        .state-card {
+          padding: 50px 20px;
           text-align: center;
-          padding: 48px 20px;
+          border-top: 1px solid #e8eaed;
+          border-bottom: 1px solid #e8eaed;
+          color: #5f6368;
         }
 
-        .empty-icon {
-          width: 52px;
-          height: 52px;
-          display: grid;
-          place-items: center;
-          margin: 0 auto 14px;
-          border-radius: 50%;
-          background: #292b2e;
-          color: #fbbc04;
-          font-size: 24px;
+        .state-card h3 {
+          margin: 12px 0 4px;
+          color: #202124;
+          font-size: 16px;
         }
 
-        .empty-card h3 {
-          font-size: 17px;
-          margin-bottom: 6px;
-        }
-
-        .empty-card p {
-          color: #777b80;
+        .state-card p {
+          margin: 0;
           font-size: 13px;
         }
 
-        @media (max-width: 650px) {
+        .empty-star {
+          width: 42px;
+          height: 42px;
+          fill: none;
+          stroke: #fbbc04;
+          stroke-width: 1.8;
+        }
+
+        .rating-stars {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          direction: ltr;
+        }
+
+        .star {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex: 0 0 auto;
+          padding: 0;
+          margin: 0;
+          border: 0;
+          background: transparent;
+          line-height: 0;
+        }
+
+        .star-icon {
+          display: block;
+          width: 25px;
+          height: 25px;
+        }
+
+        .rating-stars-input {
+          gap: 5px;
+        }
+
+        .rating-stars-input .star {
+          width: 38px;
+          height: 38px;
+          cursor: pointer;
+          border-radius: 50%;
+        }
+
+        .rating-stars-input .star:hover {
+          background: #f8f9fa;
+        }
+
+        @media (max-width: 640px) {
           .rating-page {
-            padding: 18px 12px 50px;
+            padding: 22px 14px 50px;
           }
 
-          .summary-card {
+          .rating-overview {
             grid-template-columns: 1fr;
-            gap: 22px;
-            padding: 22px 18px;
+            gap: 24px;
           }
 
-          .summary-score {
-            border-left: 0;
-            border-bottom: 1px solid #292c30;
-            padding: 0 0 22px;
-          }
-
-          .summary-score strong {
-            font-size: 52px;
-          }
-
-          .write-card {
-            padding: 22px 16px;
-          }
-
-          .rating-stars-input {
-            gap: 3px;
-          }
-
-          .rating-stars-input .star {
-            width: 36px !important;
-            height: 36px !important;
-            flex-basis: 36px;
-          }
-
-          .rating-stars-input .star-icon {
-            width: 28px;
-            height: 28px;
+          .rating-write {
+            padding: 20px 16px;
           }
 
           .form-footer {
-            align-items: flex-end;
-            flex-direction: column;
+            align-items: flex-start;
+            flex-direction: column-reverse;
           }
 
           .actions {
             width: 100%;
+            flex-wrap: wrap;
           }
 
-          .save-button,
-          .delete-button {
-            flex: 1;
+          .review-top {
+            flex-direction: column;
           }
         }
       `}</style>

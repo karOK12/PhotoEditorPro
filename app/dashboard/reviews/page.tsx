@@ -115,7 +115,7 @@ function SavedReviewStars({ value }: { value: number }) {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L5.82 14.13l-5-4.87 6.91-1L12 2z" />
+            <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
           </svg>
         );
       })}

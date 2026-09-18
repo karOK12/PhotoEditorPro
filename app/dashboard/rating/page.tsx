@@ -33,6 +33,28 @@ const emptyStats: Stats = {
   one: 0,
 };
 
+function SavedReviewStars({ value }: { value: number }) {
+  return (
+    <div className="saved-review-stars" aria-label={`${value} من 5 نجوم`}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <svg
+          key={star}
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          className="saved-review-star"
+          width="11"
+          height="11"
+          fill={star <= value ? "#fbbc04" : "none"}
+          stroke={star <= value ? "#fbbc04" : "#9aa0a6"}
+          strokeWidth="2"
+        >
+          <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L5.82 14.13l-5-4.87 6.91-1L12 2z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
 function Stars({
   value,
   interactive = false,
@@ -71,7 +93,7 @@ function Stars({
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
+            <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24z" />
           </svg>
         );
 
@@ -140,7 +162,8 @@ export default function RatingPage() {
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState("");
   const [showReviewForm, setShowReviewForm] = useState(false);
-    const [hasOwnRating, setHasOwnRating] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [hasOwnRating, setHasOwnRating] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -270,13 +293,13 @@ export default function RatingPage() {
             <button
               type="button"
               className="rating-reviews-link"
-              onClick={() => { window.location.href = "/dashboard/reviews"; }}
+              onClick={() => setShowAllReviews(true)}
               aria-label="فتح التقييمات والمراجعات"
             >
               <span className="rating-reviews-score">
                 <span className="rating-reviews-main">
                   <svg className="rating-reviews-star" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
+                    <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47 6.49-.94L12 2.5z" />
                   </svg>
                   <strong>{stats.average ? stats.average.toFixed(1) : "0.0"}</strong>
                 </span>
@@ -303,7 +326,7 @@ export default function RatingPage() {
                 <div className="distribution-row" key={item.stars}>
                   <span>{item.stars}</span>
                   <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
+                    <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-.94 6.49-.94L12 2.5z" />
                   </svg>
                   <div className="distribution-bar">
                     <div style={{ width: `${percent}%` }} />
@@ -404,6 +427,73 @@ export default function RatingPage() {
           )}
         </section>
 
+        {showAllReviews && (
+          <section className="all-reviews-section">
+            <div className="all-reviews-header">
+              <button
+                type="button"
+                className="back-reviews-button"
+                onClick={() => setShowAllReviews(false)}
+              >
+                ← العودة
+              </button>
+
+              <div>
+                <h2>مراجعة التقييمات</h2>
+                <p>{stats.total} مراجعة حقيقية من مستخدمي التطبيق</p>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="state-card">جاري تحميل التقييمات...</div>
+            ) : ratings.length === 0 ? (
+              <div className="state-card">
+                <svg className="empty-star" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-.94 4.58-4.58 6.49-.94L12 2.5z" />
+                </svg>
+                <h3>لا توجد مراجعات بعد</h3>
+                <p>ستظهر هنا التقييمات والتعليقات الحقيقية للمستخدمين.</p>
+              </div>
+            ) : (
+              <div className="reviews-list">
+                {ratings.map((item) => (
+                  <article className="review-card" key={item.id}>
+                    <div className="review-top">
+                      <div className="user-info">
+                        <div className="avatar">
+                          {(item.full_name || "م").trim().charAt(0)}
+                        </div>
+
+                        <div>
+                          <div className="user-name">
+                            {item.full_name || "مستخدم"}
+                            {item.is_owner && (
+                              <span className="owner-badge">أنت</span>
+                            )}
+                          </div>
+
+                          <div className="review-date">
+                            {formatDate(item.updated_at || item.created_at)}
+                            {item.updated_at !== item.created_at && (
+                              <span> · تم التعديل</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <SavedReviewStars value={item.rating} />
+                    </div>
+
+                    {item.comment && (
+                      <p className="review-comment">{item.comment}</p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
         <section className="reviews-section">
           <div className="reviews-heading">
             <h2>مراجعات المستخدمين</h2>
@@ -415,7 +505,7 @@ export default function RatingPage() {
           ) : ratings.length === 0 ? (
             <div className="state-card">
               <svg className="empty-star" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
+                <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-4.58-6.49-.94 4.7 4.58L12 2.5z" />
               </svg>
               <h3>لا توجد تقييمات بعد</h3>
               <p>كن أول من يشارك تجربته مع التطبيق.</p>
@@ -447,7 +537,7 @@ export default function RatingPage() {
                       </div>
                     </div>
 
-                    <Stars value={item.rating} />
+                    <SavedReviewStars value={item.rating} />
                   </div>
 
                   {item.comment && (
@@ -811,6 +901,29 @@ export default function RatingPage() {
           padding-bottom: 15px;
         }
 
+        .saved-review-stars {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: flex-start !important;
+          direction: ltr !important;
+          gap: 1px !important;
+          width: max-content !important;
+          height: 11px !important;
+          margin-top: 4px !important;
+          flex: 0 0 auto !important;
+        }
+
+        .saved-review-star {
+          display: block !important;
+          width: 11px !important;
+          height: 11px !important;
+          min-width: 11px !important;
+          max-width: 11px !important;
+          flex: 0 0 11px !important;
+          margin: 0 !important;
+        }
+
         .reviews-list {
           border-top: 1px solid #e8eaed;
         }
@@ -822,15 +935,25 @@ export default function RatingPage() {
 
         .review-top {
           display: flex;
-          justify-content: space-between;
+          justify-content: flex-start;
           align-items: flex-start;
-          gap: 18px;
+          gap: 11px;
         }
 
         .user-info {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           gap: 11px;
+          width: 100%;
+        }
+
+        .user-info > div:last-child {
+          min-width: 0;
+          flex: 1;
+        }
+
+        .user-info > div:last-child > .saved-review-stars {
+          margin-top: 4px !important;
         }
 
         .avatar {

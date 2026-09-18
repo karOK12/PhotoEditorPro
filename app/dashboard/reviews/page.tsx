@@ -772,7 +772,7 @@ export default function ReviewsPage() {
           gap: 1px !important;
           width: max-content !important;
           min-width: 0 !important;
-          height: 14px !important;
+          height: 12px !important;
           margin: 4px 0 0;
           flex: 0 0 auto !important;
         }

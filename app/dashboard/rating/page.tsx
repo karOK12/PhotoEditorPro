@@ -457,37 +457,37 @@ export default function RatingPage() {
             ) : (
               <div className="reviews-list">
                 {ratings.map((item) => (
-                  <article className="review-card" key={item.id}>
-                    <div className="review-top">
-                      <div className="user-info">
-                        <div className="avatar">
-                          {(item.full_name || "م").trim().charAt(0)}
+                  <article className="all-review-card" key={item.id}>
+                    <div className="all-review-user">
+                      <div className="all-review-avatar" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" />
+                        </svg>
+                      </div>
+
+                      <div className="all-review-body">
+                        <div className="all-review-name">
+                          {item.full_name || "مستخدم"}
+                          {item.is_owner && (
+                            <span className="owner-badge">أنت</span>
+                          )}
                         </div>
 
-                        <div>
-                          <div className="user-name">
-                            {item.full_name || "مستخدم"}
-                            {item.is_owner && (
-                              <span className="owner-badge">أنت</span>
+                        <div className="all-review-meta">
+                          <SavedReviewStars value={item.rating} />
+                          <span className="all-review-date">
+                            {formatDate(item.updated_at || item.created_at)}
+                            {item.updated_at !== item.created_at && (
+                              <span> · تم التعديل</span>
                             )}
-                          </div>
-
-                          <div className="saved-review-rating">
-                            <SavedReviewStars value={item.rating} />
-                            <span className="review-date">
-                              {formatDate(item.updated_at || item.created_at)}
-                              {item.updated_at !== item.created_at && (
-                                <span> · تم التعديل</span>
-                              )}
-                            </span>
-                          </div>
+                          </span>
                         </div>
+
+                        {item.comment && (
+                          <p className="all-review-comment">{item.comment}</p>
+                        )}
                       </div>
                     </div>
-
-                    {item.comment && (
-                      <p className="review-comment">{item.comment}</p>
-                    )}
                   </article>
                 ))}
               </div>
@@ -690,6 +690,75 @@ export default function RatingPage() {
         .back-reviews-button:hover {
           text-decoration: underline;
         }
+
+        .all-review-card {
+          padding: 18px 0;
+          border-bottom: 1px solid #e8eaed;
+        }
+
+        .all-review-user {
+          display: flex;
+          align-items: flex-start;
+          gap: 11px;
+        }
+
+        .all-review-avatar {
+          width: 38px;
+          height: 38px;
+          flex: 0 0 38px;
+          display: grid;
+          place-items: center;
+          border-radius: 50%;
+          background: #f1f3f4;
+        }
+
+        .all-review-avatar svg {
+          width: 20px;
+          height: 20px;
+          fill: #5f6368;
+        }
+
+        .all-review-body {
+          min-width: 0;
+          flex: 1;
+        }
+
+        .all-review-name {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #202124;
+        }
+
+        .all-review-meta {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-height: 15px;
+          margin-top: 3px;
+        }
+
+        .all-review-meta .saved-review-stars {
+          margin-top: 0 !important;
+        }
+
+        .all-review-date {
+          color: #80868b;
+          font-size: 11px;
+          white-space: nowrap;
+        }
+
+        .all-review-comment {
+          margin: 7px 0 0;
+          color: #3c4043;
+          font-size: 13px;
+          line-height: 1.7;
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+        }
+
 
         .rating-eyebrow {
           color: #5f6368;

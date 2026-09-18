@@ -763,13 +763,16 @@ export default function ReviewsPage() {
 
         .saved-review-stars {
           display: flex;
-          flex-direction: row;
+          flex-direction: row !important;
           align-items: center;
+          justify-content: flex-start;
           direction: ltr;
-          gap: 2px;
-          width: max-content;
-          height: 16px;
-          margin-top: 4px;
+          gap: 1px;
+          width: 80px !important;
+          min-width: 80px !important;
+          height: 15px !important;
+          margin: 4px 0 0;
+          flex: 0 0 80px !important;
         }
 
         .saved-review-star-icon {
@@ -781,6 +784,7 @@ export default function ReviewsPage() {
           min-height: 14px !important;
           max-height: 14px !important;
           flex: 0 0 14px !important;
+          margin: 0 !important;
         }
 
         .reviews-section {
@@ -796,7 +800,7 @@ export default function ReviewsPage() {
         }
 
         .review-card {
-          padding: 20px 0;
+          padding: 18px 0;
           border-bottom: 1px solid #e8eaed;
         }
 
@@ -804,6 +808,7 @@ export default function ReviewsPage() {
           display: flex;
           align-items: flex-start;
           gap: 11px;
+          width: 100%;
         }
 
         .review-content {
@@ -816,52 +821,8 @@ export default function ReviewsPage() {
           align-items: center;
           flex-direction: row;
           gap: 8px;
-          margin-top: 4px;
+          margin-top: 2px;
           width: max-content;
-        }
-
-        .review-stars-small {
-          display: flex;
-          align-items: center;
-          direction: ltr;
-        }
-
-        .review-stars-small .rating-stars {
-          display: flex !important;
-          flex-direction: row !important;
-          flex-wrap: nowrap !important;
-          align-items: center;
-          direction: ltr;
-          gap: 0 !important;
-          width: max-content !important;
-          height: 14px;
-          margin: 0;
-          transform: none !important;
-        }
-
-        .review-stars-small .rating-stars .star {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 14px !important;
-          min-width: 14px !important;
-          height: 14px !important;
-          padding: 0;
-          margin: 0;
-          flex: 0 0 14px !important;
-        }
-
-        .review-stars-small .rating-stars .star .star-icon {
-          display: block;
-          width: 12px !important;
-          height: 12px !important;
-          flex: 0 0 12px !important;
-        }
-
-        .user-info {
-          display: flex;
-          align-items: center;
-          gap: 11px;
         }
 
         .avatar {
@@ -883,13 +844,6 @@ export default function ReviewsPage() {
           width: 100%;
           height: 100%;
           object-fit: cover;
-        }
-
-        .review-user-content {
-          min-width: 0;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
         }
 
         .user-name {

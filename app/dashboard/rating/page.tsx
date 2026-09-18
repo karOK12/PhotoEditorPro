@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 type RatingItem = {
   id: string;
@@ -37,11 +39,7 @@ function SavedReviewStars({ value }: { value: number }) {
   return (
     <div className="saved-review-stars" aria-label={`${value} من 5 نجوم`}>
       {[1, 2, 3, 4, 5].map((star) => (
-        <span
-          key={star}
-          className="saved-review-star"
-          aria-hidden="true"
-        >
+        <span key={star} className="saved-review-star" aria-hidden="true">
           {star <= value ? "★" : "☆"}
         </span>
       ))}
@@ -275,13 +273,23 @@ export default function RatingPage() {
 
   return (
     <main dir="rtl" className="rating-page">
-      <div className="rating-shell">
+      {/* Header مع زر الرجوع */}
+      <header className="page-top-bar">
+        <Link href="/" className="back-btn" aria-label="العودة">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </Link>
+        <h1 className="page-title">التقييمات</h1>
+        <div style={{ width: "40px" }}></div>
+      </header>
 
+      <div className="rating-shell">
         <header className="rating-header">
           <div className="rating-header-top">
             <div>
               <span className="rating-eyebrow">تقييم التطبيق</span>
-              <h1>Photo Editor Pro</h1>
+              <h2>Photo Editor Pro</h2>
             </div>
 
             <button
@@ -335,14 +343,11 @@ export default function RatingPage() {
         <section className="rating-write">
           {!showReviewForm ? (
             <>
-              <h2>قيّم هذا التطبيق</h2>
+              <h3>قيّم هذا التطبيق</h3>
               <p>ما رأيك بتجربتك مع Photo Editor Pro؟</p>
 
               <div className="write-stars">
-                <Stars
-                  value={hasOwnRating ? selectedRating : 0}
-                  interactive={false}
-                />
+                <Stars value={hasOwnRating ? selectedRating : 0} interactive={false} />
               </div>
 
               <button
@@ -355,18 +360,12 @@ export default function RatingPage() {
             </>
           ) : (
             <>
-              <h2>{hasOwnRating ? "تعديل تقييمك" : "تقييم التطبيق"}</h2>
+              <h3>{hasOwnRating ? "تعديل تقييمك" : "تقييم التطبيق"}</h3>
               <p>اختر عدد النجوم واكتب مراجعتك.</p>
 
               <div className="interactive-rating">
-                <Stars
-                  value={selectedRating}
-                  interactive
-                  onChange={setSelectedRating}
-                />
-                {selectedRating > 0 && (
-                  <span>{selectedRating} من 5</span>
-                )}
+                <Stars value={selectedRating} interactive onChange={setSelectedRating} />
+                {selectedRating > 0 && <span>{selectedRating} من 5</span>}
               </div>
 
               {selectedRating > 0 && (
@@ -407,11 +406,7 @@ export default function RatingPage() {
                     disabled={saving || !selectedRating}
                     onClick={saveRating}
                   >
-                    {saving
-                      ? "جاري النشر..."
-                      : hasOwnRating
-                        ? "حفظ التعديل"
-                        : "نشر التقييم"}
+                    {saving ? "جاري النشر..." : hasOwnRating ? "حفظ التعديل" : "نشر التقييم"}
                   </button>
                 </div>
               </div>
@@ -433,7 +428,7 @@ export default function RatingPage() {
               </button>
 
               <div>
-                <h2>مراجعة التقييمات</h2>
+                <h3>مراجعة التقييمات</h3>
                 <p>{stats.total} مراجعة حقيقية من مستخدمي التطبيق</p>
               </div>
             </div>
@@ -445,7 +440,7 @@ export default function RatingPage() {
                 <svg className="empty-star" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-.94 4.58-4.58 6.49-.94L12 2.5z" />
                 </svg>
-                <h3>لا توجد مراجعات بعد</h3>
+                <h4>لا توجد مراجعات بعد</h4>
                 <p>ستظهر هنا التقييمات والتعليقات الحقيقية للمستخدمين.</p>
               </div>
             ) : (
@@ -462,24 +457,18 @@ export default function RatingPage() {
                       <div className="all-review-body">
                         <div className="all-review-name">
                           {item.full_name || "مستخدم"}
-                          {item.is_owner && (
-                            <span className="owner-badge">أنت</span>
-                          )}
+                          {item.is_owner && <span className="owner-badge">أنت</span>}
                         </div>
 
                         <div className="all-review-meta">
                           <SavedReviewStars value={item.rating} />
                           <span className="all-review-date">
                             {formatDate(item.updated_at || item.created_at)}
-                            {item.updated_at !== item.created_at && (
-                              <span> · تم التعديل</span>
-                            )}
+                            {item.updated_at !== item.created_at && <span> · تم التعديل</span>}
                           </span>
                         </div>
 
-                        {item.comment && (
-                          <p className="all-review-comment">{item.comment}</p>
-                        )}
+                        {item.comment && <p className="all-review-comment">{item.comment}</p>}
                       </div>
                     </div>
                   </article>
@@ -491,7 +480,7 @@ export default function RatingPage() {
 
         <section className="reviews-section">
           <div className="reviews-heading">
-            <h2>مراجعات المستخدمين</h2>
+            <h3>مراجعات المستخدمين</h3>
             <p>{stats.total} تقييم حقيقي من مستخدمي التطبيق</p>
           </div>
 
@@ -502,7 +491,7 @@ export default function RatingPage() {
               <svg className="empty-star" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 2.5l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31 6.2 20.37l1.11-6.47-4.7-4.58-6.49-.94 4.7 4.58L12 2.5z" />
               </svg>
-              <h3>لا توجد تقييمات بعد</h3>
+              <h4>لا توجد تقييمات بعد</h4>
               <p>كن أول من يشارك تجربته مع التطبيق.</p>
             </div>
           ) : (
@@ -518,27 +507,21 @@ export default function RatingPage() {
                       <div>
                         <div className="user-name">
                           {item.full_name || "مستخدم"}
-                          {item.is_owner && (
-                            <span className="owner-badge">أنت</span>
-                          )}
+                          {item.is_owner && <span className="owner-badge">أنت</span>}
                         </div>
 
                         <div className="saved-review-rating">
                           <SavedReviewStars value={item.rating} />
                           <span className="review-date">
                             {formatDate(item.updated_at || item.created_at)}
-                            {item.updated_at !== item.created_at && (
-                              <span> · تم التعديل</span>
-                            )}
+                            {item.updated_at !== item.created_at && <span> · تم التعديل</span>}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {item.comment && (
-                    <p className="review-comment">{item.comment}</p>
-                  )}
+                  {item.comment && <p className="review-comment">{item.comment}</p>}
 
                   {item.is_owner && (
                     <div className="owner-actions">
@@ -562,17 +545,66 @@ export default function RatingPage() {
         </section>
       </div>
 
+      {/* شريط التنقل السفلي */}
+      <BottomNavigation />
+
       <style jsx>{`
         .rating-page {
           min-height: 100vh;
           background: #fff;
           color: #202124;
-          padding: 32px 18px 70px;
+          padding: 0 18px 100px;
+        }
+
+        .page-top-bar {
+          position: sticky;
+          top: 0;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 0;
+          background: #fff;
+          border-bottom: 1px solid #e8eaed;
+          z-index: 50;
+          margin: 0 -18px;
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+
+        .page-title {
+          margin: 0;
+          font-size: 18px;
+          font-weight: 700;
+          color: #202124;
+        }
+
+        .back-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: #f1f3f4;
+          color: #202124;
+          text-decoration: none;
+          transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+          background: #e8eaed;
+        }
+
+        .back-btn svg {
+          width: 20px;
+          height: 20px;
+          transform: rotate(180deg);
         }
 
         .rating-shell {
           width: min(900px, 100%);
           margin: auto;
+          padding-top: 8px;
         }
 
         .rating-header {
@@ -657,7 +689,7 @@ export default function RatingPage() {
           margin-bottom: 22px;
         }
 
-        .all-reviews-header h2 {
+        .all-reviews-header h3 {
           margin: 0;
           font-size: 22px;
           font-weight: 700;
@@ -753,14 +785,13 @@ export default function RatingPage() {
           overflow-wrap: anywhere;
         }
 
-
         .rating-eyebrow {
           color: #5f6368;
           font-size: 14px;
           font-weight: 600;
         }
 
-        .rating-header h1 {
+        .rating-header h2 {
           margin: 7px 0 0;
           font-size: 34px;
           font-weight: 700;
@@ -827,8 +858,9 @@ export default function RatingPage() {
         .distribution-row svg {
           width: 15px;
           height: 15px;
+          display: block;
           fill: #fbbc04;
-          stroke: #fbbc04;
+          stroke: none;
         }
 
         .distribution-bar {
@@ -851,8 +883,8 @@ export default function RatingPage() {
           border-radius: 14px;
         }
 
-        .rating-write h2,
-        .reviews-heading h2 {
+        .rating-write h3,
+        .reviews-heading h3 {
           margin: 0;
           font-size: 19px;
           font-weight: 600;
@@ -945,7 +977,7 @@ export default function RatingPage() {
         }
 
         .save-button:disabled {
-          opacity: .45;
+          opacity: 0.45;
           cursor: default;
         }
 
@@ -1078,7 +1110,7 @@ export default function RatingPage() {
           color: #5f6368;
         }
 
-        .state-card h3 {
+        .state-card h4 {
           margin: 12px 0 4px;
           color: #202124;
           font-size: 16px;
@@ -1167,7 +1199,13 @@ export default function RatingPage() {
 
         @media (max-width: 640px) {
           .rating-page {
-            padding: 22px 14px 50px;
+            padding: 0 14px 100px;
+          }
+
+          .page-top-bar {
+            margin: 0 -14px;
+            padding-left: 14px;
+            padding-right: 14px;
           }
 
           .rating-overview {
@@ -1195,5 +1233,143 @@ export default function RatingPage() {
         }
       `}</style>
     </main>
+  );
+}
+
+/* ============================================
+   شريط التنقل السفلي - ضع هذا في ملف منفصل
+   (components/BottomNavigation.tsx) ليتم
+   مشاركته بين جميع الصفحات
+   ============================================ */
+function BottomNavigation() {
+  const pathname = usePathname();
+
+  const navItems = [
+    {
+      href: "/",
+      label: "الرئيسية",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      ),
+    },
+    {
+      href: "/explore",
+      label: "استكشاف",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+      ),
+    },
+    {
+      href: "/rating",
+      label: "مراجعة",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      ),
+    },
+    {
+      href: "/profile",
+      label: "حسابي",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <nav className="bottom-nav">
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
+        return (
+          <Link key={item.href} href={item.href} className={`nav-item ${isActive ? "active" : ""}`}>
+            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-label">{item.label}</span>
+          </Link>
+        );
+      })}
+
+      <style jsx>{`
+        .bottom-nav {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: #fff;
+          border-top: 1px solid #e8eaed;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+          z-index: 100;
+          box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 3px;
+          padding: 8px 14px;
+          text-decoration: none;
+          color: #5f6368;
+          transition: color 0.2s;
+          border-radius: 10px;
+          min-width: 60px;
+        }
+
+        .nav-item:hover {
+          background: #f8f9fa;
+        }
+
+        .nav-item.active {
+          color: #1a73e8;
+        }
+
+        .nav-item.active .nav-icon {
+          background: #e8f0fe;
+        }
+
+        .nav-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 28px;
+          border-radius: 14px;
+          transition: background 0.2s;
+        }
+
+        .nav-icon svg {
+          width: 22px;
+          height: 22px;
+        }
+
+        .nav-label {
+          font-size: 11px;
+          font-weight: 600;
+        }
+
+        @media (max-width: 640px) {
+          .nav-item {
+            padding: 8px 10px;
+            min-width: 50px;
+          }
+
+          .nav-label {
+            font-size: 10px;
+          }
+        }
+      `}</style>
+    </nav>
   );
 }

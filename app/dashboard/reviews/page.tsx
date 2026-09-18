@@ -823,8 +823,9 @@ export default function ReviewsPage() {
           align-items: center;
           flex-direction: row;
           gap: 8px;
-          margin-top: 2px;
+          margin-top: 3px;
           width: max-content;
+          min-height: 12px;
         }
 
         .avatar {

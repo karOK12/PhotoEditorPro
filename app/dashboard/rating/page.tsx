@@ -42,8 +42,8 @@ function SavedReviewStars({ value }: { value: number }) {
           viewBox="0 0 24 24"
           aria-hidden="true"
           className="saved-review-star"
-          width="11"
-          height="11"
+          width="18"
+          height="18"
           fill={star <= value ? "#fbbc04" : "none"}
           stroke={star <= value ? "#fbbc04" : "#9aa0a6"}
           strokeWidth="2"
@@ -978,20 +978,20 @@ export default function RatingPage() {
           align-items: center !important;
           justify-content: flex-start !important;
           direction: ltr !important;
-          gap: 1px !important;
+          gap: 2px !important;
           width: max-content !important;
-          height: 11px !important;
+          height: 18px !important;
           margin-top: 4px !important;
           flex: 0 0 auto !important;
         }
 
         .saved-review-star {
           display: block !important;
-          width: 11px !important;
-          height: 11px !important;
-          min-width: 11px !important;
-          max-width: 11px !important;
-          flex: 0 0 11px !important;
+          width: 18px !important;
+          height: 18px !important;
+          min-width: 18px !important;
+          max-width: 18px !important;
+          flex: 0 0 18px !important;
           margin: 0 !important;
         }
 

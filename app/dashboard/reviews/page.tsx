@@ -96,23 +96,17 @@ function SavedReviewStars({ value }: { value: number }) {
   return (
     <div className="saved-review-stars" aria-label={`${value} من 5 نجوم`}>
       {[1, 2, 3, 4, 5].map((star) => (
-        <svg
+        <span
           key={star}
-          viewBox="0 0 24 24"
+          className={`saved-review-star ${star <= value ? "active" : ""}`}
           aria-hidden="true"
-          className="saved-review-star"
-          fill={star <= value ? "#fbbc04" : "none"}
-          stroke={star <= value ? "#fbbc04" : "#9aa0a6"}
-          strokeWidth="1.8"
-          strokeLinejoin="round"
         >
-          <path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.56L12 17.52l-5.88 3.1 1.12-6.56-4.76-4.64 6.58-.96L12 2.5z" />
-        </svg>
+          ★
+        </span>
       ))}
     </div>
   );
 }
-
 function formatDate(value: string) {
   try {
     return new Intl.DateTimeFormat("ar-IQ", {
@@ -635,8 +629,19 @@ export default function ReviewsPage() {
         .saved-review-star {
           display: block;
           width: 18px;
-          height: 18px;
+          height: 20px;
           flex: 0 0 18px;
+          margin: 0;
+          padding: 0;
+          font-size: 18px;
+          line-height: 20px;
+          text-align: center;
+          font-family: Arial, sans-serif;
+          color: #9aa0a6;
+        }
+
+        .saved-review-star.active {
+          color: #fbbc04;
         }
 
         .rating-stars {

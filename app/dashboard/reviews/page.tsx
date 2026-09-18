@@ -428,16 +428,16 @@ export default function ReviewsPage() {
 
                       <div className="saved-review-rating">
                         <SavedReviewStars value={item.rating} />
+                      </div>
 
-                        <span className="review-date">
-                          {formatDate(
-                            item.updated_at || item.created_at
-                          )}
+                      <div className="review-date">
+                        {formatDate(
+                          item.updated_at || item.created_at
+                        )}
 
-                          {item.updated_at !== item.created_at && (
-                            <span> · تم التعديل</span>
-                          )}
-                        </span>
+                        {item.updated_at !== item.created_at && (
+                          <span> · تم التعديل</span>
+                        )}
                       </div>
 
                       {item.comment && (

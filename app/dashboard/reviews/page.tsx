@@ -95,7 +95,7 @@ function Stars({
 function SavedReviewStars({ value }: { value: number }) {
   return (
     <div
-      className="saved-review-stars"
+      className="saved-review-stars-only"
       aria-label={`${value} من 5 نجوم`}
     >
       {[1, 2, 3, 4, 5].map((star) => {
@@ -106,7 +106,7 @@ function SavedReviewStars({ value }: { value: number }) {
             key={star}
             viewBox="0 0 24 24"
             aria-hidden="true"
-            className="saved-review-star-icon"
+            className="saved-review-star-icon-only"
             width="14"
             height="14"
             fill={active ? "#fbbc04" : "none"}
@@ -761,29 +761,29 @@ export default function ReviewsPage() {
           font-size: 13px;
         }
 
-        .saved-review-stars {
+        .saved-review-stars-only {
           display: flex;
           flex-direction: row !important;
           align-items: center;
           justify-content: flex-start;
           direction: ltr;
-          gap: 1px;
-          width: 80px !important;
-          min-width: 80px !important;
-          height: 15px !important;
+          gap: 1px !important;
+          width: max-content !important;
+          min-width: 0 !important;
+          height: 12px !important;
           margin: 4px 0 0;
-          flex: 0 0 80px !important;
+          flex: 0 0 auto !important;
         }
 
-        .saved-review-star-icon {
+        .saved-review-star-icon-only {
           display: block;
-          width: 14px !important;
-          height: 14px !important;
-          min-width: 14px !important;
-          max-width: 14px !important;
-          min-height: 14px !important;
-          max-height: 14px !important;
-          flex: 0 0 14px !important;
+          width: 10px !important;
+          height: 10px !important;
+          min-width: 10px !important;
+          max-width: 10px !important;
+          min-height: 10px !important;
+          max-height: 10px !important;
+          flex: 0 0 10px !important;
           margin: 0 !important;
         }
 

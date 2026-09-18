@@ -779,13 +779,13 @@ export default function ReviewsPage() {
 
         .saved-review-star-icon-only {
           display: block;
-          width: 10px !important;
-          height: 10px !important;
-          min-width: 10px !important;
-          max-width: 10px !important;
-          min-height: 10px !important;
-          max-height: 10px !important;
-          flex: 0 0 10px !important;
+          width: 14px !important;
+          height: 14px !important;
+          min-width: 14px !important;
+          max-width: 14px !important;
+          min-height: 14px !important;
+          max-height: 14px !important;
+          flex: 0 0 14px !important;
           margin: 0 !important;
         }
 

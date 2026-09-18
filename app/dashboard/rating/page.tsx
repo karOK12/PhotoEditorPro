@@ -37,19 +37,13 @@ function SavedReviewStars({ value }: { value: number }) {
   return (
     <div className="saved-review-stars" aria-label={`${value} من 5 نجوم`}>
       {[1, 2, 3, 4, 5].map((star) => (
-        <svg
+        <span
           key={star}
-          viewBox="0 0 24 24"
-          aria-hidden="true"
           className="saved-review-star"
-          width="18"
-          height="18"
-          fill={star <= value ? "#fbbc04" : "none"}
-          stroke={star <= value ? "#fbbc04" : "#9aa0a6"}
-          strokeWidth="2"
+          aria-hidden="true"
         >
-          <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L5.82 14.13l-5-4.87 6.91-1L12 2z" />
-        </svg>
+          {star <= value ? "★" : "☆"}
+        </span>
       ))}
     </div>
   );
@@ -976,11 +970,10 @@ export default function RatingPage() {
           display: flex !important;
           flex-direction: row !important;
           align-items: center !important;
-          justify-content: flex-start !important;
           direction: ltr !important;
           gap: 2px !important;
           width: max-content !important;
-          height: 18px !important;
+          height: 20px !important;
           margin-top: 4px !important;
           flex: 0 0 auto !important;
         }
@@ -988,11 +981,14 @@ export default function RatingPage() {
         .saved-review-star {
           display: block !important;
           width: 18px !important;
-          height: 18px !important;
-          min-width: 18px !important;
-          max-width: 18px !important;
+          height: 20px !important;
           flex: 0 0 18px !important;
           margin: 0 !important;
+          padding: 0 !important;
+          font-family: Arial, sans-serif !important;
+          font-size: 18px !important;
+          line-height: 20px !important;
+          text-align: center !important;
         }
 
         .reviews-list {

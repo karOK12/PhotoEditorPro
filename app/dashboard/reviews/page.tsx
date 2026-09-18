@@ -93,32 +93,7 @@ function Stars({
 }
 
 function SavedReviewStars({ value }: { value: number }) {
-  return (
-    <div
-      className="saved-review-stars-only"
-      aria-label={`${value} من 5 نجوم`}
-    >
-      {[1, 2, 3, 4, 5].map((star) => {
-        const active = star <= value;
-
-        return (
-          <svg
-            key={star}
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            className="saved-review-star-icon-only"
-            fill={active ? "#fbbc04" : "none"}
-            stroke={active ? "#fbbc04" : "#8a8a8a"}
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L5.82 14.13l-5-4.87 6.91-1L12 2z" />
-          </svg>
-        );
-      })}
-    </div>
-  );
+  return <Stars value={value} />;
 }
 
 function formatDate(value: string) {
@@ -761,31 +736,6 @@ export default function ReviewsPage() {
           font-size: 13px;
         }
 
-        .saved-review-stars-only {
-          display: flex;
-          flex-direction: row !important;
-          align-items: center;
-          justify-content: flex-start;
-          direction: ltr;
-          gap: 1px !important;
-          width: max-content !important;
-          min-width: 0 !important;
-          height: 12px !important;
-          margin: 4px 0 0;
-          flex: 0 0 auto !important;
-        }
-
-        .saved-review-star-icon-only {
-          display: block;
-          width: 18px !important;
-          height: 18px !important;
-          min-width: 18px !important;
-          max-width: 18px !important;
-          min-height: 18px !important;
-          max-height: 18px !important;
-          flex: 0 0 18px !important;
-          margin: 0 !important;
-        }
 
         .reviews-section {
           margin-top: 34px;

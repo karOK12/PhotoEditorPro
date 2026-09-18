@@ -410,51 +410,49 @@ export default function ReviewsPage() {
             <div className="reviews-list">
               {ratings.map((item) => (
                 <article className="review-card" key={item.id}>
-                  <div className="review-top">
-                    <div className="user-info">
-                      <div className="avatar">
-                        {item.profile_image ? (
-                          <img
-                            src={item.profile_image}
-                            alt=""
-                            className="avatar-image"
-                          />
-                        ) : (
-                          (item.full_name || "م").trim().charAt(0)
-                        )}
-                      </div>
+                  <div className="review-user">
+                    <div className="avatar">
+                      {item.profile_image ? (
+                        <img
+                          src={item.profile_image}
+                          alt=""
+                          className="avatar-image"
+                        />
+                      ) : (
+                        (item.full_name || "م").trim().charAt(0)
+                      )}
+                    </div>
 
-                      <div className="review-user-content">
-                        <div className="user-name">
-                          {item.full_name || "مستخدم"}
+                    <div className="review-content">
+                      <div className="user-name">
+                        {item.full_name || "مستخدم"}
 
-                          {item.is_owner && (
-                            <span className="owner-badge">
-                              أنت
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="saved-review-rating">
-                          <SavedReviewStars value={item.rating} />
-
-                          <span className="review-date">
-                            {formatDate(
-                              item.updated_at || item.created_at
-                            )}
-
-                            {item.updated_at !== item.created_at && (
-                              <span> · تم التعديل</span>
-                            )}
+                        {item.is_owner && (
+                          <span className="owner-badge">
+                            أنت
                           </span>
-                        </div>
-
-                        {item.comment && (
-                          <p className="review-comment">
-                            {item.comment}
-                          </p>
                         )}
                       </div>
+
+                      <div className="saved-review-rating">
+                        <SavedReviewStars value={item.rating} />
+
+                        <span className="review-date">
+                          {formatDate(
+                            item.updated_at || item.created_at
+                          )}
+
+                          {item.updated_at !== item.created_at && (
+                            <span> · تم التعديل</span>
+                          )}
+                        </span>
+                      </div>
+
+                      {item.comment && (
+                        <p className="review-comment">
+                          {item.comment}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -802,11 +800,15 @@ export default function ReviewsPage() {
           border-bottom: 1px solid #e8eaed;
         }
 
-        .review-top {
+        .review-user {
           display: flex;
-          justify-content: flex-start;
           align-items: flex-start;
-          gap: 12px;
+          gap: 11px;
+        }
+
+        .review-content {
+          min-width: 0;
+          flex: 1;
         }
 
         .saved-review-rating {
@@ -974,7 +976,7 @@ export default function ReviewsPage() {
             flex-wrap: wrap;
           }
 
-          .review-top {
+          .review-user {
             flex-direction: row;
           }
         }

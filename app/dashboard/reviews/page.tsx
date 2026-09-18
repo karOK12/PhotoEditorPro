@@ -107,15 +107,13 @@ function SavedReviewStars({ value }: { value: number }) {
             viewBox="0 0 24 24"
             aria-hidden="true"
             className="saved-review-star-icon-only"
-            width="14"
-            height="14"
             fill={active ? "#fbbc04" : "none"}
             stroke={active ? "#fbbc04" : "#8a8a8a"}
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L7 14.13l-5-4.87 6.91-1L12 2z" />
+            <path d="M12 2l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.77l-6.18 3.23L5.82 14.13l-5-4.87 6.91-1L12 2z" />
           </svg>
         );
       })}

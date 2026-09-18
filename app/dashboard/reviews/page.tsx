@@ -773,7 +773,7 @@ export default function ReviewsPage() {
           gap: 8px;
           margin-top: 3px;
           width: max-content;
-          min-height: 12px;
+          min-height: 20px;
         }
 
         .avatar {

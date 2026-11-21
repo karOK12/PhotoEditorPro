@@ -288,6 +288,10 @@ function loadImage(file) {
         enableEditorTools();
 
         createImageLayer(file, imageUrl);
+
+        document.dispatchEvent(
+            new CustomEvent("editor:image-loaded")
+        );
     };
 
     img.src = imageUrl;

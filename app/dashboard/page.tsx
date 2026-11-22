@@ -82,8 +82,70 @@ export default function DashboardPage() {
         style={{
           minHeight: "100dvh",
           background: "radial-gradient(circle at top right, #172554 0%, #0b1020 35%, #08090c 70%)",
+          color: "#fff",
+          fontFamily: "Arial, Tahoma, sans-serif",
+          padding: "30px 16px",
+          boxSizing: "border-box",
         }}
-      />
+      >
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div
+            style={{
+              height: 28,
+              width: 190,
+              borderRadius: 8,
+              background: "rgba(255,255,255,.09)",
+              marginBottom: 35,
+            }}
+          />
+
+          <div
+            style={{
+              height: 75,
+              borderRadius: 16,
+              background: "rgba(255,255,255,.055)",
+              marginBottom: 25,
+            }}
+          />
+
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              overflow: "hidden",
+              marginBottom: 25,
+            }}
+          >
+            {[1, 2, 3, 4].map((item) => (
+              <div
+                key={item}
+                style={{
+                  flex: "1 0 130px",
+                  height: 45,
+                  borderRadius: 12,
+                  background: "rgba(255,255,255,.07)",
+                }}
+              />
+            ))}
+          </div>
+
+          <div
+            style={{
+              minHeight: 220,
+              borderRadius: 20,
+              background: "rgba(255,255,255,.045)",
+              border: "1px solid rgba(255,255,255,.07)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#a78bfa",
+              fontSize: 13,
+            }}
+          >
+            جارٍ تحميل مساحة الإبداع...
+          </div>
+        </div>
+      </main>
     );
   }
 

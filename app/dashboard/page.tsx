@@ -29,6 +29,7 @@ type User = {
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function checkSession() {
@@ -58,20 +59,32 @@ export default function DashboardPage() {
               ...data.user,
               ...dashboardData.user,
             });
+            setLoading(false);
             return;
           }
         }
 
         setUser(data.user);
+        setLoading(false);
       } catch {
         router.replace("/");
-      } finally {
-        // لا نعرض شاشة تحميل؛ الواجهة تظهر مباشرة.
       }
     }
 
     checkSession();
   }, [router]);
+
+  if (loading) {
+    return (
+      <main
+        dir="rtl"
+        style={{
+          minHeight: "100dvh",
+          background: "radial-gradient(circle at top right, #172554 0%, #0b1020 35%, #08090c 70%)",
+        }}
+      />
+    );
+  }
 
   return (
     <main

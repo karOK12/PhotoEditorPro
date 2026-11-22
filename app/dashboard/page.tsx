@@ -30,6 +30,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState("photos");
 
   useEffect(() => {
     async function checkSession() {
@@ -100,7 +101,7 @@ export default function DashboardPage() {
     >
 
 
-      {/* مساحة العمل */}
+      {/* Creative Sections - Middle Content Only */}
       <section
         style={{
           maxWidth: "1100px",
@@ -108,130 +109,155 @@ export default function DashboardPage() {
           padding: "24px 16px",
         }}
       >
+        {/* Horizontal Sections */}
         <div
           style={{
-            marginBottom: "22px",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            overflowX: "auto",
+            paddingBottom: 12,
+            marginBottom: 25,
+            scrollbarWidth: "thin",
           }}
         >
-          <h1
-            style={{
-              margin: 0,
-              fontSize: "30px",
-              fontWeight: 800,
-            }}
-          >
-            مساحة العمل
-          </h1>
-
-          <p
-            style={{
-              margin: "8px 0 0",
-              color: "#94a3b8",
-              fontSize: "14px",
-            }}
-          >
-            اختر الأداة التي تريد استخدامها
-          </p>
+          {[
+            { id: "photos", title: "تحرير الصور", icon: "▧" },
+            { id: "videos", title: "تحرير الفيديو", icon: "▶" },
+            { id: "design", title: "التصميم", icon: "✎" },
+            { id: "ai", title: "الذكاء الاصطناعي", icon: "✦" },
+            { id: "tools", title: "الأدوات الإبداعية", icon: "✧" },
+            { id: "projects", title: "المشاريع الأخيرة", icon: "▤" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveSection(item.id)}
+              style={{
+                flex: "0 0 auto",
+                padding: "12px 19px",
+                borderRadius: 12,
+                border: activeSection === item.id
+                  ? "1px solid #8b5cf6"
+                  : "1px solid rgba(255,255,255,.10)",
+                background: activeSection === item.id
+                  ? "linear-gradient(135deg,#7044c8,#5033a0)"
+                  : "rgba(255,255,255,.045)",
+                color: "#fff",
+                fontSize: 13,
+                fontWeight: 750,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <span style={{ marginLeft: 8 }}>{item.icon}</span>
+              {item.title}
+            </button>
+          ))}
         </div>
 
-        {/* أدوات التحرير */}
-        <section
+        {/* Section Content */}
+        <div
           style={{
-            marginTop: 24,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: 14,
+            minHeight: 220,
+            padding: "24px",
+            borderRadius: 20,
+            border: "1px solid rgba(255,255,255,.09)",
+            background: "rgba(255,255,255,.035)",
           }}
         >
-          <a
-            href="/editor/photo"
-            style={{
-              minHeight: 150,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 12,
-              padding: 20,
-              borderRadius: 18,
-              border: "1px solid rgba(255,255,255,.10)",
-              background: "linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.035))",
-              color: "#fff",
-              textDecoration: "none",
-              boxSizing: "border-box",
-            }}
-          >
-            <svg
-              width="34"
-              height="34"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="3" width="18" height="18" rx="3" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <path d="m21 15-5-5L5 21" />
-            </svg>
+          {activeSection === "photos" && (
+            <>
+              <h2 style={{ fontSize: 21, margin: "0 0 9px" }}>
+                تحرير الصور
+              </h2>
+              <p style={{ color: "#94a3b8", fontSize: 13, marginBottom: 22 }}>
+                أدوات تعديل الصور وتحسينها وإنشاء أعمال احترافية.
+              </p>
+              <a
+                href="/editor/photo"
+                style={{
+                  display: "inline-block",
+                  padding: "13px 23px",
+                  borderRadius: 11,
+                  background: "#7044c8",
+                  color: "#fff",
+                  textDecoration: "none",
+                  fontWeight: 800,
+                  fontSize: 13,
+                }}
+              >
+                فتح محرر الصور ←
+              </a>
+            </>
+          )}
 
-            <span style={{ fontSize: 16, fontWeight: 850 }}>
-              تحرير الصور
-            </span>
+          {activeSection === "videos" && (
+            <>
+              <h2 style={{ fontSize: 21, margin: "0 0 9px" }}>
+                تحرير الفيديو
+              </h2>
+              <p style={{ color: "#94a3b8", fontSize: 13 }}>
+                مساحة مخصصة لقص الفيديوهات وتحريرها وإضافة المؤثرات.
+              </p>
+              <span style={{ color: "#a78bfa", fontSize: 12 }}>
+                قريباً
+              </span>
+            </>
+          )}
 
-            <span
-              style={{
-                fontSize: 12,
-                color: "rgba(255,255,255,.58)",
-              }}
-            >
-              تعديل وتحسين الصور
-            </span>
-          </a>
-        </section>
+          {activeSection === "design" && (
+            <>
+              <h2 style={{ fontSize: 21, margin: "0 0 9px" }}>
+                التصميم الإبداعي
+              </h2>
+              <p style={{ color: "#94a3b8", fontSize: 13 }}>
+                مساحة لإنشاء التصاميم والأعمال البصرية.
+              </p>
+              <span style={{ color: "#a78bfa", fontSize: 12 }}>
+                قريباً
+              </span>
+            </>
+          )}
 
-        {/* المشاريع */}
-        <section style={{ marginTop: "30px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "14px",
-            }}
-          >
-            <h2 style={{ margin: 0, fontSize: "20px" }}>
-              مشاريعي
-            </h2>
+          {activeSection === "ai" && (
+            <>
+              <h2 style={{ fontSize: 21, margin: "0 0 9px" }}>
+                الذكاء الاصطناعي
+              </h2>
+              <p style={{ color: "#94a3b8", fontSize: 13 }}>
+                أدوات ذكية لتحليل الصور والفيديو وإنشاء المونتاج تلقائياً.
+              </p>
+              <span style={{ color: "#a78bfa", fontSize: 12 }}>
+                قيد التطوير
+              </span>
+            </>
+          )}
 
-            <span
-              style={{
-                color: "#64748b",
-                fontSize: "13px",
-              }}
-            >
-              قريباً
-            </span>
-          </div>
+          {activeSection === "tools" && (
+            <>
+              <h2 style={{ fontSize: 21, margin: "0 0 9px" }}>
+                الأدوات الإبداعية
+              </h2>
+              <p style={{ color: "#94a3b8", fontSize: 13 }}>
+                مجموعة أدوات مساعدة لإثراء أعمالك الإبداعية.
+              </p>
+              <span style={{ color: "#a78bfa", fontSize: 12 }}>
+                قريباً
+              </span>
+            </>
+          )}
 
-          <div
-            style={{
-              minHeight: "130px",
-              borderRadius: "20px",
-              border: "1px dashed rgba(255,255,255,.14)",
-              background: "rgba(255,255,255,.035)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-              color: "#64748b",
-              padding: "20px",
-            }}
-          >
-            ستظهر مشاريعك المحفوظة هنا
-          </div>
-        </section>
+          {activeSection === "projects" && (
+            <>
+              <h2 style={{ fontSize: 21, margin: "0 0 9px" }}>
+                المشاريع الأخيرة
+              </h2>
+              <p style={{ color: "#94a3b8", fontSize: 13 }}>
+                ستظهر هنا أعمالك ومشاريعك المحفوظة.
+              </p>
+            </>
+          )}
+        </div>
       </section>
 
       {/* الشريط السفلي */}

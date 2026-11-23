@@ -62,15 +62,21 @@ export default function VideoEditorPage() {
     const update = () => setCurrentTime(video.currentTime);
     const play = () => setPlaying(true);
     const pause = () => setPlaying(false);
+    const ended = () => {
+      setPlaying(false);
+      setCurrentTime(Number.isFinite(video.duration) ? video.duration : 0);
+    };
 
     video.addEventListener("timeupdate", update);
     video.addEventListener("play", play);
     video.addEventListener("pause", pause);
+    video.addEventListener("ended", ended);
 
     return () => {
       video.removeEventListener("timeupdate", update);
       video.removeEventListener("play", play);
       video.removeEventListener("pause", pause);
+      video.removeEventListener("ended", ended);
     };
   }, [selected?.id]);
 
@@ -111,6 +117,7 @@ export default function VideoEditorPage() {
   };
 
   const selectMedia = (item: MediaItem) => {
+    videoRef.current?.pause();
     setSelectedId(item.id);
     setCurrentTime(0);
     setPlaying(false);
@@ -196,7 +203,12 @@ export default function VideoEditorPage() {
           video.currentTime = 0;
           setCurrentTime(0);
         }
-        await video.play();
+        try {
+          await video.play();
+        } catch (error) {
+          setPlaying(false);
+          console.error("Video playback failed:", error);
+        }
       } else {
         video.pause();
       }
